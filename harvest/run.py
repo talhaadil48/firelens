@@ -185,7 +185,9 @@ def investigate(hit: dict, folder: Path, client: SourceClient) -> dict:
                     validator=validator,
                 )
                 entry.update(
-                    status="success", path=target.relative_to(folder).as_posix(), receipt=asdict(receipt)
+                    status="success",
+                    path=target.relative_to(folder).as_posix(),
+                    receipt=asdict(receipt),
                 )
                 if item["role"] == "table":
                     entry["csv"] = csv_summary(target.read_bytes())
