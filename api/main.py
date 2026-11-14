@@ -1,16 +1,23 @@
-"""Contract server (v2). Mock mode serves Phase 2 fixtures; snapshot mode lands in Phase 6."""
+"""FireLens API. FIRELENS_MODE=snapshot serves a harvested PSI snapshot; mock serves fixtures.
+
+Numbers come from code (rule 1): rankings, ranges, counts and rows are computed from the
+snapshot. No PSI call in the request path except the cached hourly check behind /meta.
+"""
 
 import csv
 import io
 import json
+import logging
+import time
 from collections.abc import Iterator
 from typing import Annotated, Literal
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 
-from api.config import ROOT, Settings, load_profiles
+from api.config import Settings, load_profiles
+from api.freshness import CatalogueCheck
 from api.models import (
     MAX_TEST_PAGE,
     AnswerEvent,
@@ -18,25 +25,38 @@ from api.models import (
     CompareResponse,
     DoneEvent,
     ErrorResponse,
+    ExperimentalTest,
     ExportResponse,
+    Gravity,
     Investigation,
     InvestigationList,
     MetaResponse,
     ProfileConfig,
     ProgressEvent,
-    RankItem,
     RankResponse,
+    ReviewStatus,
     TestList,
 )
+from api.rank import rank_all
+from api.store import StoreManager, TestFilter
 
 settings = Settings()
-if settings.mode != "mock":
-    raise RuntimeError("Only FIRELENS_MODE=mock is implemented until the Phase 6 loader")
+logging.basicConfig(
+    level=settings.log_level, format="%(asctime)s %(levelname)s %(name)s %(message)s"
+)
+log = logging.getLogger("firelens.api")
+DATA = StoreManager(settings.mode, settings.snapshot_dir, settings.pointer_check_seconds)
+FRESHNESS = CatalogueCheck(
+    settings.psi_check_seconds, enabled=settings.psi_check and settings.mode == "snapshot"
+)
 
 app = FastAPI(
-    title="FireLens contract API",
-    version="0.1.0",
-    description="Phase 2 offline fixtures. Real NASA metadata; no validated scientific outputs.",
+    title="FireLens API",
+    version="0.2.0",
+    description=(
+        "Ranks and explains NASA PSI microgravity combustion investigations for crewed-habitat "
+        "fire safety. Every number is computed from a dated PSI snapshot."
+    ),
     responses={404: {"model": ErrorResponse}},
 )
 app.add_middleware(
@@ -45,24 +65,56 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
-SAMPLE = ROOT / "snapshots/sample"
+
+
+@app.middleware("http")
+async def access_log(request: Request, call_next):
+    started = time.perf_counter()
+    response = await call_next(request)
+    log.info(
+        json.dumps(
+            {
+                "method": request.method,
+                "path": request.url.path,
+                "status": response.status_code,
+                "ms": round((time.perf_counter() - started) * 1000, 1),
+            }
+        )
+    )
+    return response
 
 
 def investigations() -> list[Investigation]:
-    payload = InvestigationList.model_validate_json((SAMPLE / "investigations.json").read_text())
-    return payload.items
+    return DATA.store.investigations
 
 
 def by_id(accession: str) -> Investigation:
-    result = next((item for item in investigations() if item.accession == accession), None)
+    result = DATA.store.by_id.get(accession)
     if result is None:
         raise HTTPException(404, f"Unknown investigation: {accession}")
     return result
 
 
+@app.get("/healthz", include_in_schema=False)
+def healthz() -> dict:
+    """Liveness/readiness probe for Azure Container Apps; no PSI or model call."""
+    return {"status": "ok", "snapshot_id": DATA.store.snapshot_id}
+
+
 @app.get("/meta", response_model=MetaResponse)
 def meta() -> MetaResponse:
-    return MetaResponse.model_validate_json((SAMPLE / "meta.json").read_text())
+    store = DATA.store
+    result = store.meta()
+    checked_at, new = FRESHNESS.status(set(store.by_id))
+    if checked_at is not None:
+        result.catalogue_checked_at = checked_at
+        result.new_releases_since_snapshot = len(new)
+        result.new_release_accessions = new
+    if store.mode == "snapshot" and result.reviewed_test_count == 0:
+        result.warnings.append(
+            "Column maps are awaiting review; test rows are shown as unreviewed."
+        )
+    return result
 
 
 @app.get("/profiles", response_model=ProfileConfig)
@@ -78,9 +130,19 @@ def list_investigations(
 ) -> InvestigationList:
     items = investigations()
     if q:
-        items = [i for i in items if q.casefold() in f"{i.title} {i.accession}".casefold()]
+        needle = q.casefold()
+        items = [
+            i
+            for i in items
+            if needle
+            in f"{i.title} {i.accession} {i.acronym or ''} {' '.join(i.keywords)}".casefold()
+        ]
     return InvestigationList(
-        items=items[offset : offset + limit], total=len(items), limit=limit, offset=offset
+        items=items[offset : offset + limit],
+        total=len(items),
+        limit=limit,
+        offset=offset,
+        mode=DATA.store.mode,
     )
 
 
@@ -110,67 +172,141 @@ def rank(
         if value is not None:
             condition = getattr(selected, name)
             condition.minimum = condition.maximum = value
+    store = DATA.store
+    items = rank_all(
+        store.investigations, store.tests, selected, goal, config, settings.allow_unreviewed
+    )
+    warnings = ["Profiles, weights and tolerances are illustrative and need scientific review."]
+    if selected.gravity in (Gravity.REDUCED, Gravity.UNKNOWN):
+        warnings.append(
+            "PSI holds no partial-gravity data yet (LUCI and FM2 are future); "
+            "microgravity and 1 g results can only bound it."
+        )
+    if store.mode == "mock":
+        warnings.append("Mock fixtures: no normalized tests, so no score is calculated.")
+    elif settings.allow_unreviewed:
+        warnings.append("Includes rows from column maps that a person has not reviewed yet.")
+    elif any(t.review_status != ReviewStatus.REVIEWED for t in store.tests):
+        warnings.append(
+            "Rows from unreviewed column maps are excluded; those investigations show as "
+            "metadata only."
+        )
     return RankResponse(
         profile=selected,
         goal=goal,
         weights=config.weights,
-        items=[
-            RankItem(
-                accession=i.accession,
-                breakdown={name: None for name in config.weights.model_dump()},
-                gaps=["No reviewed normalized tests in Phase 2 fixture"],
-                rationale=(
-                    "Metadata fixture only; no quantitative relevance score can be calculated."
-                ),
-            )
-            for i in investigations()
-        ],
-        warnings=[
-            "No ranking calculated. Fixture order is not a ranking.",
-            "Profiles and weights are illustrative and require scientific review.",
-        ],
+        items=items,
+        mode=store.mode,
+        warnings=warnings,
     )
 
 
-@app.get("/tests", response_model=TestList)
-def tests(
+def filter_params(
     accession: str | None = None,
     o2_min: Annotated[float | None, Query(ge=0, le=1)] = None,
     o2_max: Annotated[float | None, Query(ge=0, le=1)] = None,
     pressure_min: Annotated[float | None, Query(gt=0)] = None,
     pressure_max: Annotated[float | None, Query(gt=0)] = None,
+    flow_min: Annotated[float | None, Query(ge=0)] = None,
+    flow_max: Annotated[float | None, Query(ge=0)] = None,
+    fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] | None = None,
+    outcome: Literal["ignited", "extinguished", "cool_flame", "failed", "unknown"] | None = None,
+    reviewed_only: bool = False,
+) -> TestFilter:
+    if accession:
+        by_id(accession)
+    for lower, upper in [(o2_min, o2_max), (pressure_min, pressure_max), (flow_min, flow_max)]:
+        if lower is not None and upper is not None and lower > upper:
+            raise HTTPException(422, "Minimum filter cannot exceed maximum")
+    return TestFilter(
+        accession,
+        o2_min,
+        o2_max,
+        pressure_min,
+        pressure_max,
+        flow_min,
+        flow_max,
+        fuel_phase,
+        outcome,
+        reviewed_only,
+    )
+
+
+@app.get("/tests", response_model=TestList)
+def tests(
+    flt: Annotated[TestFilter, Depends(filter_params)],
     limit: Annotated[int, Query(ge=1, le=MAX_TEST_PAGE)] = MAX_TEST_PAGE,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> TestList:
-    if accession:
-        by_id(accession)
-    for lower, upper in [(o2_min, o2_max), (pressure_min, pressure_max)]:
-        if lower is not None and upper is not None and lower > upper:
-            raise HTTPException(422, "Minimum filter cannot exceed maximum")
-    # No normalized measurements are fabricated to make an empty plot look populated.
-    return TestList(items=[], total=0, limit=limit, offset=offset)
+    rows = DATA.store.query_tests(flt)
+    return TestList(
+        items=rows[offset : offset + limit],
+        total=len(rows),
+        limit=limit,
+        offset=offset,
+        mode=DATA.store.mode,
+    )
 
 
 def parse_ids(ids: str) -> list[Investigation]:
     accessions = [accession.strip() for accession in ids.split(",")]
     if len(accessions) not in (2, 3) or len(set(accessions)) != len(accessions):
         raise HTTPException(422, "Supply 2–3 distinct investigation IDs, separated by commas")
-    return [by_id(accession.strip()) for accession in accessions]
+    return [by_id(accession) for accession in accessions]
+
+
+def describe_range(item: Investigation, field: str) -> str:
+    found = item.condition_ranges.get(field)
+    if found is None or found.minimum is None:
+        return "not reported"
+    if field == "o2_fraction":
+        return f"{found.minimum * 100:.1f}–{found.maximum * 100:.1f} % O2"
+    return f"{found.minimum:.4g}–{found.maximum:.4g} {found.unit}"
+
+
+COMPARE_FIELDS = {
+    "Fuel phase": lambda i: i.fuel_phase,
+    "Platform": lambda i: i.platform or "not reported",
+    "Research sub-area": lambda i: i.sub_area or "not reported",
+    "Hardware": lambda i: "; ".join(i.hardware) or "not reported",
+    "Fire-safety category": lambda i: ", ".join(i.fire_safety_tags) or "none tagged",
+    "Oxygen tested": lambda i: describe_range(i, "o2_fraction"),
+    "Pressure tested": lambda i: describe_range(i, "pressure_kpa"),
+    "Airflow tested": lambda i: describe_range(i, "flow_cm_s"),
+    "Normalized tests": lambda i: str(i.test_count),
+    "Data status": lambda i: i.data_status,
+}
 
 
 @app.get("/compare", response_model=CompareResponse)
 def compare(ids: str) -> CompareResponse:
     items = parse_ids(ids)
+    same, different = [], []
+    for label, getter in COMPARE_FIELDS.items():
+        values = [getter(item) for item in items]
+        if len(set(values)) == 1:
+            same.append(f"{label}: {values[0]}")
+        else:
+            different.append(
+                f"{label}: "
+                + "; ".join(
+                    f"{item.acronym or item.accession} {value}"
+                    for item, value in zip(items, values, strict=True)
+                )
+            )
+    names = ", ".join(item.acronym or item.accession for item in items)
     return CompareResponse(
         investigations=items,
-        same=["All selected records are NASA PSI combustion metadata fixtures."],
-        different=[f"{item.accession}: {item.title}" for item in items],
+        same=same,
+        different=different,
         summary=(
-            "Titles and identifiers can be compared; experimental outcomes are not normalized yet."
+            f"{names}: {len(same)} attributes match and {len(different)} differ, compared "
+            "field by field from the snapshot records."
         ),
         warnings=[
             "Different investigations do not imply directly comparable materials or conditions."
         ],
+        mode=DATA.store.mode,
     )
 
 
@@ -190,10 +326,22 @@ CSV_FIELDS = [
     "flow_direction",
     "outcome",
     "doi",
+    "review_status",
     "source_url",
+    "source_version",
     "source_file",
     "source_row",
 ]
+
+
+def csv_value(row: ExperimentalTest, field: str):
+    if field.startswith("source_"):
+        value = getattr(row.provenance, field)
+    else:
+        value = getattr(row, field)
+    if value is None:
+        return ""  # missing stays empty, never zero
+    return getattr(value, "value", value)
 
 
 @app.get(
@@ -202,24 +350,42 @@ CSV_FIELDS = [
     responses={200: {"content": {"text/csv": {"schema": {"type": "string"}}}}},
 )
 def export(
+    flt: Annotated[TestFilter, Depends(filter_params)],
     format: Annotated[str, Query(pattern=r"^(csv|json)$")] = "csv",
 ) -> Response | ExportResponse:
+    store = DATA.store
+    rows = store.query_tests(flt)
+    accessions = sorted({r.accession for r in rows}, key=lambda a: int(a.split("-")[1]))
+    cited = [store.by_id[a] for a in accessions if a in store.by_id]
+    credit = (
+        f"NASA Physical Sciences Informatics (CC0-1.0); FireLens {store.mode} {store.snapshot_id}"
+    )
     if format == "json":
         return ExportResponse(
-            source_credit="NASA Physical Sciences Informatics; metadata fixtures",
-            tests=[],
-            investigations=investigations(),
+            source_credit=credit,
+            mode=store.mode,
+            tests=rows,
+            investigations=cited or store.investigations,
         )
     stream = io.StringIO(newline="")
-    stream.write(
-        "# Source: NASA Physical Sciences Informatics; FireLens Phase 2 mock; no test rows\r\n"
-    )
-    csv.writer(stream).writerow(CSV_FIELDS)
+    stream.write(f"# Source: {credit}\r\n")
+    if cited:
+        stream.write(
+            "# Cite: "
+            + "; ".join(f"{i.accession} {i.acronym or ''} doi:{i.doi} v{i.version}" for i in cited)
+            + "\r\n"
+        )
+    if any(r.review_status != ReviewStatus.REVIEWED for r in rows):
+        stream.write("# Rows marked unreviewed come from column maps not yet approved.\r\n")
+    writer = csv.writer(stream)
+    writer.writerow(CSV_FIELDS)
+    for row in rows:
+        writer.writerow([csv_value(row, field) for field in CSV_FIELDS])
     return Response(
         stream.getvalue(),
         media_type="text/csv",
         headers={
-            "Content-Disposition": 'attachment; filename="firelens-tests-mock.csv"',
+            "Content-Disposition": f'attachment; filename="firelens-tests-{store.snapshot_id}.csv"',
         },
     )
 

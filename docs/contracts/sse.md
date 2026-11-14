@@ -10,9 +10,9 @@ Contract v2 (aligned with the project plan). Mock mode serves offline fixtures; 
 | GET | `/investigations?q=&limit=100&offset=0` | Filtered/paginated list |
 | GET | `/investigations/{accession}` | Record, source links and citations |
 | GET | `/rank?profile=iss&goal=prevention` | R = 0.40 C + 0.25 F + 0.20 M + 0.15 D with a per-term breakdown; null when evidence is missing. Optional `o2_fraction`, `pressure_kpa`, `flow_cm_s` overrides; `goal` is prevention/detection/suppression |
-| GET | `/tests` | Unified test rows (up to 5000 per page); `accession`, `o2_min`/`o2_max`, `pressure_min`/`pressure_max` filters. Empty in mock mode |
-| GET | `/compare?ids=PSI-26,PSI-25` | 2–3 distinct records and metadata-only comparison |
-| GET | `/export?format=csv` | Citation line + CSV header; missing measurements not fabricated |
+| GET | `/tests` | Unified test rows (up to 5000 per page), filtered in DuckDB: `accession`, `o2_min`/`o2_max`, `pressure_min`/`pressure_max`, `flow_min`/`flow_max`, `fuel_phase`, `outcome`, `reviewed_only`. Empty in mock mode |
+| GET | `/compare?ids=PSI-26,PSI-25` | 2–3 distinct records; same/different computed field by field (no model call) |
+| GET | `/export?format=csv` | Same filters as `/tests`. Comment lines: source + snapshot id, DOI/version per cited investigation, unreviewed notice; then rows with source file/row. Missing values stay empty |
 | GET | `/export?format=json` | Metadata and empty tests array |
 | POST | `/chat` | `text/event-stream` |
 

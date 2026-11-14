@@ -215,9 +215,12 @@ class MetaResponse(Model):
     mode: DataMode = "mock"
     snapshot_id: str
     snapshot_date: datetime
+    psi_retrieved_at: datetime | None = None
     investigation_count: int = Field(ge=0)
     test_count: int = Field(ge=0)
+    reviewed_test_count: int | None = Field(default=None, ge=0)
     new_releases_since_snapshot: int | None = None
+    new_release_accessions: list[Accession] = Field(default_factory=list)
     catalogue_checked_at: datetime | None = None
     warnings: list[str]
 
@@ -294,7 +297,7 @@ class Tolerances(Model):
 
 
 class RichnessScale(Model):
-    """D = row_share * min(1, log(rows+1)/log(full+1)) + documents_share * has_reports."""
+    """D = row_share * min(1, ln(rows+1)/ln(full+1)) + documents_share * has_publications."""
 
     rows_for_full_score: int = Field(ge=1)
     row_share: Fraction

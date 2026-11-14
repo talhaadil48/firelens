@@ -3,9 +3,12 @@
     "mode": "mock",
     "snapshot_id": "phase2-metadata-fixture-v1",
     "snapshot_date": "2026-11-14T13:14:47.565647Z",
+    "psi_retrieved_at": null,
     "investigation_count": 5,
     "test_count": 0,
+    "reviewed_test_count": null,
     "new_releases_since_snapshot": null,
+    "new_release_accessions": [],
     "catalogue_checked_at": null,
     "warnings": [
       "Phase 2 contract fixtures: real NASA titles and metadata; scientific claims unreviewed.",
@@ -633,16 +636,19 @@
         "breakdown": {
           "condition": null,
           "fuel": null,
-          "category": null,
-          "richness": null
+          "category": 0.0,
+          "richness": 0.0
         },
         "status": "metadata_only",
         "test_count": 0,
         "tests_near_profile": null,
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No tests report O2",
+          "No tests report pressure",
+          "No normalized test table in this snapshot",
+          "Fuel phase 'unknown' has no realism score"
         ],
-        "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
+        "rationale": "C: no assessable tests; F: unknown fuel (unscored); M: no fire-safety tag; D: 0 normalized rows, no publications listed."
       },
       {
         "accession": "PSI-69",
@@ -650,16 +656,19 @@
         "breakdown": {
           "condition": null,
           "fuel": null,
-          "category": null,
-          "richness": null
+          "category": 0.0,
+          "richness": 0.0
         },
         "status": "metadata_only",
         "test_count": 0,
         "tests_near_profile": null,
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No tests report O2",
+          "No tests report pressure",
+          "No normalized test table in this snapshot",
+          "Fuel phase 'unknown' has no realism score"
         ],
-        "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
+        "rationale": "C: no assessable tests; F: unknown fuel (unscored); M: no fire-safety tag; D: 0 normalized rows, no publications listed."
       },
       {
         "accession": "PSI-159",
@@ -667,16 +676,19 @@
         "breakdown": {
           "condition": null,
           "fuel": null,
-          "category": null,
-          "richness": null
+          "category": 0.0,
+          "richness": 0.0
         },
         "status": "metadata_only",
         "test_count": 0,
         "tests_near_profile": null,
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No tests report O2",
+          "No tests report pressure",
+          "No normalized test table in this snapshot",
+          "Fuel phase 'unknown' has no realism score"
         ],
-        "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
+        "rationale": "C: no assessable tests; F: unknown fuel (unscored); M: no fire-safety tag; D: 0 normalized rows, no publications listed."
       },
       {
         "accession": "PSI-100",
@@ -684,16 +696,19 @@
         "breakdown": {
           "condition": null,
           "fuel": null,
-          "category": null,
-          "richness": null
+          "category": 0.0,
+          "richness": 0.0
         },
         "status": "metadata_only",
         "test_count": 0,
         "tests_near_profile": null,
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No tests report O2",
+          "No tests report pressure",
+          "No normalized test table in this snapshot",
+          "Fuel phase 'unknown' has no realism score"
         ],
-        "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
+        "rationale": "C: no assessable tests; F: unknown fuel (unscored); M: no fire-safety tag; D: 0 normalized rows, no publications listed."
       },
       {
         "accession": "PSI-25",
@@ -701,23 +716,26 @@
         "breakdown": {
           "condition": null,
           "fuel": null,
-          "category": null,
-          "richness": null
+          "category": 0.0,
+          "richness": 0.0
         },
         "status": "metadata_only",
         "test_count": 0,
         "tests_near_profile": null,
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No tests report O2",
+          "No tests report pressure",
+          "No normalized test table in this snapshot",
+          "Fuel phase 'unknown' has no realism score"
         ],
-        "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
+        "rationale": "C: no assessable tests; F: unknown fuel (unscored); M: no fire-safety tag; D: 0 normalized rows, no publications listed."
       }
     ],
     "score_label": "research relevance",
     "mode": "mock",
     "warnings": [
-      "No ranking calculated. Fixture order is not a ranking.",
-      "Profiles and weights are illustrative and require scientific review."
+      "Profiles, weights and tolerances are illustrative and need scientific review.",
+      "Mock fixtures: no normalized tests, so no score is calculated."
     ]
   },
   "tests": {
@@ -857,13 +875,19 @@
       }
     ],
     "same": [
-      "All selected records are NASA PSI combustion metadata fixtures."
+      "Fuel phase: unknown",
+      "Platform: not reported",
+      "Research sub-area: not reported",
+      "Hardware: not reported",
+      "Fire-safety category: none tagged",
+      "Oxygen tested: not reported",
+      "Pressure tested: not reported",
+      "Airflow tested: not reported",
+      "Normalized tests: 0",
+      "Data status: metadata_only"
     ],
-    "different": [
-      "PSI-26: Burning and Suppression of Solids",
-      "PSI-25: Burning and Suppression of Solids - II"
-    ],
-    "summary": "Titles and identifiers can be compared; experimental outcomes are not normalized yet.",
+    "different": [],
+    "summary": "BASS, BASS-II: 10 attributes match and 0 differ, compared field by field from the snapshot records.",
     "warnings": [
       "Different investigations do not imply directly comparable materials or conditions."
     ],
@@ -871,7 +895,7 @@
   },
   "export": {
     "format": "json",
-    "source_credit": "NASA Physical Sciences Informatics; metadata fixtures",
+    "source_credit": "NASA Physical Sciences Informatics (CC0-1.0); FireLens mock phase2-metadata-fixture-v1",
     "mode": "mock",
     "tests": [],
     "investigations": [

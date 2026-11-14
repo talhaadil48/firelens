@@ -6,6 +6,7 @@ import json
 from api.config import ROOT, load_profiles
 from api.main import app, compare, export, investigation, list_investigations, meta, rank
 from api.models import AnswerEvent, DoneEvent, ProgressEvent, TestList
+from api.store import TestFilter
 
 
 def outputs() -> dict:
@@ -18,7 +19,7 @@ def outputs() -> dict:
         "rank": rank().model_dump(mode="json"),
         "tests": TestList(items=[], total=0, limit=100, offset=0).model_dump(mode="json"),
         "compare": compare("PSI-26,PSI-25").model_dump(mode="json"),
-        "export": export("json").model_dump(mode="json"),
+        "export": export(TestFilter(), "json").model_dump(mode="json"),
     }
     events = [
         (

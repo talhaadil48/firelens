@@ -40,3 +40,8 @@
     ≤70 kPa, nominal 34 % / 70 kPa). Still illustrative, not a NASA requirement.
 14. Responses carry `mode: mock | snapshot`. Snapshot v1 is committed and baked into the
     API image (the plan's fallback). Blob Storage `latest.json` loading follows after G2.
+15. Vectors are stored as a NumPy array in the snapshot (`vectors/embeddings.npy` plus
+    chunk ids) and searched by brute-force cosine similarity, instead of LanceDB. The
+    corpus is a few thousand chunks at most, so exact search takes milliseconds, and
+    dropping LanceDB and pyarrow cuts ~330 MB from the API image, which keeps the
+    scale-from-zero cold start short on Container Apps.

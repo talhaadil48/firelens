@@ -506,12 +506,18 @@ export interface components {
              * Format: date-time
              */
             snapshot_date: string;
+            /** Psi Retrieved At */
+            psi_retrieved_at?: string | null;
             /** Investigation Count */
             investigation_count: number;
             /** Test Count */
             test_count: number;
+            /** Reviewed Test Count */
+            reviewed_test_count?: number | null;
             /** New Releases Since Snapshot */
             new_releases_since_snapshot?: number | null;
+            /** New Release Accessions */
+            new_release_accessions?: string[];
             /** Catalogue Checked At */
             catalogue_checked_at?: string | null;
             /** Warnings */
@@ -715,7 +721,7 @@ export interface components {
         ReviewStatus: "unreviewed" | "reviewed" | "rejected";
         /**
          * RichnessScale
-         * @description D = row_share * min(1, log(rows+1)/log(full+1)) + documents_share * has_reports.
+         * @description D = row_share * min(1, ln(rows+1)/ln(full+1)) + documents_share * has_publications.
          */
         RichnessScale: {
             /** Rows For Full Score */
@@ -1013,13 +1019,18 @@ export interface operations {
     tests_tests_get: {
         parameters: {
             query?: {
+                limit?: number;
+                offset?: number;
                 accession?: string | null;
                 o2_min?: number | null;
                 o2_max?: number | null;
                 pressure_min?: number | null;
                 pressure_max?: number | null;
-                limit?: number;
-                offset?: number;
+                flow_min?: number | null;
+                flow_max?: number | null;
+                fuel_phase?: ("solid" | "liquid" | "gas" | "mixed" | "unknown") | null;
+                outcome?: ("ignited" | "extinguished" | "cool_flame" | "failed" | "unknown") | null;
+                reviewed_only?: boolean;
             };
             header?: never;
             path?: never;
@@ -1100,6 +1111,16 @@ export interface operations {
         parameters: {
             query?: {
                 format?: string;
+                accession?: string | null;
+                o2_min?: number | null;
+                o2_max?: number | null;
+                pressure_min?: number | null;
+                pressure_max?: number | null;
+                flow_min?: number | null;
+                flow_max?: number | null;
+                fuel_phase?: ("solid" | "liquid" | "gas" | "mixed" | "unknown") | null;
+                outcome?: ("ignited" | "extinguished" | "cool_flame" | "failed" | "unknown") | null;
+                reviewed_only?: boolean;
             };
             header?: never;
             path?: never;

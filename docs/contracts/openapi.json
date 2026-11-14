@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "FireLens contract API",
-    "description": "Phase 2 offline fixtures. Real NASA metadata; no validated scientific outputs.",
-    "version": "0.1.0"
+    "title": "FireLens API",
+    "description": "Ranks and explains NASA PSI microgravity combustion investigations for crewed-habitat fire safety. Every number is computed from a dated PSI snapshot.",
+    "version": "0.2.0"
   },
   "paths": {
     "/meta": {
@@ -319,6 +319,29 @@
         "operationId": "tests_tests_get",
         "parameters": [
           {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5000,
+              "minimum": 1,
+              "default": 5000,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
             "name": "accession",
             "in": "query",
             "required": false,
@@ -405,26 +428,93 @@
             }
           },
           {
-            "name": "limit",
+            "name": "flow_min",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "maximum": 5000,
-              "minimum": 1,
-              "default": 5000,
-              "title": "Limit"
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Flow Min"
             }
           },
           {
-            "name": "offset",
+            "name": "flow_max",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "minimum": 0,
-              "default": 0,
-              "title": "Offset"
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Flow Max"
+            }
+          },
+          {
+            "name": "fuel_phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "solid",
+                    "liquid",
+                    "gas",
+                    "mixed",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fuel Phase"
+            }
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "ignited",
+                    "extinguished",
+                    "cool_flame",
+                    "failed",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Outcome"
+            }
+          },
+          {
+            "name": "reviewed_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Reviewed Only"
             }
           }
         ],
@@ -525,6 +615,182 @@
               "pattern": "^(csv|json)$",
               "default": "csv",
               "title": "Format"
+            }
+          },
+          {
+            "name": "accession",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accession"
+            }
+          },
+          {
+            "name": "o2_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "O2 Min"
+            }
+          },
+          {
+            "name": "o2_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "O2 Max"
+            }
+          },
+          {
+            "name": "pressure_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pressure Min"
+            }
+          },
+          {
+            "name": "pressure_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pressure Max"
+            }
+          },
+          {
+            "name": "flow_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Flow Min"
+            }
+          },
+          {
+            "name": "flow_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Flow Max"
+            }
+          },
+          {
+            "name": "fuel_phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "solid",
+                    "liquid",
+                    "gas",
+                    "mixed",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fuel Phase"
+            }
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "ignited",
+                    "extinguished",
+                    "cool_flame",
+                    "failed",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Outcome"
+            }
+          },
+          {
+            "name": "reviewed_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Reviewed Only"
             }
           }
         ],
@@ -1665,6 +1931,18 @@
             "format": "date-time",
             "title": "Snapshot Date"
           },
+          "psi_retrieved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Psi Retrieved At"
+          },
           "investigation_count": {
             "type": "integer",
             "minimum": 0.0,
@@ -1674,6 +1952,18 @@
             "type": "integer",
             "minimum": 0.0,
             "title": "Test Count"
+          },
+          "reviewed_test_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Test Count"
           },
           "new_releases_since_snapshot": {
             "anyOf": [
@@ -1685,6 +1975,14 @@
               }
             ],
             "title": "New Releases Since Snapshot"
+          },
+          "new_release_accessions": {
+            "items": {
+              "type": "string",
+              "pattern": "^PSI-\\d+$"
+            },
+            "type": "array",
+            "title": "New Release Accessions"
           },
           "catalogue_checked_at": {
             "anyOf": [
@@ -2200,7 +2498,7 @@
           "documents_share"
         ],
         "title": "RichnessScale",
-        "description": "D = row_share * min(1, log(rows+1)/log(full+1)) + documents_share * has_reports."
+        "description": "D = row_share * min(1, ln(rows+1)/ln(full+1)) + documents_share * has_publications."
       },
       "SourceDocument": {
         "properties": {
