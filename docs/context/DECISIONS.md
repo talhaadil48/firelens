@@ -47,3 +47,17 @@ it does not assume the checklist's approximate investigation count. Current resu
 contain 24 manifests and 22 experimental CSVs. It excludes bulk Raw Data and keeps
 raw collection separate from the unchanged Phase 2 API/UI fixtures. See the Phase 3
 handoff and harvest log for the two unresolved upstream PDF links.
+
+## Complete product plan received
+
+The owner has now supplied the original complete `flame-in-freefall-plan.md`.
+It is preserved verbatim under that name in this context directory. The previous
+derived plan is retained as `implementation-summary.md`. Read `PLAN_ALIGNMENT.md`
+for the code-level comparison.
+
+The supplied plan establishes C/F/M/D (conditions, fuel realism, safety goal, data
+richness) as the intended ranking design, superseding decision 5's provisional
+dimensions. It also provides a fuller normalized row schema, rover/custom profile
+requirements and three exact Spinoff sources. Runtime models/configuration remain
+unchanged in this documentation task; those differences must be addressed during
+the corresponding authorized implementation work.
