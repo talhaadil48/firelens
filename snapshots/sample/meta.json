@@ -1,0 +1,13 @@
+{
+  "mode": "mock",
+  "snapshot_id": "phase2-metadata-fixture-v1",
+  "snapshot_date": "2026-11-14T13:14:47.565647Z",
+  "investigation_count": 5,
+  "test_count": 0,
+  "new_releases_since_snapshot": null,
+  "catalogue_checked_at": null,
+  "warnings": [
+    "Phase 2 contract fixtures: real NASA titles and metadata; scientific claims unreviewed.",
+    "No normalized test measurements or mission-safety rankings are available yet."
+  ]
+}

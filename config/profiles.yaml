@@ -1,0 +1,53 @@
+schema_version: 1
+score_label: research relevance
+review_status: draft_requires_science_review
+# Design choices, NOT NASA-approved specifications or safety weights.
+weights:
+  oxygen: 0.40
+  pressure: 0.25
+  flow: 0.20
+  gravity: 0.15
+missing_data_policy: >-
+  Missing or unreviewed conditions yield no score (null); never zero-fill or
+  silently renormalize. Exclude simulated and mock rows from measured coverage.
+profiles:
+  - id: earth
+    label: Earth laboratory
+    description: Illustrative near-ambient ground comparison.
+    oxygen: {minimum: 0.21, maximum: 0.21, unit: fraction}
+    pressure: {minimum: 101.325, maximum: 101.325, unit: kPa}
+    flow: {minimum: null, maximum: null, unit: cm/s}
+    gravity: normal_gravity
+    assumptions: [Rounded oxygen value, Airflow unspecified, Not a safety specification]
+  - id: iss
+    label: ISS-like cabin
+    description: Illustrative Earth-like atmosphere in microgravity; not an operational ISS specification.
+    oxygen: {minimum: 0.21, maximum: 0.21, unit: fraction}
+    pressure: {minimum: 101.325, maximum: 101.325, unit: kPa}
+    flow: {minimum: null, maximum: null, unit: cm/s}
+    gravity: microgravity
+    assumptions: [Airflow unspecified, No inference of spacecraft material approval]
+  - id: moon_base
+    label: Moon-base scenario
+    description: User-plan exploration envelope; not a NASA habitat requirement.
+    oxygen: {minimum: 0.30, maximum: 1.0, unit: fraction}
+    pressure: {minimum: null, maximum: 70.0, unit: kPa}
+    flow: {minimum: null, maximum: null, unit: cm/s}
+    gravity: reduced_gravity
+    assumptions: [Oxygen at least 30 percent from the project plan, Positive pressure up to 70 kPa, Lunar gravity differs from microgravity, Envelope requires scientific review]
+  - id: rover
+    label: Rover (configure conditions)
+    description: No atmosphere supplied in the project plan; conditions intentionally unset.
+    oxygen: {minimum: null, maximum: null, unit: fraction}
+    pressure: {minimum: null, maximum: null, unit: kPa}
+    flow: {minimum: null, maximum: null, unit: cm/s}
+    gravity: unknown
+    assumptions: [User must supply operating conditions, No default relevance ranking]
+  - id: spacesuit
+    label: Spacesuit scenario
+    description: User-plan pure-oxygen scenario; not an approved suit specification.
+    oxygen: {minimum: 1.0, maximum: 1.0, unit: fraction}
+    pressure: {minimum: 30.0, maximum: 30.0, unit: kPa}
+    flow: {minimum: null, maximum: null, unit: cm/s}
+    gravity: unknown
+    assumptions: [100 percent oxygen and 30 kPa from project plan, Gravity and ventilation unspecified]

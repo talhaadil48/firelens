@@ -1,0 +1,9 @@
+event: progress
+data: {"stage":"retrieval","message":"Offline contract mock; no LLM called."}
+
+event: answer
+data: {"text":"Insufficient evidence: Phase 2 contains catalogue metadata, not reviewed experimental findings.","status":"insufficient_evidence","mode":"mock","citations":[]}
+
+event: done
+data: {"finish_reason":"insufficient_evidence"}
+

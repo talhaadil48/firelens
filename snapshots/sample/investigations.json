@@ -1,0 +1,273 @@
+{
+  "items": [
+    {
+      "accession": "PSI-26",
+      "title": "Burning and Suppression of Solids",
+      "acronym": "BASS",
+      "research_area": "Combustion Science",
+      "description": null,
+      "doi": null,
+      "version": "4",
+      "license": "CC0-1.0",
+      "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
+      "documents": [],
+      "related_investigations": [],
+      "findings": [
+        {
+          "claim": "NASA catalogue title: Burning and Suppression of Solids",
+          "evidence_type": "metadata",
+          "citation_ids": [
+            "PSI-26:catalogue-title"
+          ],
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
+        }
+      ],
+      "citations": [
+        {
+          "id": "PSI-26:catalogue-title",
+          "accession": "PSI-26",
+          "locator": "title",
+          "supporting_text": "Burning and Suppression of Solids",
+          "provenance": {
+            "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-26",
+            "source_file": "manifest.json",
+            "source_version": "4",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
+            "source_row": null,
+            "page": null,
+            "source_sha256": "9dee45d44bb736178db270a07c9ee8f98ac02ee810189ab518271fd4720c0533",
+            "is_mock": false
+          }
+        }
+      ],
+      "test_count": 0,
+      "review_status": "unreviewed",
+      "data_status": "metadata_only",
+      "fixture": true
+    },
+    {
+      "accession": "PSI-69",
+      "title": "Flame Extinguishment Experiment",
+      "acronym": "FLEX",
+      "research_area": "Combustion Science",
+      "description": null,
+      "doi": null,
+      "version": "5",
+      "license": "CC0-1.0",
+      "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
+      "documents": [],
+      "related_investigations": [],
+      "findings": [
+        {
+          "claim": "NASA catalogue title: Flame Extinguishment Experiment",
+          "evidence_type": "metadata",
+          "citation_ids": [
+            "PSI-69:catalogue-title"
+          ],
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
+        }
+      ],
+      "citations": [
+        {
+          "id": "PSI-69:catalogue-title",
+          "accession": "PSI-69",
+          "locator": "title",
+          "supporting_text": "Flame Extinguishment Experiment",
+          "provenance": {
+            "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-69",
+            "source_file": "manifest.json",
+            "source_version": "5",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
+            "source_row": null,
+            "page": null,
+            "source_sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
+            "is_mock": false
+          }
+        }
+      ],
+      "test_count": 0,
+      "review_status": "unreviewed",
+      "data_status": "metadata_only",
+      "fixture": true
+    },
+    {
+      "accession": "PSI-159",
+      "title": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+      "acronym": "ACME CFI-G",
+      "research_area": "Combustion Science",
+      "description": null,
+      "doi": null,
+      "version": "1",
+      "license": "CC0-1.0",
+      "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
+      "documents": [],
+      "related_investigations": [],
+      "findings": [
+        {
+          "claim": "NASA catalogue title: Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+          "evidence_type": "metadata",
+          "citation_ids": [
+            "PSI-159:catalogue-title"
+          ],
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
+        }
+      ],
+      "citations": [
+        {
+          "id": "PSI-159:catalogue-title",
+          "accession": "PSI-159",
+          "locator": "title",
+          "supporting_text": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+          "provenance": {
+            "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-159",
+            "source_file": "manifest.json",
+            "source_version": "1",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
+            "source_row": null,
+            "page": null,
+            "source_sha256": "e01abe2caa309753a9bee1b0c3c79dec194a2a7300d0d13541e0dcf25e3b0ea5",
+            "is_mock": false
+          }
+        }
+      ],
+      "test_count": 0,
+      "review_status": "unreviewed",
+      "data_status": "metadata_only",
+      "fixture": true
+    },
+    {
+      "accession": "PSI-100",
+      "title": "Spacecraft Fire Experiment-III",
+      "acronym": "SAFFIRE-III",
+      "research_area": "Combustion Science",
+      "description": null,
+      "doi": null,
+      "version": "4",
+      "license": "CC0-1.0",
+      "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
+      "documents": [],
+      "related_investigations": [],
+      "findings": [
+        {
+          "claim": "NASA catalogue title: Spacecraft Fire Experiment-III",
+          "evidence_type": "metadata",
+          "citation_ids": [
+            "PSI-100:catalogue-title"
+          ],
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
+        }
+      ],
+      "citations": [
+        {
+          "id": "PSI-100:catalogue-title",
+          "accession": "PSI-100",
+          "locator": "title",
+          "supporting_text": "Spacecraft Fire Experiment-III",
+          "provenance": {
+            "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-100",
+            "source_file": "manifest.json",
+            "source_version": "4",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
+            "source_row": null,
+            "page": null,
+            "source_sha256": "9c836955a28ff129b2f239f9499e06f4ca52ba58f7a03d384a7bd0528c8bbe10",
+            "is_mock": false
+          }
+        }
+      ],
+      "test_count": 0,
+      "review_status": "unreviewed",
+      "data_status": "metadata_only",
+      "fixture": true
+    },
+    {
+      "accession": "PSI-25",
+      "title": "Burning and Suppression of Solids - II",
+      "acronym": "BASS-II",
+      "research_area": "Combustion Science",
+      "description": null,
+      "doi": null,
+      "version": "4",
+      "license": "CC0-1.0",
+      "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
+      "documents": [],
+      "related_investigations": [],
+      "findings": [
+        {
+          "claim": "NASA catalogue title: Burning and Suppression of Solids - II",
+          "evidence_type": "metadata",
+          "citation_ids": [
+            "PSI-25:catalogue-title"
+          ],
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
+        }
+      ],
+      "citations": [
+        {
+          "id": "PSI-25:catalogue-title",
+          "accession": "PSI-25",
+          "locator": "title",
+          "supporting_text": "Burning and Suppression of Solids - II",
+          "provenance": {
+            "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-25",
+            "source_file": "manifest.json",
+            "source_version": "4",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
+            "source_row": null,
+            "page": null,
+            "source_sha256": "b9234754db5da651ad27d888af082b889d07210b018e543369662f065b4ec2da",
+            "is_mock": false
+          }
+        }
+      ],
+      "test_count": 0,
+      "review_status": "unreviewed",
+      "data_status": "metadata_only",
+      "fixture": true
+    }
+  ],
+  "total": 5,
+  "limit": 100,
+  "offset": 0,
+  "mode": "mock"
+}
