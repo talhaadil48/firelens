@@ -223,26 +223,36 @@ export interface components {
         EvidenceType: "measurement" | "simulation" | "author_interpretation" | "metadata" | "mock";
         /** ExperimentalTest */
         ExperimentalTest: {
-            /** Test Id */
-            test_id: string;
             /** Accession */
             accession: string;
+            /** Investigation */
+            investigation?: string | null;
+            /** Test Id */
+            test_id: string;
+            /** Test Date */
+            test_date?: string | null;
             /** Campaign Id */
             campaign_id?: string | null;
-            /** Material */
-            material?: string | null;
+            /** Fuel */
+            fuel?: string | null;
             /**
              * Fuel Phase
              * @default unknown
              * @enum {string}
              */
             fuel_phase: "solid" | "liquid" | "gas" | "mixed" | "unknown";
-            /** Geometry */
-            geometry?: string | null;
+            /** Sample Geometry */
+            sample_geometry?: string | null;
+            /** Sample Size Mm */
+            sample_size_mm?: number | null;
+            /** Sample Dimensions Mm */
+            sample_dimensions_mm?: {
+                [key: string]: number;
+            };
             /** Thickness Mm */
             thickness_mm?: number | null;
-            /** Oxygen Fraction */
-            oxygen_fraction?: number | null;
+            /** O2 Fraction */
+            o2_fraction?: number | null;
             /**
              * Oxygen Basis
              * @default unknown
@@ -251,22 +261,46 @@ export interface components {
             oxygen_basis: "mole" | "volume" | "mass" | "unknown";
             /** Pressure Kpa */
             pressure_kpa?: number | null;
+            /** Diluent */
+            diluent?: string | null;
+            /** Diluent Fractions */
+            diluent_fractions?: {
+                [key: string]: number;
+            };
             /** Flow Cm S */
             flow_cm_s?: number | null;
             /** Flow Direction */
             flow_direction?: string | null;
             /** @default unknown */
             gravity: components["schemas"]["Gravity"];
+            /** Gravity Level G */
+            gravity_level_g?: number | null;
             /** Platform */
             platform?: string | null;
             /** Outcome */
-            outcome?: string | null;
-            /** Outcome Value */
+            outcome?: ("ignited" | "extinguished" | "cool_flame" | "failed" | "unknown") | null;
+            /** Metrics */
+            metrics?: {
+                [key: string]: components["schemas"]["Metric"];
+            };
+            /**
+             * Outcome Value
+             * @deprecated
+             */
             outcome_value?: number | null;
-            /** Outcome Unit */
+            /**
+             * Outcome Unit
+             * @deprecated
+             */
             outcome_unit?: string | null;
             /** Baseline Test Id */
             baseline_test_id?: string | null;
+            /** Source File */
+            source_file?: string | null;
+            /** Source Row */
+            source_row?: number | null;
+            /** Doi */
+            doi?: string | null;
             evidence_type: components["schemas"]["EvidenceType"];
             /** @default unreviewed */
             review_status: components["schemas"]["ReviewStatus"];
@@ -335,6 +369,27 @@ export interface components {
             research_area: string;
             /** Description */
             description?: string | null;
+            /** Objectives */
+            objectives?: string | null;
+            /** Approach */
+            approach?: string | null;
+            /** Hypothesis */
+            hypothesis?: string | null;
+            /** Research Impacts */
+            research_impacts?: string | null;
+            /** Sub Area */
+            sub_area?: string | null;
+            /** Sensors */
+            sensors?: string[];
+            /** Measurements */
+            measurements?: string[];
+            /** File Count */
+            file_count?: number | null;
+            /** File Size Bytes */
+            file_size_bytes?: number | null;
+            /** Publications */
+            publications?: components["schemas"]["Publication"][];
+            summary?: components["schemas"]["InvestigationSummary"] | null;
             /** Doi */
             doi?: string | null;
             /** Version */
@@ -411,6 +466,23 @@ export interface components {
              */
             mode: "mock";
         };
+        /** InvestigationSummary */
+        InvestigationSummary: {
+            /** Objective */
+            objective: string;
+            /** Fuels And Geometry */
+            fuels_and_geometry?: string | null;
+            /** Conditions Tested */
+            conditions_tested?: string | null;
+            /** Varied */
+            varied?: string | null;
+            /** Sensors */
+            sensors?: string[];
+            /** Findings */
+            findings?: components["schemas"]["Finding"][];
+            /** @default unreviewed */
+            review_status: components["schemas"]["ReviewStatus"];
+        };
         /** MetaResponse */
         MetaResponse: {
             /**
@@ -437,6 +509,19 @@ export interface components {
             /** Warnings */
             warnings: string[];
         };
+        /** Metric */
+        Metric: {
+            /** Value */
+            value?: number | null;
+            /**
+             * Unit
+             * @description Use '1' for dimensionless values
+             */
+            unit: string;
+            /** Source Column */
+            source_column?: string | null;
+            provenance?: components["schemas"]["Provenance"] | null;
+        };
         /** MissionProfile */
         MissionProfile: {
             /** Id */
@@ -455,6 +540,8 @@ export interface components {
             pressure: components["schemas"]["ConditionRange"];
             flow: components["schemas"]["ConditionRange"];
             gravity: components["schemas"]["Gravity"];
+            /** Gravity Level G */
+            gravity_level_g?: number | null;
             /** Assumptions */
             assumptions: string[];
         };
@@ -522,6 +609,17 @@ export interface components {
              */
             is_mock: boolean;
         };
+        /** Publication */
+        Publication: {
+            /** Title */
+            title: string;
+            /** Authors */
+            authors?: string | null;
+            /** Doi */
+            doi?: string | null;
+            /** Url */
+            url?: string | null;
+        };
         /** RankItem */
         RankItem: {
             /** Accession */
@@ -539,6 +637,12 @@ export interface components {
         };
         /** RankResponse */
         RankResponse: {
+            /**
+             * Safety Goal
+             * @default prevention
+             * @enum {string}
+             */
+            safety_goal: "prevention" | "detection" | "suppression";
             profile: components["schemas"]["MissionProfile"];
             weights: components["schemas"]["RankWeights"];
             /** Items */
@@ -561,25 +665,25 @@ export interface components {
         /** RankWeights */
         RankWeights: {
             /**
-             * Oxygen
+             * Conditions
              * @default 0.4
              */
-            oxygen: number;
+            conditions: number;
             /**
-             * Pressure
+             * Fuel Realism
              * @default 0.25
              */
-            pressure: number;
+            fuel_realism: number;
             /**
-             * Flow
+             * Safety Goal
              * @default 0.2
              */
-            flow: number;
+            safety_goal: number;
             /**
-             * Gravity
+             * Data Richness
              * @default 0.15
              */
-            gravity: number;
+            data_richness: number;
         };
         /**
          * ReviewStatus
@@ -819,9 +923,13 @@ export interface operations {
         parameters: {
             query?: {
                 profile?: string;
+                /** @deprecated */
                 oxygen_fraction?: number | null;
+                o2_fraction?: number | null;
                 pressure_kpa?: number | null;
                 flow_cm_s?: number | null;
+                gravity_level_g?: number | null;
+                goal?: "prevention" | "detection" | "suppression";
             };
             header?: never;
             path?: never;

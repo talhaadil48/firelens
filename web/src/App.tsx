@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import type { FormEvent } from 'react'
 import CoverageMap from './CoverageMap'
-import { getInvestigations, getMeta, getProfiles } from './client'
-import type { Investigation, Meta, ProfileConfig } from './client'
+import { getInvestigations, getMeta, getProfiles, getRank } from './client'
+import type { Investigation, Meta, ProfileConfig, RankResponse } from './client'
 
 export default function App() {
   const [meta, setMeta] = useState<Meta | null>(null)
@@ -11,6 +12,10 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [custom, setCustom] = useState({ oxygen: '', pressure: '', flow: '', gravity: '' })
+  const [customResult, setCustomResult] = useState<RankResponse | null>(null)
+  const [customError, setCustomError] = useState('')
+  const [customLoading, setCustomLoading] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -22,6 +27,28 @@ export default function App() {
       .finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
   }, [])
+
+  async function applyCustom(event: FormEvent) {
+    event.preventDefault()
+    setCustomError('')
+    setCustomResult(null)
+    if (!custom.oxygen.trim() || !custom.pressure.trim()) {
+      setCustomError('Enter oxygen and pressure.')
+      return
+    }
+    setCustomLoading(true)
+    try {
+      const result = await getRank('custom', {
+        o2_fraction: Number(custom.oxygen) / 100,
+        pressure_kpa: Number(custom.pressure),
+        ...(custom.flow.trim() ? { flow_cm_s: Number(custom.flow) } : {}),
+        ...(custom.gravity.trim() ? { gravity_level_g: Number(custom.gravity) } : {}),
+      })
+      setCustomResult(result)
+    } catch (reason) {
+      setCustomError(reason instanceof Error ? reason.message : 'Could not apply custom conditions')
+    } finally { setCustomLoading(false) }
+  }
 
   const visible = records.filter(item => `${item.title} ${item.accession}`.toLowerCase().includes(query.toLowerCase()))
   const selected = profiles?.profiles.find(item => item.id === profile)
@@ -39,9 +66,20 @@ export default function App() {
       {profiles && <section aria-labelledby="scenario-heading">
         <h2 id="scenario-heading">Explore a scenario</h2>
         <label htmlFor="profile">Illustrative mission profile</label>
-        <select id="profile" value={profile} onChange={event => setProfile(event.target.value)}>
+        <select id="profile" value={profile} onChange={event => { setProfile(event.target.value); setCustomResult(null); setCustomError('') }}>
           {profiles.profiles.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
         </select>
+        {profile === 'custom' && <form onSubmit={applyCustom} aria-label="Custom environment conditions">
+          <div className="custom-grid">
+            <div><label htmlFor="custom-oxygen">Oxygen (%)</label><input id="custom-oxygen" type="number" min="0" max="100" step="any" required value={custom.oxygen} onChange={e => setCustom({ ...custom, oxygen: e.target.value })} /></div>
+            <div><label htmlFor="custom-pressure">Pressure (kPa)</label><input id="custom-pressure" type="number" min="0.000001" step="any" required value={custom.pressure} onChange={e => setCustom({ ...custom, pressure: e.target.value })} /></div>
+            <div><label htmlFor="custom-flow">Airflow (cm/s, optional)</label><input id="custom-flow" type="number" min="0" step="any" value={custom.flow} onChange={e => setCustom({ ...custom, flow: e.target.value })} /></div>
+            <div><label htmlFor="custom-gravity">Gravity (g, optional)</label><input id="custom-gravity" type="number" min="0" step="any" value={custom.gravity} onChange={e => setCustom({ ...custom, gravity: e.target.value })} /></div>
+          </div>
+          <button type="submit" disabled={customLoading}>{customLoading ? 'Applying…' : 'Apply custom conditions'}</button>
+          {customError && <p role="alert">{customError}</p>}
+          {customResult && <p role="status">Applied: {Number(customResult.profile.oxygen.minimum) * 100}% O2 · {customResult.profile.pressure.minimum} kPa. Scores remain unavailable until evidence is reviewed.</p>}
+        </form>}
         {selected && <p className="muted">{selected.description} No safety recommendation is implied.</p>}
       </section>}
       <section aria-labelledby="studies-heading">

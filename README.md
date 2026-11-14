@@ -2,7 +2,7 @@
 
 Evidence-linked exploration of NASA microgravity combustion research.
 
-**Status: Phases 1–2 foundation.** This repository contains a reproducible source
+**Status: Phases 1–2 foundation plus Phase 3 harvest implementation.** This repository contains a reproducible source
 spike, shared data models, API contracts, offline fixtures and a React scaffold.
 It is not yet the complete research dashboard. The preview uses five real NASA
 catalogue records, zero normalized measurements and no live LLM. Null relevance
@@ -31,7 +31,25 @@ Without Make: `uv run uvicorn api.main:app --reload` and `cd web && npm run dev`
 To test the UI against the API, copy `web/.env.example` to `web/.env.local`, set
 `VITE_DATA_MODE=api`, and restart Vite. No API keys or cloud accounts are required.
 
-## Check NASA access
+## Harvest the full combustion collection (Phase 3)
+
+```bash
+uv run python -m harvest.run
+# or: make harvest
+```
+
+This paginates the PSI catalogue, filters Combustion Science, saves every manifest
+and listed experimental CSV, and collects Reports/Science Documents below 20 MB.
+It also saves eight NASA context topics as source-linked text. Bulk Raw Data is skipped.
+Run folders and cache stay under ignored `raw/`. No API key is required.
+
+A partial run exits nonzero and records failures in its `HARVEST_LOG.md`. The
+observed run has 24 manifests, 22 CSVs and 53 supporting documents; two legacy
+NASA report URLs returned 404, so it is honestly labelled partial. The API/UI
+remain Phase 2 fixtures until normalization and reviewed snapshots exist.
+See [Phase 3 handoff](docs/PHASE_3_HANDOFF.md) and [harvest log](docs/harvest/HARVEST_LOG.md).
+
+## Check NASA access (small Phase 2 spike)
 
 ```bash
 make spike
@@ -69,7 +87,7 @@ also records differences that need resolution before implementing real rankings.
 
 | Folder | Responsibility |
 | --- | --- |
-| `harvest/` | Source spike, row validation; later harvesting/normalization |
+| `harvest/` | Full Phase 3 collection, verified cache/audit, Phase 2 spike; normalization comes later |
 | `api/` | Shared Pydantic contracts and mock FastAPI server |
 | `web/` | Vite, React, TypeScript, Tailwind and lazy-loaded Plotly scaffold |
 | `config/` | Illustrative mission profiles and draft relevance weights |
@@ -95,3 +113,9 @@ NASA-endorsed. Software is MIT licensed; upstream data retains its own license.
 See [references](REFERENCES.md), [AI disclosure](docs/AI_USAGE.md),
 [Phase 1–2 handoff](docs/PHASE_1_2_HANDOFF.md) and the [supplied plan](docs/context/build-steps.md).
 No public production deployment is included in these phases.
+
+The complete-plan alignment adds canonical test/metric contracts, C/F/M/D ranking
+weights, rover/custom scenarios and the exact eight requested context sources.
+See [alignment status](docs/context/PLAN_ALIGNMENT.md) and
+[session handoff](docs/context/SESSION_HANDOFF.md). Actual normalization and science
+outputs remain later-phase work.

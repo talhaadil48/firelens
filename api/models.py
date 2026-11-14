@@ -1,10 +1,10 @@
 """Shared Phase 2 contracts. Missing science values remain null, never guessed."""
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
 Accession = Annotated[str, Field(pattern=r"^PSI-\d+$")]
 Fraction = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)]
@@ -57,34 +57,79 @@ class Citation(Model):
     provenance: Provenance
 
 
+class Metric(Model):
+    value: float | None = Field(default=None, allow_inf_nan=False)
+    unit: str = Field(min_length=1, description="Use '1' for dimensionless values")
+    source_column: str | None = None
+    provenance: Provenance | None = None
+
+
 class ExperimentalTest(Model):
-    test_id: str = Field(min_length=1)
     accession: Accession
+    investigation: str | None = None
+    test_id: str = Field(min_length=1)
+    test_date: date | None = None
     campaign_id: str | None = None
-    material: str | None = None
+    fuel: str | None = Field(default=None, validation_alias=AliasChoices("fuel", "material"))
     fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] = "unknown"
-    geometry: str | None = None
+    sample_geometry: str | None = Field(
+        default=None, validation_alias=AliasChoices("sample_geometry", "geometry")
+    )
+    sample_size_mm: Positive | None = None
+    sample_dimensions_mm: dict[str, Positive] = Field(default_factory=dict)
     thickness_mm: Positive | None = None
-    oxygen_fraction: Fraction | None = None
+    o2_fraction: Fraction | None = Field(
+        default=None, validation_alias=AliasChoices("o2_fraction", "oxygen_fraction")
+    )
     oxygen_basis: Literal["mole", "volume", "mass", "unknown"] = "unknown"
     pressure_kpa: Positive | None = None
+    diluent: str | None = None
+    diluent_fractions: dict[str, Fraction] = Field(default_factory=dict)
     flow_cm_s: NonNegative | None = None
     flow_direction: str | None = None
     gravity: Gravity = Gravity.UNKNOWN
+    gravity_level_g: NonNegative | None = None
     platform: str | None = None
-    outcome: str | None = None
-    outcome_value: float | None = Field(default=None, allow_inf_nan=False)
-    outcome_unit: str | None = None
+    outcome: Literal["ignited", "extinguished", "cool_flame", "failed", "unknown"] | None = None
+    metrics: dict[str, Metric] = Field(default_factory=dict)
+    # Retained as optional legacy fields; new data uses named metrics.
+    outcome_value: float | None = Field(
+        default=None, allow_inf_nan=False, json_schema_extra={"deprecated": True}
+    )
+    outcome_unit: str | None = Field(default=None, json_schema_extra={"deprecated": True})
     baseline_test_id: str | None = None
+    source_file: str | None = Field(default=None, min_length=1)
+    source_row: int | None = Field(default=None, ge=1)
+    doi: str | None = None
     evidence_type: EvidenceType
     review_status: ReviewStatus = ReviewStatus.UNREVIEWED
     provenance: Provenance
     notes: list[str] = Field(default_factory=list)
 
+    @property
+    def material(self) -> str | None:
+        return self.fuel
+
+    @property
+    def geometry(self) -> str | None:
+        return self.sample_geometry
+
+    @property
+    def oxygen_fraction(self) -> float | None:
+        return self.o2_fraction
+
     @model_validator(mode="after")
     def check_evidence(self) -> "ExperimentalTest":
         if self.provenance.source_row is None:
             raise ValueError("Experimental test requires the original source row")
+        if self.source_file is not None and self.source_file != self.provenance.source_file:
+            raise ValueError("Flat source_file conflicts with provenance")
+        if self.source_row is not None and self.source_row != self.provenance.source_row:
+            raise ValueError("Flat source_row conflicts with provenance")
+        self.source_file = self.provenance.source_file
+        self.source_row = self.provenance.source_row
+        if sum(self.diluent_fractions.values()) > 1 + 1e-9:
+            raise ValueError("Diluent fractions cannot sum to more than 1")
         if self.outcome_value is not None and not self.outcome_unit:
             raise ValueError("An outcome value needs its original unit")
         if self.evidence_type == EvidenceType.MOCK and not self.provenance.is_mock:
@@ -112,12 +157,40 @@ class Finding(Model):
     uncertainty_note: str | None = None
 
 
+class Publication(Model):
+    title: str
+    authors: str | None = None
+    doi: str | None = None
+    url: HttpUrl | None = None
+
+
+class InvestigationSummary(Model):
+    objective: str
+    fuels_and_geometry: str | None = None
+    conditions_tested: str | None = None
+    varied: str | None = None
+    sensors: list[str] = Field(default_factory=list)
+    findings: list[Finding] = Field(default_factory=list)
+    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
+
+
 class Investigation(Model):
     accession: Accession
     title: str
     acronym: str | None = None
     research_area: str
     description: str | None = None
+    objectives: str | None = None
+    approach: str | None = None
+    hypothesis: str | None = None
+    research_impacts: str | None = None
+    sub_area: str | None = None
+    sensors: list[str] = Field(default_factory=list)
+    measurements: list[str] = Field(default_factory=list)
+    file_count: int | None = Field(default=None, ge=0)
+    file_size_bytes: int | None = Field(default=None, ge=0)
+    publications: list[Publication] = Field(default_factory=list)
+    summary: InvestigationSummary | None = None
     doi: str | None = None
     version: str
     license: str | None = None
@@ -144,7 +217,7 @@ class Investigation(Model):
     @model_validator(mode="after")
     def check_citations(self) -> "Investigation":
         known = {citation.id for citation in self.citations}
-        for finding in self.findings:
+        for finding in self.findings + (self.summary.findings if self.summary else []):
             if not set(finding.citation_ids) <= known:
                 raise ValueError("Finding refers to an unknown citation")
         return self
@@ -199,6 +272,7 @@ class MissionProfile(Model):
     pressure: ConditionRange
     flow: ConditionRange
     gravity: Gravity
+    gravity_level_g: NonNegative | None = None
     assumptions: list[str]
 
     @model_validator(mode="after")
@@ -209,10 +283,10 @@ class MissionProfile(Model):
 
 
 class RankWeights(Model):
-    oxygen: Fraction = 0.40
-    pressure: Fraction = 0.25
-    flow: Fraction = 0.20
-    gravity: Fraction = 0.15
+    conditions: Fraction = 0.40
+    fuel_realism: Fraction = 0.25
+    safety_goal: Fraction = 0.20
+    data_richness: Fraction = 0.15
 
     @model_validator(mode="after")
     def normalized(self) -> "RankWeights":
@@ -239,6 +313,7 @@ class RankItem(Model):
 
 
 class RankResponse(Model):
+    safety_goal: Literal["prevention", "detection", "suppression"] = "prevention"
     profile: MissionProfile
     weights: RankWeights
     items: list[RankItem]
@@ -301,3 +376,40 @@ class DoneEvent(Model):
 
 class ErrorResponse(Model):
     detail: str
+
+
+class TextChunk(Model):
+    """Schema for one line in chunks.jsonl (Phase 5 precompute -> Phase 6 RAG)."""
+
+    chunk_id: str = Field(min_length=1)
+    accession: Accession | None = None
+    source_kind: Literal["investigation_field", "summary", "document", "context_page"]
+    source_file: str = Field(min_length=1)
+    source_url: HttpUrl
+    source_version: str | None = None
+    doi: str | None = None
+    page: int | None = Field(default=None, ge=1, description="1-based PDF/DOCX page")
+    field_name: str | None = None
+    text: str = Field(min_length=1)
+    token_count: int | None = Field(default=None, ge=1)
+    sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+
+    @model_validator(mode="after")
+    def require_accession_for_investigation_sources(self) -> "TextChunk":
+        if self.source_kind != "context_page" and self.accession is None:
+            raise ValueError(f"{self.source_kind} chunks require an investigation accession")
+        return self
+
+
+class SnapshotPointer(Model):
+    """Schema for snapshots/latest.json (Phase 5 snapshot -> Phase 6 API & Phase 12 sync)."""
+
+    schema_version: Literal[1] = 1
+    snapshot_id: str = Field(min_length=1)
+    created_at: datetime
+    path: str = Field(min_length=1)
+    investigation_count: int = Field(ge=0)
+    test_count: int = Field(ge=0)
+    chunk_count: int = Field(ge=0)
+    files: list[str] = Field(min_length=1)
+    review_status: ReviewStatus = ReviewStatus.UNREVIEWED

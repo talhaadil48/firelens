@@ -1,0 +1,2920 @@
+{
+  "run_id": "plan-aligned-20261114",
+  "started_at": "2026-11-14T15:46:18.797447+00:00",
+  "raw_folder": "/mnt/d/projects/hackathon/nasa-space-challenge/firelens/raw/plan-aligned-20261114",
+  "status": "partial",
+  "investigations": [
+    {
+      "accession": "PSI-10",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-10",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-10_Experimental table_Flame Design_Normal Flame.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/PSI-10_Experimental table_Flame Design_Normal Flame.csv",
+          "receipt": {
+            "sha256": "4a663292bd3f65201943cc71bd661a70383639276a9176f64105b285bf0b6deb",
+            "bytes": 26933,
+            "retrieved_at": "2026-11-14T14:35:11.548901+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.05
+          },
+          "csv": {
+            "headers": [
+              "Flame Type",
+              "Day",
+              "Fuel",
+              "Test",
+              "Xfuel",
+              "mfuel (mg/s)",
+              "mN2 (mg/s)",
+              "mtot (mg/s)",
+              "XO2 (init)",
+              "XO2 (final)",
+              "pinit (atm)",
+              "pfinal (atm)",
+              "pmean (atm)",
+              "mean Zst",
+              "Tad (K)"
+            ],
+            "physical_data_rows": 207,
+            "sha256": "4a663292bd3f65201943cc71bd661a70383639276a9176f64105b285bf0b6deb",
+            "bytes": 26933,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.057
+        },
+        {
+          "source_file": "PSI-10_Experimental table_Flame Design_Inverse Flame.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/PSI-10_Experimental table_Flame Design_Inverse Flame.csv",
+          "receipt": {
+            "sha256": "97933ee9ae0b9ebc6b948a67485a0fe2f8218f753253a4f2be93c40d374c44e4",
+            "bytes": 17314,
+            "retrieved_at": "2026-11-14T14:35:13.635146+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.06
+          },
+          "csv": {
+            "headers": [
+              "Flame Type",
+              "Day",
+              "Test",
+              "XO2",
+              "mO2 (mg/s)",
+              "mN2 (mg/s)",
+              "mtot (mg/s)",
+              "XC2H4 initial",
+              "XC2H4 final",
+              "pinit (atm)",
+              "pfinal (atm)",
+              "pmean (atm)",
+              "mean Zst",
+              "Tad (K)"
+            ],
+            "physical_data_rows": 120,
+            "sha256": "97933ee9ae0b9ebc6b948a67485a0fe2f8218f753253a4f2be93c40d374c44e4",
+            "bytes": 17314,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.066
+        },
+        {
+          "source_file": "PSI-10_Reports_FinalRpt_ACMEFlameDesign.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/documents/Reports/PSI-10_Reports_FinalRpt_ACMEFlameDesign.pdf",
+          "receipt": {
+            "sha256": "1d64b7f42f079579671624da5356cfe6d867ad014dd1d6932e9fcc6d3a1706fd",
+            "bytes": 4152310,
+            "retrieved_at": "2026-11-14T14:35:17.810632+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.457
+          },
+          "seconds": 0.457
+        },
+        {
+          "source_file": "PSI-10_Science Documents_SRD_ACMEFlameDesign.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/documents/Science_Documents/PSI-10_Science Documents_SRD_ACMEFlameDesign.pdf",
+          "receipt": {
+            "sha256": "e783fc0da3d388b567654c109b2595a5a74218de6ccd641241f13b091a5448eb",
+            "bytes": 471072,
+            "retrieved_at": "2026-11-14T14:35:20.278013+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.196
+          },
+          "seconds": 0.196
+        },
+        {
+          "source_file": "PSI-10_Reports_TaskbookRpts.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/documents/Reports/PSI-10_Reports_TaskbookRpts.pdf",
+          "receipt": {
+            "sha256": "81cea0977ef21d3d99d5e3a0f07a0af41eee326a82d92e8ff0cff38bc36c9e34",
+            "bytes": 284417,
+            "retrieved_at": "2026-11-14T14:35:21.641636+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.077
+          },
+          "seconds": 0.077
+        },
+        {
+          "source_file": "PSI-10_Reports_TaskbookPubsList_Feb2023.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/documents/Reports/PSI-10_Reports_TaskbookPubsList_Feb2023.pdf",
+          "receipt": {
+            "sha256": "efb9ac32a82a6bd000ad28e88f2c355d59973357cd39a5a9d5865704ae7f3847",
+            "bytes": 97986,
+            "retrieved_at": "2026-11-14T14:35:23.073916+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.066
+          },
+          "seconds": 0.067
+        },
+        {
+          "source_file": "PSI-10_Science Documents_ACME_SORD.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/documents/Science_Documents/PSI-10_Science Documents_ACME_SORD.pdf",
+          "receipt": {
+            "sha256": "32afd4c0d3c9fe5be1c8e992b7d6a615418911712a93d204a3b220dcbc6601f6",
+            "bytes": 300262,
+            "retrieved_at": "2026-11-14T14:35:24.530277+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.086
+          },
+          "seconds": 0.086
+        },
+        {
+          "source_file": "PSI-10_Science Documents_ACME_ISRD.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-10/documents/Science_Documents/PSI-10_Science Documents_ACME_ISRD.pdf",
+          "receipt": {
+            "sha256": "f7f9e49476606f0f9da67dd655d08237090f89139ecb2d295c4c25ab5c5342e9",
+            "bytes": 1860945,
+            "retrieved_at": "2026-11-14T14:35:28.095992+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.177
+          },
+          "seconds": 0.177
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Engineering Documents": 1,
+        "duplicate_manifest_entry": 2,
+        "category:Raw Data": 3792,
+        "category:Representative Image(s)": 5
+      },
+      "notes": [],
+      "title": "Advanced Combustion via Microgravity Experiments / Flame Design",
+      "doi": "10.60555/w4zy-bt45",
+      "version": "1",
+      "license": {
+        "identifier": "",
+        "name": "",
+        "url": ""
+      },
+      "hardware": "Advanced Combustion via Microgravity Experiments (ACME), Combustion Integrated Rack (CIR), Reconfiguration of Combustion Integrated Rack (CIR)",
+      "manifest": {
+        "sha256": "a20756e7acf67f0046a21a3bce9bfca7f142cd5350350c0dad29997cf8fe28db",
+        "bytes": 2867657,
+        "retrieved_at": "2026-11-14T14:35:09.426789+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.264
+      },
+      "listed_files": 3807,
+      "experimental_table_entries": 2,
+      "seconds": 1.548
+    },
+    {
+      "accession": "PSI-20",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-20",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-20_Experimental table_ACME BRE.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-20/PSI-20_Experimental table_ACME BRE.csv",
+          "receipt": {
+            "sha256": "4aa5d3f98708ceacced5c620d46858b9965f8d4d941b203229f46467d53e5ab7",
+            "bytes": 1113,
+            "retrieved_at": "2026-11-14T14:35:10.985628+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.039
+          },
+          "csv": {
+            "headers": [
+              "Year",
+              "Month",
+              "Date",
+              "Burner Size (mm)",
+              "Fuel Bottle",
+              "Oxygen Conc (percent)",
+              "Flames Ignited",
+              "Notes"
+            ],
+            "physical_data_rows": 18,
+            "sha256": "4aa5d3f98708ceacced5c620d46858b9965f8d4d941b203229f46467d53e5ab7",
+            "bytes": 1113,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.044
+        }
+      ],
+      "skipped": {
+        "duplicate_manifest_entry": 1
+      },
+      "notes": [],
+      "title": "Advanced Combustion via Microgravity Experiments - Burning Rate Emulator",
+      "doi": "10.60555/vb93-3y72",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Combustion Integrated Rack (CIR), ACME",
+      "manifest": {
+        "sha256": "ea118e19d02785f54d246406aacea93878053ff95ddd5bdca44bd29c09a753d1",
+        "bytes": 17376,
+        "retrieved_at": "2026-11-14T14:35:09.249488+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.057
+      },
+      "listed_files": 1,
+      "experimental_table_entries": 1,
+      "seconds": 0.129
+    },
+    {
+      "accession": "PSI-21",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-21",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-21_Experimental table_CLD Flame.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-21/PSI-21_Experimental table_CLD Flame.csv",
+          "receipt": {
+            "sha256": "9fafbc5b3dddaf715ce8025ed9154ce297803f7b69a935f077ec26c8249e44c0",
+            "bytes": 2454,
+            "retrieved_at": "2026-11-14T14:35:11.736788+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.038
+          },
+          "csv": {
+            "headers": [
+              "Test Type",
+              "Test Day",
+              "Fuel MFC",
+              "N2 MFC",
+              "Fuel Bottle",
+              "Fuel conc. Range",
+              "Flames ignited",
+              "Notes"
+            ],
+            "physical_data_rows": 32,
+            "sha256": "9fafbc5b3dddaf715ce8025ed9154ce297803f7b69a935f077ec26c8249e44c0",
+            "bytes": 2454,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.043
+        }
+      ],
+      "skipped": {
+        "duplicate_manifest_entry": 1
+      },
+      "notes": [],
+      "title": "Advanced Combustion via Microgravity Experiments / Coflow Laminar Diffusion Flame",
+      "doi": "10.60555/23e1-9950",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Combustion Integrated Rack (CIR), ACME",
+      "manifest": {
+        "sha256": "99a5e58119a9c01ec1b57dfe03d696fb8d05b494a3658338b0f2abb077a72ac5",
+        "bytes": 18065,
+        "retrieved_at": "2026-11-14T14:35:10.026439+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.061
+      },
+      "listed_files": 1,
+      "experimental_table_entries": 1,
+      "seconds": 0.13
+    },
+    {
+      "accession": "PSI-22",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-22",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-22_Experimental table_ACME E-FIELD Flames.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-22/PSI-22_Experimental table_ACME E-FIELD Flames.csv",
+          "receipt": {
+            "sha256": "69090c357b83ae38d161d29001d1d32b40fd77b13324ca6585ee990cdceef524",
+            "bytes": 2475,
+            "retrieved_at": "2026-11-14T14:35:14.378940+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.13
+          },
+          "csv": {
+            "headers": [
+              "Test Type",
+              "Test Day",
+              "Year",
+              "Month",
+              "Date",
+              "Mesh Polarity",
+              "Fuel Bottle",
+              "Fuel Conc",
+              "Flames Ignited",
+              "Notes"
+            ],
+            "physical_data_rows": 32,
+            "sha256": "69090c357b83ae38d161d29001d1d32b40fd77b13324ca6585ee990cdceef524",
+            "bytes": 2475,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.135
+        }
+      ],
+      "skipped": {},
+      "notes": [],
+      "title": "Advanced Combustion via Microgravity Experiments Electric-Field Effects on Laminar Diffusion Flames",
+      "doi": "10.60555/se5a-8c73",
+      "version": "7",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Combustion Integrated Rack (CIR), ACME",
+      "manifest": {
+        "sha256": "a491519f60b91c9eb2272e651846103f34006867fb74535911e8c18448e48a09",
+        "bytes": 20827,
+        "retrieved_at": "2026-11-14T14:35:12.536759+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.054
+      },
+      "listed_files": 0,
+      "experimental_table_entries": 1,
+      "seconds": 0.215
+    },
+    {
+      "accession": "PSI-23",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-23",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-23_Experimental table_ACME s-Flame.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/PSI-23_Experimental table_ACME s-Flame.csv",
+          "receipt": {
+            "sha256": "16cd10f50bd2e962887c8eb4077e5a9b3e790c78de8e0361c0b77e19300be7cf",
+            "bytes": 2456,
+            "retrieved_at": "2026-11-14T14:35:34.868136+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.039
+          },
+          "csv": {
+            "headers": [
+              "Test Type",
+              "Test Day*",
+              "Year",
+              "Month",
+              "Date",
+              "Atmosphere*",
+              "Fuel Bottle",
+              "Flames Ignited*",
+              "Notes"
+            ],
+            "physical_data_rows": 18,
+            "sha256": "16cd10f50bd2e962887c8eb4077e5a9b3e790c78de8e0361c0b77e19300be7cf",
+            "bytes": 2456,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.046
+        },
+        {
+          "source_file": "PSI-23_Science Documents_ACME non-imaging data file description.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_ACME non-imaging data file description.pdf",
+          "receipt": {
+            "sha256": "684d321a26e81472f3c9ca7d320f531217b06cf863075a60ebb004a931bba06b",
+            "bytes": 377001,
+            "retrieved_at": "2026-11-14T14:35:38.766284+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.084
+          },
+          "seconds": 0.084
+        },
+        {
+          "source_file": "PSI-23_Science Documents_ACME_Integrated_Science_Requirements_RevB.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_ACME_Integrated_Science_Requirements_RevB.pdf",
+          "receipt": {
+            "sha256": "ac5f006da7a822a670f23c6dab407fbd637cf07d20ece9489776c7112afae4d6",
+            "bytes": 1878639,
+            "retrieved_at": "2026-11-14T14:35:44.152598+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.166
+          },
+          "seconds": 0.166
+        },
+        {
+          "source_file": "PSI-23_Science Documents_ACME Science Operation Requirements revA 20111018.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_ACME Science Operation Requirements revA 20111018.pdf",
+          "receipt": {
+            "sha256": "32afd4c0d3c9fe5be1c8e992b7d6a615418911712a93d204a3b220dcbc6601f6",
+            "bytes": 300262,
+            "retrieved_at": "2026-11-14T14:35:47.232490+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.084
+          },
+          "seconds": 0.085
+        },
+        {
+          "source_file": "PSI-23_Science Documents_ACME Integrated Science Requirements Definition Review 20100505.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_ACME Integrated Science Requirements Definition Review 20100505.pdf",
+          "receipt": {
+            "sha256": "de4fbf2c4b4a88629b7938c8a61cd1530ed77440188015cccc60d56dbe85a08e",
+            "bytes": 3119886,
+            "retrieved_at": "2026-11-14T14:35:51.939653+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.251
+          },
+          "seconds": 0.252
+        },
+        {
+          "source_file": "PSI-23_Science Documents_s-Flame SCR 200802.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_s-Flame SCR 200802.pdf",
+          "receipt": {
+            "sha256": "2b93ce4409df9559af37cb4a319cc0536e77fb36abadaa4a68f18bff3b0a4c47",
+            "bytes": 2382728,
+            "retrieved_at": "2026-11-14T14:35:55.524943+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.289
+          },
+          "seconds": 0.289
+        },
+        {
+          "source_file": "PSI-23_Science Documents_s-Flame_SRD_20100125.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_s-Flame_SRD_20100125.pdf",
+          "receipt": {
+            "sha256": "2df7bb27a8b8734d5d099d7d2378ca9b401ca8d8c96b9eef6365906abbf11f7c",
+            "bytes": 946359,
+            "retrieved_at": "2026-11-14T14:35:57.977107+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.109
+          },
+          "seconds": 0.109
+        },
+        {
+          "source_file": "PSI-23_Reports_s-Flame 30-day report Inc 63 20201216.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Reports/PSI-23_Reports_s-Flame 30-day report Inc 63 20201216.pdf",
+          "receipt": {
+            "sha256": "6686f5f2038e6e3a8ade2744861533f525019a297ea1e732c13234a7680a9dac",
+            "bytes": 301047,
+            "retrieved_at": "2026-11-14T14:35:59.852623+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.075
+          },
+          "seconds": 0.076
+        },
+        {
+          "source_file": "PSI-23_Reports_s_Flame_final_report_20210729.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Reports/PSI-23_Reports_s_Flame_final_report_20210729.pdf",
+          "receipt": {
+            "sha256": "2056f8f85291f49c1446981541e4689dc6df8ad02ef7ac0fddbd84e956968a3b",
+            "bytes": 3182281,
+            "retrieved_at": "2026-11-14T14:36:03.383957+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.253
+          },
+          "seconds": 0.253
+        },
+        {
+          "source_file": "PSI-23_Science Documents_ACME s-Flame  DoD.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-23/documents/Science_Documents/PSI-23_Science Documents_ACME s-Flame  DoD.pdf",
+          "receipt": {
+            "sha256": "f4ae0b6ffb4c60f69146ddb6df981963e1fccf39ee2be4706a64d7c00337a25b",
+            "bytes": 801605,
+            "retrieved_at": "2026-11-14T14:36:05.476914+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.108
+          },
+          "seconds": 0.108
+        }
+      ],
+      "skipped": {
+        "category:Presentations": 17,
+        "category:Raw Data": 4058,
+        "category:Reference Data": 50,
+        "category:Engineering Documents": 29
+      },
+      "notes": [],
+      "title": "Advanced Combustion via Microgravity Experiments-Structure and Response of Spherical Diffusion Flames",
+      "doi": "10.60555/k57n-p030",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Combustion Integrated Rack (CIR), ACME",
+      "manifest": {
+        "sha256": "a89bd634a661e724b9bc766a8f217bc0c76c816f0db973991847bce6b53802d7",
+        "bytes": 8127138,
+        "retrieved_at": "2026-11-14T14:35:32.847907+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.748
+      },
+      "listed_files": 4163,
+      "experimental_table_entries": 1,
+      "seconds": 2.42
+    },
+    {
+      "accession": "PSI-25",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-25",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-25_Experimental table_BASS-II.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-25/PSI-25_Experimental table_BASS-II.csv",
+          "receipt": {
+            "sha256": "71e792bf6b5fb5ea620c5dd70fbbac05515992e12aefcf5dff47312caa48c042",
+            "bytes": 16590,
+            "retrieved_at": "2026-11-14T14:35:22.652951+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.065
+          },
+          "csv": {
+            "headers": [
+              "PI",
+              "Test #",
+              "Date",
+              "GMT",
+              "Sample #",
+              "Fuel Sample Material",
+              "Flow restrictor",
+              "Fan display",
+              "Air display",
+              "Radiometer gain   (1000   250   50   10)",
+              "Total Frames Shot",
+              "Calibrated  initial O2 % by vol ",
+              "Calibrated final O2 % by vol",
+              "Initial CO2 % by vol",
+              "Final CO2 % by vol",
+              "Initial CO (ppm)",
+              "Final CO (ppm)"
+            ],
+            "physical_data_rows": 129,
+            "sha256": "71e792bf6b5fb5ea620c5dd70fbbac05515992e12aefcf5dff47312caa48c042",
+            "bytes": 16590,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.071
+        },
+        {
+          "source_file": "PSI-25_Science Documents_BASS-II_Test.Matrices.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-25/documents/Science_Documents/PSI-25_Science Documents_BASS-II_Test.Matrices.xlsx",
+          "receipt": {
+            "sha256": "1a3b283dd0adec861793bbc4a454aab64d398cd32d6f37d7a1ad0f642879e686",
+            "bytes": 28956,
+            "retrieved_at": "2026-11-14T14:35:25.200682+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.066
+          },
+          "seconds": 0.066
+        },
+        {
+          "source_file": "PSI-25_Science Documents_BASS-II_ReadMe.docx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-25/documents/Science_Documents/PSI-25_Science Documents_BASS-II_ReadMe.docx",
+          "receipt": {
+            "sha256": "69f32647792f54ab2a561e3cdafc6c87d854564fe487aed2b09265286bd84e1d",
+            "bytes": 21538,
+            "retrieved_at": "2026-11-14T14:35:27.582493+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.06
+          },
+          "seconds": 0.061
+        },
+        {
+          "source_file": "PSI-25_Science Documents_BASS-II_SRD.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-25/documents/Science_Documents/PSI-25_Science Documents_BASS-II_SRD.pdf",
+          "receipt": {
+            "sha256": "d00a763d60719bc14004264e216452b44c3c1bf4b0c629e9d307c8abf9568e75",
+            "bytes": 1108340,
+            "retrieved_at": "2026-11-14T14:35:32.003826+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.22
+          },
+          "seconds": 0.22
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Engineering Documents": 2,
+        "category:Raw Data": 685,
+        "category:Reference Data": 1,
+        "document_at_or_over_20_MB": 1,
+        "category:Representative Image(s)": 1
+      },
+      "notes": [],
+      "title": "Burning and Suppression of Solids - II",
+      "doi": "10.60555/4qc4-de67",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Microgravity Science Glovebox (MSG)",
+      "manifest": {
+        "sha256": "b9234754db5da651ad27d888af082b889d07210b018e543369662f065b4ec2da",
+        "bytes": 680348,
+        "retrieved_at": "2026-11-14T14:35:21.494469+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.103
+      },
+      "listed_files": 694,
+      "experimental_table_entries": 1,
+      "seconds": 0.56
+    },
+    {
+      "accession": "PSI-26",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-26",
+      "status": "partial",
+      "files": [
+        {
+          "source_file": "PSI-26_Experimental table_BASS.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-26/PSI-26_Experimental table_BASS.csv",
+          "receipt": {
+            "sha256": "ccfc3c54d948b64a1c5d2596a63c7c8019e51df0c91a1d62f039f48fa28c300f",
+            "bytes": 4726,
+            "retrieved_at": "2026-11-14T14:35:31.473571+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.034
+          },
+          "csv": {
+            "headers": [
+              "Date",
+              "GMT",
+              "As Run Test #",
+              "Test #",
+              "Sample #",
+              "Fuel Sample Material"
+            ],
+            "physical_data_rows": 122,
+            "sha256": "ccfc3c54d948b64a1c5d2596a63c7c8019e51df0c91a1d62f039f48fa28c300f",
+            "bytes": 4726,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.04
+        },
+        {
+          "source_file": "PSI-26_Science Documents_FlammabilityAspectsofFabric_USNationalCombustion.2013.docx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-26/documents/Science_Documents/PSI-26_Science Documents_FlammabilityAspectsofFabric_USNationalCombustion.2013.docx",
+          "receipt": {
+            "sha256": "434e9b2cade638d63dcb738d3355533db702649eca356c63e9277b1ef8eecac7",
+            "bytes": 8837026,
+            "retrieved_at": "2026-11-14T14:35:43.839683+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.611
+          },
+          "seconds": 0.611
+        },
+        {
+          "source_file": "PSI-26_Reports_SPICE_FinalReport.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "failed",
+          "file_version": 2,
+          "error": "HTTP 404; request URL omitted",
+          "seconds": 2.943
+        },
+        {
+          "source_file": "PSI-26_Reports_BASS_FinalReport.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "failed",
+          "file_version": 2,
+          "error": "HTTP 404; request URL omitted",
+          "seconds": 2.373
+        },
+        {
+          "source_file": "PSI-26_Science Documents_Planned_Test Matrix.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-26/documents/Science_Documents/PSI-26_Science Documents_Planned_Test Matrix.xlsx",
+          "receipt": {
+            "sha256": "e0a06f81c110efc83cb23841342734c2d0a7187e9d9cbf2c0100c78d66bab9f9",
+            "bytes": 20976,
+            "retrieved_at": "2026-11-14T14:35:52.763411+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.056
+          },
+          "seconds": 0.057
+        },
+        {
+          "source_file": "PSI-26_Science Documents_SRD_BASS.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-26/documents/Science_Documents/PSI-26_Science Documents_SRD_BASS.pdf",
+          "receipt": {
+            "sha256": "768a7c289af30d47a2d519db9ba67ef1d944b6053760da3b79efa99df9c04707",
+            "bytes": 884257,
+            "retrieved_at": "2026-11-14T14:35:56.862940+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.13
+          },
+          "seconds": 0.131
+        },
+        {
+          "source_file": "PSI-26_Science Documents_DLD_BASS.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-26/documents/Science_Documents/PSI-26_Science Documents_DLD_BASS.pdf",
+          "receipt": {
+            "sha256": "e38622cce587897c8fe5f8f5af404ee9bb682fea687f4038a67167c03b218505",
+            "bytes": 69653,
+            "retrieved_at": "2026-11-14T14:35:59.285787+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.11
+          },
+          "seconds": 0.11
+        },
+        {
+          "source_file": "PSI-26_Science Documents_As Run_Test Matrix.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-26/documents/Science_Documents/PSI-26_Science Documents_As Run_Test Matrix.xlsx",
+          "receipt": {
+            "sha256": "850910541fc9c802d00aa9de14758205103642184249b419c09868df2fbea6e8",
+            "bytes": 111886,
+            "retrieved_at": "2026-11-14T14:36:06.094297+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.062
+          },
+          "seconds": 0.062
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Presentations": 6,
+        "category:Engineering Documents": 24,
+        "category:Raw Data": 173
+      },
+      "notes": [],
+      "title": "Burning and Suppression of Solids",
+      "doi": "10.60555/58h4-dy80",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Microgravity Science Glovebox",
+      "manifest": {
+        "sha256": "9dee45d44bb736178db270a07c9ee8f98ac02ee810189ab518271fd4720c0533",
+        "bytes": 190127,
+        "retrieved_at": "2026-11-14T14:35:30.343836+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.168
+      },
+      "listed_files": 211,
+      "experimental_table_entries": 1,
+      "seconds": 6.522
+    },
+    {
+      "accession": "PSI-39",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-39",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-39_Experimental table_CFI.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-39/PSI-39_Experimental table_CFI.csv",
+          "receipt": {
+            "sha256": "fb898e28762353aa132c16b886dbd207a024b1dd3c9bed5928d70d8036d2ec7e",
+            "bytes": 7792,
+            "retrieved_at": "2026-11-14T14:35:42.786375+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.033
+          },
+          "csv": {
+            "headers": [
+              "Flex Number",
+              "Test Date",
+              "Local Time",
+              "CIR ",
+              "Pressure",
+              "Oxygen",
+              "Nitrogen",
+              "Helium",
+              "Fiber",
+              "Fuel "
+            ],
+            "physical_data_rows": 87,
+            "sha256": "fb898e28762353aa132c16b886dbd207a024b1dd3c9bed5928d70d8036d2ec7e",
+            "bytes": 7792,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.038
+        },
+        {
+          "source_file": "PSI-39_Reports_CFI Science Final Report.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-39/documents/Reports/PSI-39_Reports_CFI Science Final Report.pdf",
+          "receipt": {
+            "sha256": "e15158689180314583917200a071730d3aed9088e1ae689b847bd416674010f9",
+            "bytes": 811459,
+            "retrieved_at": "2026-11-14T14:35:45.583069+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.105
+          },
+          "seconds": 0.105
+        },
+        {
+          "source_file": "PSI-39_Science Documents_CFI_DataSummary_Spreadsheet_Jan2021.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-39/documents/Science_Documents/PSI-39_Science Documents_CFI_DataSummary_Spreadsheet_Jan2021.xlsx",
+          "receipt": {
+            "sha256": "a5b04b6a32bda764a9b367e491cc46b78ad0af0ac6b5e723e63b57abdb1d7dd8",
+            "bytes": 208743,
+            "retrieved_at": "2026-11-14T14:35:48.114397+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.065
+          },
+          "seconds": 0.066
+        },
+        {
+          "source_file": "PSI-39_Science Documents_SRD_CFI.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-39/documents/Science_Documents/PSI-39_Science Documents_SRD_CFI.pdf",
+          "receipt": {
+            "sha256": "d1098335a97e23aecb8528f3a3d413b2eccf27d12f2dcc58d5c6645e1c5d9e89",
+            "bytes": 12260561,
+            "retrieved_at": "2026-11-14T14:36:15.455963+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.893
+          },
+          "seconds": 0.893
+        },
+        {
+          "source_file": "PSI-39_Science Documents_CFI_SCR.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-39/documents/Science_Documents/PSI-39_Science Documents_CFI_SCR.pdf",
+          "receipt": {
+            "sha256": "5c050f1ed28349fd3f101db152ce293f5b36b7b975ca6f24ac26b43779aedc11",
+            "bytes": 3630234,
+            "retrieved_at": "2026-11-14T14:36:19.779245+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.261
+          },
+          "seconds": 0.261
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Raw Data": 2791,
+        "category:Analyzed Data": 32,
+        "category:Engineering Documents": 1,
+        "category:Presentations": 2
+      },
+      "notes": [],
+      "title": "Cool Flames Investigation",
+      "doi": "10.60555/m6pj-a914",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Multi-User Droplet Combustion Apparatus (MDCA), Combustion Integrated Rack (CIR)",
+      "manifest": {
+        "sha256": "ab2501bbe6200dabd012e7bf199e79426f8d19eb484c2af421183bb61b558d35",
+        "bytes": 4232395,
+        "retrieved_at": "2026-11-14T14:35:39.260271+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.358
+      },
+      "listed_files": 2831,
+      "experimental_table_entries": 1,
+      "seconds": 1.831
+    },
+    {
+      "accession": "PSI-47",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-47",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-47_Experimental table_DAFT.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-47/PSI-47_Experimental table_DAFT.csv",
+          "receipt": {
+            "sha256": "d9d1a436c6e7bbc410b433e04575fe7dedaff763b5237d688089929b7393b5c0",
+            "bytes": 518,
+            "retrieved_at": "2026-11-14T14:36:08.607913+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.042
+          },
+          "csv": {
+            "headers": [
+              "Session Name",
+              "Actual Day",
+              "Hardware Description",
+              "Sample Material",
+              "Sampled Location"
+            ],
+            "physical_data_rows": 2,
+            "sha256": "d9d1a436c6e7bbc410b433e04575fe7dedaff763b5237d688089929b7393b5c0",
+            "bytes": 518,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.047
+        },
+        {
+          "source_file": "PSI-47_Reports_DAFT_FinalReport.doc",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 4,
+          "path": "PSI-47/documents/Reports/PSI-47_Reports_DAFT_FinalReport.doc",
+          "receipt": {
+            "sha256": "290c97891d80859466551f341e894be7f0c27fad76b787ed410dfce3887ad930",
+            "bytes": 8844800,
+            "retrieved_at": "2026-11-14T14:36:16.943467+00:00",
+            "content_type": "application/msword",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.553
+          },
+          "seconds": 0.554
+        },
+        {
+          "source_file": "PSI-47_Reports_DAFT_30Day.PostFlightReport.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 4,
+          "path": "PSI-47/documents/Reports/PSI-47_Reports_DAFT_30Day.PostFlightReport.pdf",
+          "receipt": {
+            "sha256": "6e6008f2d7f0216432f7df5579579264a34c3a29601a9f0688461019d59be1e4",
+            "bytes": 185648,
+            "retrieved_at": "2026-11-14T14:36:20.087269+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.07
+          },
+          "seconds": 0.07
+        },
+        {
+          "source_file": "PSI-47_Reports_DAFT_1YearReport.doc",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 4,
+          "path": "PSI-47/documents/Reports/PSI-47_Reports_DAFT_1YearReport.doc",
+          "receipt": {
+            "sha256": "3d4082484a320f7e4e09587ce72cb0d5cb16ea7a95c404fb648430ce2f305223",
+            "bytes": 4919296,
+            "retrieved_at": "2026-11-14T14:36:24.468090+00:00",
+            "content_type": "application/msword",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.31
+          },
+          "seconds": 0.31
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Presentations": 3,
+        "category:Analyzed Data": 12,
+        "category:Raw Data": 6,
+        "category:Engineering Documents": 6,
+        "category:Representative Image(s)": 1
+      },
+      "notes": [],
+      "title": "Dust and Aerosol Measurement Feasibility Test / Dust and Aerosol Measurement Feasibility Test-2",
+      "doi": "10.60555/ztgj-d202",
+      "version": "5",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "TSI P-Trak",
+      "manifest": {
+        "sha256": "60ff7a7d0ef34c3043dda4133f277045ba72addb1fb2fc2e9f02e0550d0eb389",
+        "bytes": 174029,
+        "retrieved_at": "2026-11-14T14:36:06.932819+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.06
+      },
+      "listed_files": 32,
+      "experimental_table_entries": 1,
+      "seconds": 1.066
+    },
+    {
+      "accession": "PSI-60",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-60",
+      "status": "success",
+      "files": [],
+      "skipped": {
+        "category:metadata": 1
+      },
+      "notes": [
+        "No experimental table listed; metadata/documents only."
+      ],
+      "title": "Computational and Experimental Analysis of SPICE Data Sets",
+      "doi": "10.60555/mzjm-yv57",
+      "version": "1",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "",
+      "manifest": {
+        "sha256": "cc7a61fee3ea20466b58462bdf57af6648dea0a99d8c4936828a471cbfa73051",
+        "bytes": 6505,
+        "retrieved_at": "2026-11-14T14:36:06.481224+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.047
+      },
+      "listed_files": 1,
+      "experimental_table_entries": 0,
+      "seconds": 0.067
+    },
+    {
+      "accession": "PSI-62",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-62",
+      "status": "success",
+      "files": [],
+      "skipped": {
+        "category:metadata": 1
+      },
+      "notes": [
+        "No experimental table listed; metadata/documents only."
+      ],
+      "title": "Concurrent Flame Spread Modeling using Flamelet Generated Manifolds in Microgravity with Comparison to BASS Experiments using Two-Color Tomography",
+      "doi": "10.60555/e9xp-ex83",
+      "version": "1",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "",
+      "manifest": {
+        "sha256": "e4325a65cecdbbc8104502ddbf4d8cec42c463e8e8bc9d61d92b939614cff444",
+        "bytes": 8719,
+        "retrieved_at": "2026-11-14T14:36:06.867997+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.048
+      },
+      "listed_files": 1,
+      "experimental_table_entries": 0,
+      "seconds": 0.065
+    },
+    {
+      "accession": "PSI-68",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-68",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-68_Experimental table_Flex2.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-68/PSI-68_Experimental table_Flex2.csv",
+          "receipt": {
+            "sha256": "cc57ad1bd9977aa13e7ac6c3aa618303012686e232b36c052c6a9f1a74e5f528",
+            "bytes": 1029,
+            "retrieved_at": "2026-11-14T14:36:16.198805+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.053
+          },
+          "csv": {
+            "headers": [
+              "Sample (Fuel Type)",
+              "Initial Droplet Diameter (mm)",
+              "Ambient Gas Mixture ",
+              "Oxygen Mole Fraction",
+              "Ambient Pressure (atm)",
+              " Ambient Temperature (C)",
+              "Flow Velocity (cm/s)"
+            ],
+            "physical_data_rows": 8,
+            "sha256": "cc57ad1bd9977aa13e7ac6c3aa618303012686e232b36c052c6a9f1a74e5f528",
+            "bytes": 1029,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.058
+        }
+      ],
+      "skipped": {},
+      "notes": [],
+      "title": "Flame Extinguishment Experiment - 2",
+      "doi": "10.60555/byp8-h018",
+      "version": "6",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Combustion Integrated Rack (CIR), Multi-user Droplet Combustion Appartatus (MDCA)",
+      "manifest": {
+        "sha256": "de041dc1dc8b093e8f168b36d3b06cab257b4d75ffb24ff21754b8af4256ebcf",
+        "bytes": 30456,
+        "retrieved_at": "2026-11-14T14:36:13.126365+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.046
+      },
+      "listed_files": 0,
+      "experimental_table_entries": 1,
+      "seconds": 0.126
+    },
+    {
+      "accession": "PSI-69",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-69",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-69_Experimental table_FLEX.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-69/PSI-69_Experimental table_FLEX.csv",
+          "receipt": {
+            "sha256": "37c88ce8ae9391b7544ff630a45ce87543d04d317cdbfbed104fe7d5c27e1b96",
+            "bytes": 24776,
+            "retrieved_at": "2026-11-14T14:36:24.755131+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.045
+          },
+          "csv": {
+            "headers": [
+              "FLEX Test #",
+              "FLEX Identifier",
+              "Test Date",
+              "Test GMT",
+              "Fuel",
+              "Ambient pressure; mmHg",
+              "O initial ambient composition; mole fraction",
+              "N initial ambient composition; mole fraction",
+              "CO initial ambient composition; mole fraction",
+              "He initial ambient composition; mole fraction",
+              "Droplet initial diameter; mm",
+              "Visible flame extinction diameter; mm",
+              "Burning rate; mm",
+              "Burn time; s",
+              "Test end"
+            ],
+            "physical_data_rows": 274,
+            "sha256": "37c88ce8ae9391b7544ff630a45ce87543d04d317cdbfbed104fe7d5c27e1b96",
+            "bytes": 24776,
+            "encoding": "cp1252"
+          },
+          "seconds": 0.052
+        }
+      ],
+      "skipped": {},
+      "notes": [],
+      "title": "Flame Extinguishment Experiment",
+      "doi": "10.60555/mbq8-0451",
+      "version": "5",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Combustion Integrated Rack (CIR)-Fluids and Combustion Facility (FCF), Multi-user Droplet Combustion Appartatus (MDCA)",
+      "manifest": {
+        "sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
+        "bytes": 31770,
+        "retrieved_at": "2026-11-14T14:36:22.513871+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.049
+      },
+      "listed_files": 0,
+      "experimental_table_entries": 1,
+      "seconds": 0.121
+    },
+    {
+      "accession": "PSI-98",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-98",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-98_Experimental table_SAFFIRE-1.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-98/PSI-98_Experimental table_SAFFIRE-1.csv",
+          "receipt": {
+            "sha256": "c01f29c62455f0a3b512290ab85e5687ecded326733189f002f580368402308d",
+            "bytes": 469,
+            "retrieved_at": "2026-11-14T14:36:23.747206+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.04
+          },
+          "csv": {
+            "headers": [
+              "Sample Number ",
+              "Material",
+              "Sample Thickness (cm)",
+              "Sample Length (cm)",
+              "Sample Width (cm)",
+              "Air Flow (cm/s)",
+              "Percent O2",
+              "Ignition Power (W)",
+              "Ignition Time (s)",
+              "Burn Time (s)",
+              "Flow Direction ",
+              "Camera 1",
+              "Camera 2"
+            ],
+            "physical_data_rows": 4,
+            "sha256": "c01f29c62455f0a3b512290ab85e5687ecded326733189f002f580368402308d",
+            "bytes": 469,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.044
+        },
+        {
+          "source_file": "PSI-98_Science Documents_SAFFIRE-I Image Directory Nomenclature.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-98/documents/Science_Documents/PSI-98_Science Documents_SAFFIRE-I Image Directory Nomenclature.pdf",
+          "receipt": {
+            "sha256": "c775153b5c68f5aa8bbdcdb455ef9f737f5291da752ce6befe1f5558cf3fd6ce",
+            "bytes": 262860,
+            "retrieved_at": "2026-11-14T14:36:26.901720+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.082
+          },
+          "seconds": 0.082
+        },
+        {
+          "source_file": "PSI-98_Science Documents_SAFFIRE-1_MergeResult-jpeg_Update_Final_v2.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-98/documents/Science_Documents/PSI-98_Science Documents_SAFFIRE-1_MergeResult-jpeg_Update_Final_v2.xlsx",
+          "receipt": {
+            "sha256": "9bfeb80f921d966932e9f903b713148a5f5ec5b13e79564e527f268cc0709536",
+            "bytes": 12325177,
+            "retrieved_at": "2026-11-14T14:36:33.917237+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.8
+          },
+          "seconds": 0.8
+        },
+        {
+          "source_file": "PSI-98_Science Documents_SAFFIRE Objectives, Development and Status.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-98/documents/Science_Documents/PSI-98_Science Documents_SAFFIRE Objectives, Development and Status.pdf",
+          "receipt": {
+            "sha256": "6cff0b55b8f1416f5b5b768b7fd22ae31991791ef633865471b72ff19ff4159b",
+            "bytes": 186259,
+            "retrieved_at": "2026-11-14T14:36:37.876182+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.072
+          },
+          "seconds": 0.072
+        },
+        {
+          "source_file": "PSI-98_Science Documents_SAFFIRE-I and SAFFIRE-III Readme.docx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-98/documents/Science_Documents/PSI-98_Science Documents_SAFFIRE-I and SAFFIRE-III Readme.docx",
+          "receipt": {
+            "sha256": "49c939337fa00a0473f7efa10367288f510afcbf69dd7f5405054a2617d3a66d",
+            "bytes": 65426,
+            "retrieved_at": "2026-11-14T14:36:42.356025+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.054
+          },
+          "seconds": 0.054
+        }
+      ],
+      "skipped": {
+        "category:Engineering Documents": 2,
+        "category:Raw Data": 68
+      },
+      "notes": [],
+      "title": "Spacecraft Fire Safety Experiment-I",
+      "doi": "10.60555/0t15-1z43",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Saffire 1 enclosure in Cygnus",
+      "manifest": {
+        "sha256": "501b5f625733e29c0c6ff0c12b3de1a3e960a159a8c8f8a21ba5c5803afe0570",
+        "bytes": 134230,
+        "retrieved_at": "2026-11-14T14:36:21.933045+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.058
+      },
+      "listed_files": 74,
+      "experimental_table_entries": 1,
+      "seconds": 1.133
+    },
+    {
+      "accession": "PSI-99",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-99",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-99_Experimental table_SAFFIRE-2.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-99/PSI-99_Experimental table_SAFFIRE-2.csv",
+          "receipt": {
+            "sha256": "3c24390b9ef86f3d1ebaab911a1a3cc95a8759aebf42062371370e6d4b31b8ac",
+            "bytes": 1973,
+            "retrieved_at": "2026-11-14T14:36:26.849388+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.033
+          },
+          "csv": {
+            "headers": [
+              "Sample Number",
+              "Material",
+              "Samle Thickness ",
+              "Sample Length ",
+              "Sample Width (cm)",
+              "Air Flow (cm/s)",
+              "Percent O2 (Note 1)",
+              "Ignition Power (W)",
+              "Ignition Time (s)",
+              "Burn Time (s)",
+              "Flow Direction",
+              "?-g Burn Length",
+              "?-g Spread Length",
+              "1-g Burn Length",
+              "1-g Spread Rate",
+              "Camera 1",
+              "Camera 2"
+            ],
+            "physical_data_rows": 15,
+            "sha256": "3c24390b9ef86f3d1ebaab911a1a3cc95a8759aebf42062371370e6d4b31b8ac",
+            "bytes": 1973,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.037
+        }
+      ],
+      "skipped": {},
+      "notes": [],
+      "title": "Spacecraft Fire Experiment-II",
+      "doi": "10.60555/2chp-m469",
+      "version": "5",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Cygnus Pressurized Cargo Module, SAFFIRE",
+      "manifest": {
+        "sha256": "2c042a6bd82fa6b437cae61490d54ea91f890a52282bc5949b4a0119bcbf6633",
+        "bytes": 10308,
+        "retrieved_at": "2026-11-14T14:36:25.684799+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.048
+      },
+      "listed_files": 0,
+      "experimental_table_entries": 1,
+      "seconds": 0.106
+    },
+    {
+      "accession": "PSI-100",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-100",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-100_Experimental table_SAFFIRE-3.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-100/PSI-100_Experimental table_SAFFIRE-3.csv",
+          "receipt": {
+            "sha256": "4d3c717ec20dd0247db670b2784a9fd7d746788bc54a936f80693e48eb8cd117",
+            "bytes": 239,
+            "retrieved_at": "2026-11-14T14:36:29.767180+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.038
+          },
+          "csv": {
+            "headers": [
+              "Sample Number ",
+              "Material",
+              "Sample Thickness",
+              "Sample Length",
+              "Sample Width",
+              "Air Flow ",
+              "Direction",
+              "Camera 1",
+              "Camera 2"
+            ],
+            "physical_data_rows": 2,
+            "sha256": "4d3c717ec20dd0247db670b2784a9fd7d746788bc54a936f80693e48eb8cd117",
+            "bytes": 239,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.043
+        },
+        {
+          "source_file": "PSI-100_Science Documents_SAFFIRE-III Image Directory Nomenclature_v3.0.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-100/documents/Science_Documents/PSI-100_Science Documents_SAFFIRE-III Image Directory Nomenclature_v3.0.pdf",
+          "receipt": {
+            "sha256": "5dfe4822358df39475a542b79c0424bf4c44bb6c3382fd3f92e3288c0c917ff2",
+            "bytes": 273485,
+            "retrieved_at": "2026-11-14T14:36:37.507258+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.098
+          },
+          "seconds": 0.099
+        },
+        {
+          "source_file": "PSI-100_Science Documents_SAFFIRE-III_MergeResult-raw_Final.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-100/documents/Science_Documents/PSI-100_Science Documents_SAFFIRE-III_MergeResult-raw_Final.xlsx",
+          "receipt": {
+            "sha256": "9d3593b9ff87be0bbf623e6bc2e8d46ae286ac78971ad6630ec67a25c19c82d0",
+            "bytes": 7701589,
+            "retrieved_at": "2026-11-14T14:36:42.803959+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.511
+          },
+          "seconds": 0.512
+        },
+        {
+          "source_file": "PSI-100_Science Documents_SAFFIRE-III_MergeResult-jpeg_Final.xlsx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-100/documents/Science_Documents/PSI-100_Science Documents_SAFFIRE-III_MergeResult-jpeg_Final.xlsx",
+          "receipt": {
+            "sha256": "55766b94516b99149e4c81b38691ec1c07122de08916d4055b10948e9d2cfe43",
+            "bytes": 7879404,
+            "retrieved_at": "2026-11-14T14:37:11.833679+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.512
+          },
+          "seconds": 0.512
+        },
+        {
+          "source_file": "PSI-100_Science Documents_SAFFIRE Objectives, Development and Status.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-100/documents/Science_Documents/PSI-100_Science Documents_SAFFIRE Objectives, Development and Status.pdf",
+          "receipt": {
+            "sha256": "6cff0b55b8f1416f5b5b768b7fd22ae31991791ef633865471b72ff19ff4159b",
+            "bytes": 186259,
+            "retrieved_at": "2026-11-14T14:37:15.127724+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.07
+          },
+          "seconds": 0.07
+        },
+        {
+          "source_file": "PSI-100_Science Documents_SAFFIRE-I and SAFFIRE-III Readme.docx",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-100/documents/Science_Documents/PSI-100_Science Documents_SAFFIRE-I and SAFFIRE-III Readme.docx",
+          "receipt": {
+            "sha256": "49c939337fa00a0473f7efa10367288f510afcbf69dd7f5405054a2617d3a66d",
+            "bytes": 65426,
+            "retrieved_at": "2026-11-14T14:37:18.561011+00:00",
+            "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.067
+          },
+          "seconds": 0.068
+        }
+      ],
+      "skipped": {
+        "category:Engineering Documents": 2,
+        "category:Presentations": 3,
+        "category:Raw Data": 75
+      },
+      "notes": [],
+      "title": "Spacecraft Fire Experiment-III",
+      "doi": "10.60555/040q-4h36",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Saffire III enclosure in Cygnus",
+      "manifest": {
+        "sha256": "9c836955a28ff129b2f239f9499e06f4ca52ba58f7a03d384a7bd0528c8bbe10",
+        "bytes": 148767,
+        "retrieved_at": "2026-11-14T14:36:26.940251+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.065
+      },
+      "listed_files": 85,
+      "experimental_table_entries": 1,
+      "seconds": 1.396
+    },
+    {
+      "accession": "PSI-101",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-101",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-101_Experimental table_SAME-R.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-101/PSI-101_Experimental table_SAME-R.csv",
+          "receipt": {
+            "sha256": "87164b7dc9168a4273c159f7a9f23699afbd06ad97b77974377e79b9bf8a3bef",
+            "bytes": 5674,
+            "retrieved_at": "2026-11-14T14:36:30.942920+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.033
+          },
+          "csv": {
+            "headers": [
+              "Sample Type",
+              "SAME Test #",
+              "Description",
+              "Date",
+              "Inlet velocity (cm/s)",
+              "Rt/R0",
+              "Duration (sec)",
+              "Primary aging time (sec)",
+              "Primary mixing time (sec)",
+              "Net aging time (sec)"
+            ],
+            "physical_data_rows": 109,
+            "sha256": "87164b7dc9168a4273c159f7a9f23699afbd06ad97b77974377e79b9bf8a3bef",
+            "bytes": 5674,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.038
+        },
+        {
+          "source_file": "PSI-101_Reports_SAME-R_Final Report.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-101/documents/Reports/PSI-101_Reports_SAME-R_Final Report.pdf",
+          "receipt": {
+            "sha256": "65381e2715eb7379113dd1b9c550baaa5fa5a247dba00419123143aa98ef80d6",
+            "bytes": 4578437,
+            "retrieved_at": "2026-11-14T14:36:43.787319+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.343
+          },
+          "seconds": 0.344
+        },
+        {
+          "source_file": "PSI-101_Science Documents_SAME_Baseline Concept Description Document_001 Rev A.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-101/documents/Science_Documents/PSI-101_Science Documents_SAME_Baseline Concept Description Document_001 Rev A.pdf",
+          "receipt": {
+            "sha256": "3eed4b7ecd71f9e37a3f7a78d7e7a011ff636bb24ec8bcc72ff97a8ac41b598a",
+            "bytes": 247315,
+            "retrieved_at": "2026-11-14T14:36:47.461478+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.085
+          },
+          "seconds": 0.085
+        },
+        {
+          "source_file": "PSI-101_Science Documents_SAME_Operations Manual_007.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-101/documents/Science_Documents/PSI-101_Science Documents_SAME_Operations Manual_007.pdf",
+          "receipt": {
+            "sha256": "ac00e24b0f9a0388c3ac5097cca67591112c9992c0c9d40a6810ca5ba7289f36",
+            "bytes": 699811,
+            "retrieved_at": "2026-11-14T14:36:51.187601+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.119
+          },
+          "seconds": 0.119
+        }
+      ],
+      "skipped": {
+        "category:Engineering Documents": 24,
+        "category:Presentations": 4,
+        "category:Analyzed Data": 86,
+        "category:Raw Data": 223,
+        "category:Reference Data": 2
+      },
+      "notes": [],
+      "title": "Smoke Aerosol Measurement Experiment-Reflight",
+      "doi": "10.60555/2np7-jv14",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Comparitive Soot Diagnostic Hardware; Refer to final report",
+      "manifest": {
+        "sha256": "e0aa75d015705a5943b51dbb4a8ba52751a35e4cafc2307d9201d77ebed711a5",
+        "bytes": 552733,
+        "retrieved_at": "2026-11-14T14:36:28.872174+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.089
+      },
+      "listed_files": 342,
+      "experimental_table_entries": 1,
+      "seconds": 0.707
+    },
+    {
+      "accession": "PSI-102",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-102",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-102_Experimental table_SAME.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-102/PSI-102_Experimental table_SAME.csv",
+          "receipt": {
+            "sha256": "268d1e121d2f211b124407dd32b9475617bd269ede2c2d1749441da3e949a2af",
+            "bytes": 331,
+            "retrieved_at": "2026-11-14T14:36:45.634648+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.046
+          },
+          "csv": {
+            "headers": [
+              "Sample #",
+              "Sample Material  ",
+              "Air Flow (cm/s)",
+              "Weight loss rate (mg/min)",
+              "Aging Duration (minutes)"
+            ],
+            "physical_data_rows": 8,
+            "sha256": "268d1e121d2f211b124407dd32b9475617bd269ede2c2d1749441da3e949a2af",
+            "bytes": 331,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.052
+        },
+        {
+          "source_file": "PSI-102_Reports_SAME_Final Science Report.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-102/documents/Reports/PSI-102_Reports_SAME_Final Science Report.pdf",
+          "receipt": {
+            "sha256": "af91c96d22d93bbefbc0f2c5e1cc06e24813f532e5379b3fec9f121cccb22193",
+            "bytes": 3712845,
+            "retrieved_at": "2026-11-14T14:36:50.656561+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.263
+          },
+          "seconds": 0.263
+        },
+        {
+          "source_file": "PSI-102_Science Documents_SAME_Baseline Concept Description Doc.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-102/documents/Science_Documents/PSI-102_Science Documents_SAME_Baseline Concept Description Doc.pdf",
+          "receipt": {
+            "sha256": "3eed4b7ecd71f9e37a3f7a78d7e7a011ff636bb24ec8bcc72ff97a8ac41b598a",
+            "bytes": 247315,
+            "retrieved_at": "2026-11-14T14:36:58.905436+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.084
+          },
+          "seconds": 0.084
+        },
+        {
+          "source_file": "PSI-102_Science Documents_SAME_Operations Manual_007.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-102/documents/Science_Documents/PSI-102_Science Documents_SAME_Operations Manual_007.pdf",
+          "receipt": {
+            "sha256": "ac00e24b0f9a0388c3ac5097cca67591112c9992c0c9d40a6810ca5ba7289f36",
+            "bytes": 699811,
+            "retrieved_at": "2026-11-14T14:37:00.957285+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.106
+          },
+          "seconds": 0.107
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Engineering Documents": 28,
+        "category:Analyzed Data": 63,
+        "category:Presentations": 6,
+        "category:Reference Data": 3
+      },
+      "notes": [],
+      "title": "Smoke and Aerosol Measurement Experiment",
+      "doi": "10.60555/gd4k-8h62",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Comparitive Soot Diagnostic Hardware",
+      "manifest": {
+        "sha256": "fe221f1380ad3317f70b559a3213c4e00ef3676b40838a49cb5b3cba89dea5ba",
+        "bytes": 135432,
+        "retrieved_at": "2026-11-14T14:36:43.874578+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.08
+      },
+      "listed_files": 104,
+      "experimental_table_entries": 1,
+      "seconds": 0.611
+    },
+    {
+      "accession": "PSI-106",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-106",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-106_Experimental table_Slice.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-106/PSI-106_Experimental table_Slice.csv",
+          "receipt": {
+            "sha256": "89ef980810ca6d9aa8be817b42e36cd2adff23f5e9058361b5a33d18b4363f4d",
+            "bytes": 734,
+            "retrieved_at": "2026-11-14T14:37:09.749636+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.035
+          },
+          "csv": {
+            "headers": [
+              "Test Date",
+              "Fuel Type"
+            ],
+            "physical_data_rows": 12,
+            "sha256": "89ef980810ca6d9aa8be817b42e36cd2adff23f5e9058361b5a33d18b4363f4d",
+            "bytes": 734,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.039
+        }
+      ],
+      "skipped": {
+        "duplicate_manifest_entry": 1
+      },
+      "notes": [],
+      "title": "Structure and Liftoff In Combustion Experiment",
+      "doi": "10.60555/pm12-rg61",
+      "version": "3",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "",
+      "manifest": {
+        "sha256": "f705b2e04bd00d05f3c74ae55391c340b5a08d60efa8193e66b7c4e2518d9d5d",
+        "bytes": 9715,
+        "retrieved_at": "2026-11-14T14:37:07.719364+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.046
+      },
+      "listed_files": 1,
+      "experimental_table_entries": 1,
+      "seconds": 0.102
+    },
+    {
+      "accession": "PSI-107",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-107",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-107_Experimental table_Spice.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-107/PSI-107_Experimental table_Spice.csv",
+          "receipt": {
+            "sha256": "fb0d7e60cf5367afb429089e9901d27288f78038efd26c8de1db4fbe04117136",
+            "bytes": 31205,
+            "retrieved_at": "2026-11-14T14:37:05.046777+00:00",
+            "content_type": "application/vnd.ms-excel",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.05
+          },
+          "csv": {
+            "headers": [
+              "GMT date",
+              "GMT ignition",
+              "GMT  Flame Off ",
+              "Fuel",
+              "Nozzle (mm)",
+              "Fuel Rate (sccm)",
+              "Fuel Rate (mg/s)",
+              "HC Fuel Rate (mg/s)",
+              "Air Rate (cm/s)"
+            ],
+            "physical_data_rows": 469,
+            "sha256": "fb0d7e60cf5367afb429089e9901d27288f78038efd26c8de1db4fbe04117136",
+            "bytes": 31205,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.056
+        },
+        {
+          "source_file": "PSI-107_Reports_SMOKE POINTS OF MICROGRAVITY AND  NORMAL GRAVITY COFLOW DIFFUSION  FLAMES_DotsonThesis.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-107/documents/Reports/PSI-107_Reports_SMOKE POINTS OF MICROGRAVITY AND  NORMAL GRAVITY COFLOW DIF-555818ebd3.pdf",
+          "receipt": {
+            "sha256": "1bb111e67a9101ca957265d08a193e55cc6e4cc800f84766f6bfbf2c6f3df9cf",
+            "bytes": 2227738,
+            "retrieved_at": "2026-11-14T14:37:09.750650+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.194
+          },
+          "seconds": 0.194
+        },
+        {
+          "source_file": "PSI-107_Science Documents_SPICE_SRD.doc",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-107/documents/Science_Documents/PSI-107_Science Documents_SPICE_SRD.doc",
+          "receipt": {
+            "sha256": "a1e281ff575f3ba017b0b187b5dfc2789df097adc29e1e1d77821cbc7e185e16",
+            "bytes": 1112064,
+            "retrieved_at": "2026-11-14T14:37:13.789500+00:00",
+            "content_type": "application/msword",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.122
+          },
+          "seconds": 0.122
+        },
+        {
+          "source_file": "PSI-107_Reports_SPICE_30-DayPostFlightReport.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-107/documents/Reports/PSI-107_Reports_SPICE_30-DayPostFlightReport.pdf",
+          "receipt": {
+            "sha256": "0ba8a154fc17c560874c2ef23b508b9f078fa849650472f5819efc54eface32d",
+            "bytes": 160909,
+            "retrieved_at": "2026-11-14T14:37:15.850696+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.071
+          },
+          "seconds": 0.071
+        },
+        {
+          "source_file": "PSI-107_Reports_SPICE_FinalReport.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-107/documents/Reports/PSI-107_Reports_SPICE_FinalReport.pdf",
+          "receipt": {
+            "sha256": "95e76859017d201dcd6a9fb12f1df568aed77e0edf7a1b609975db37f32fa680",
+            "bytes": 601754,
+            "retrieved_at": "2026-11-14T14:37:18.045887+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.09
+          },
+          "seconds": 0.09
+        }
+      ],
+      "skipped": {
+        "category:Presentations": 5,
+        "category:Raw Data": 172,
+        "category:Engineering Documents": 4,
+        "category:Reference Data": 1
+      },
+      "notes": [],
+      "title": "Smoke Point In Co-flow Experiment",
+      "doi": "10.60555/9kbh-e962",
+      "version": "4",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Microgravity Science Glovebox (MSG)",
+      "manifest": {
+        "sha256": "f31081deb2b079373a0cbc98ad8483d87856aeca1aa6946ce31acff6cefcfbf2",
+        "bytes": 320156,
+        "retrieved_at": "2026-11-14T14:37:02.962599+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.076
+      },
+      "listed_files": 186,
+      "experimental_table_entries": 1,
+      "seconds": 0.639
+    },
+    {
+      "accession": "PSI-115",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-115",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-115_Reports_NNX17AF08A_FinalReport.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-115/documents/Reports/PSI-115_Reports_NNX17AF08A_FinalReport.pdf",
+          "receipt": {
+            "sha256": "487108f951ba8ec9042464ae7c70a8190fa63c4b1141f8b1dfe19d697bd9752c",
+            "bytes": 10617514,
+            "retrieved_at": "2026-11-14T14:37:18.519207+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.783
+          },
+          "seconds": 0.784
+        },
+        {
+          "source_file": "PSI-115_Science Documents_DataOrganizationDocument.pdf",
+          "category": "Science Documents",
+          "role": "document",
+          "status": "success",
+          "file_version": 2,
+          "path": "PSI-115/documents/Science_Documents/PSI-115_Science Documents_DataOrganizationDocument.pdf",
+          "receipt": {
+            "sha256": "754cd3b7e1f1334f7de75abbdc0fac2687bc451c76d36245b66a5315c01d7253",
+            "bytes": 96899,
+            "retrieved_at": "2026-11-14T14:37:21.132455+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.063
+          },
+          "seconds": 0.064
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Analyzed Data": 44
+      },
+      "notes": [
+        "No experimental table listed; metadata/documents only."
+      ],
+      "title": "Utilization of the Smoke Aerosol Measurement Experiment Data for Advanced Modeling and Simulation of Smoke Generation in Micro-Gravity",
+      "doi": "10.60555/q0v5-1v28",
+      "version": "3",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "",
+      "manifest": {
+        "sha256": "9c5b463fbe8fe8ed034229cbabd6c498f48ca9bb636196084ed2046eb2e41484",
+        "bytes": 66623,
+        "retrieved_at": "2026-11-14T14:37:10.866048+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.059
+      },
+      "listed_files": 47,
+      "experimental_table_entries": 0,
+      "seconds": 0.929
+    },
+    {
+      "accession": "PSI-117",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-117",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-117_Reports_Dissertation_Combustion Behavior Of Sub-Millimeter Sized Oxygenated And N-Alka.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-117/documents/Reports/PSI-117_Reports_Dissertation_Combustion Behavior Of Sub-Millimeter Sized Oxygenated And N-Alka.pdf",
+          "receipt": {
+            "sha256": "9ca74dd4eb2e76b1f39c2754363c55eed827444e335ef9956922a6a8f2b4199d",
+            "bytes": 8072629,
+            "retrieved_at": "2026-11-14T14:37:24.842771+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.624
+          },
+          "seconds": 0.625
+        }
+      ],
+      "skipped": {
+        "category:Presentations": 4,
+        "category:Analyzed Data": 10
+      },
+      "notes": [
+        "No experimental table listed; metadata/documents only."
+      ],
+      "title": "Effect of External Thermo-Convective Perturbation on Cool Flame Dynamics: A Multidimensional Multi-Physics CFD Analysis",
+      "doi": "10.60555/gz0q-b577",
+      "version": "2",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "",
+      "manifest": {
+        "sha256": "13e50b67d851dcf8bfc09103055995a17d89174589080d7103fa54ef1e02a794",
+        "bytes": 22422,
+        "retrieved_at": "2026-11-14T14:37:18.800819+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.048
+      },
+      "listed_files": 15,
+      "experimental_table_entries": 0,
+      "seconds": 0.691
+    },
+    {
+      "accession": "PSI-142",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-142",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-142_Experimental table_Data Summary Table.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-142/PSI-142_Experimental table_Data Summary Table.csv",
+          "receipt": {
+            "sha256": "c66d135b0053590d239f06b9e8627d826e3d726b8443fd2cbccc37484b6a8e7f",
+            "bytes": 727,
+            "retrieved_at": "2026-11-14T14:37:21.659801+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.046
+          },
+          "csv": {
+            "headers": [
+              "Data ID",
+              "Data Description",
+              "Reference Publication Link",
+              "Figure ID in Reference"
+            ],
+            "physical_data_rows": 8,
+            "sha256": "c66d135b0053590d239f06b9e8627d826e3d726b8443fd2cbccc37484b6a8e7f",
+            "bytes": 727,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.05
+        }
+      ],
+      "skipped": {
+        "category:Analyzed Data": 1,
+        "duplicate_manifest_entry": 1
+      },
+      "notes": [],
+      "title": "Quantitative Studies of Cool Flame Transitions at Radiation / Stretch Extinction Using Counterflow Flames",
+      "doi": "10.60555/80qf-vj95",
+      "version": "2",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "Principal Investigator Laboratory Hardware",
+      "manifest": {
+        "sha256": "c55ab5d3140025e16ef25ac37a99158d510c2e3c170c04dabc8993bd548a3506",
+        "bytes": 16715,
+        "retrieved_at": "2026-11-14T14:37:19.945118+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.05
+      },
+      "listed_files": 2,
+      "experimental_table_entries": 1,
+      "seconds": 0.121
+    },
+    {
+      "accession": "PSI-159",
+      "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-159",
+      "status": "success",
+      "files": [
+        {
+          "source_file": "PSI-159_Experimental table_CFI-G_Normal Flames.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-159/PSI-159_Experimental table_CFI-G_Normal Flames.csv",
+          "receipt": {
+            "sha256": "d95a621c3fbd27d204dd32ed29fa17d68f2b779d6a523cde8479ed7ebaa5251a",
+            "bytes": 22166,
+            "retrieved_at": "2026-11-14T14:37:38.237567+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.05
+          },
+          "csv": {
+            "headers": [
+              "Flame Type",
+              "Day",
+              "Fuel",
+              "Test",
+              "Cool flame?",
+              " XO2 before test",
+              "XO2  after test",
+              "approx p (bar)",
+              "Xf",
+              "mHC (mg/s)",
+              "TFP",
+              "Tad (K)",
+              "Zst",
+              "Hot ignition",
+              "burn time (sec)",
+              "Self-ext or flow term",
+              "Peak burner T (C )",
+              "Comments"
+            ],
+            "physical_data_rows": 179,
+            "sha256": "d95a621c3fbd27d204dd32ed29fa17d68f2b779d6a523cde8479ed7ebaa5251a",
+            "bytes": 22166,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.055
+        },
+        {
+          "source_file": "PSI-159_Experimental table_CFI-G_Inverse Flames.csv",
+          "category": "Experimental table",
+          "role": "table",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-159/PSI-159_Experimental table_CFI-G_Inverse Flames.csv",
+          "receipt": {
+            "sha256": "d4d44f8b9896936728748e34d1b6ad0812032a92fa5289599b708c138e3a9b39",
+            "bytes": 39422,
+            "retrieved_at": "2026-11-14T14:37:39.559781+00:00",
+            "content_type": "text/csv",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.043
+          },
+          "csv": {
+            "headers": [
+              "Flame Type",
+              "Day",
+              "Fuel",
+              "Test",
+              "Xf  before test",
+              "Xf  after test",
+              "approx p (bar)",
+              "XO2",
+              "HC burnrate (mg/s)",
+              "O2 flow rate (mg/s)",
+              "TFP",
+              "Tad (K)",
+              "Zst",
+              "Hot ignition",
+              "burn time (sec)",
+              "Self -ext or flow term",
+              "Peak burner Temp (C)",
+              "Peak burner temp (K)",
+              "Color",
+              "Comments"
+            ],
+            "physical_data_rows": 1015,
+            "sha256": "d4d44f8b9896936728748e34d1b6ad0812032a92fa5289599b708c138e3a9b39",
+            "bytes": 39422,
+            "encoding": "utf-8-sig"
+          },
+          "seconds": 0.054
+        },
+        {
+          "source_file": "PSI-159_Reports_FinalRpt_ACME.CFI-G.pdf",
+          "category": "Reports",
+          "role": "document",
+          "status": "success",
+          "file_version": 1,
+          "path": "PSI-159/documents/Reports/PSI-159_Reports_FinalRpt_ACME.CFI-G.pdf",
+          "receipt": {
+            "sha256": "f6cce7cc08ca69c155994d7a8898e21cd4aba122f4e46d5e00708e4889a1ebab",
+            "bytes": 3894907,
+            "retrieved_at": "2026-11-14T14:37:43.232999+00:00",
+            "content_type": "application/pdf",
+            "cached": true,
+            "attempts": 0,
+            "seconds": 0.273
+          },
+          "seconds": 0.273
+        }
+      ],
+      "skipped": {
+        "category:metadata": 1,
+        "category:Engineering Documents": 1,
+        "duplicate_manifest_entry": 2,
+        "category:Raw Data": 3749,
+        "category:Representative Image(s)": 2
+      },
+      "notes": [],
+      "title": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+      "doi": "10.60555/cyt1-kh64",
+      "version": "1",
+      "license": {
+        "identifier": "CC0-1.0",
+        "name": "Creative Commons Zero v1.0 Universal",
+        "url": "https://spdx.org/licenses/CC0-1.0.html"
+      },
+      "hardware": "ACME, Combustion Integrated Rack (CIR)",
+      "manifest": {
+        "sha256": "e01abe2caa309753a9bee1b0c3c79dec194a2a7300d0d13541e0dcf25e3b0ea5",
+        "bytes": 2796301,
+        "retrieved_at": "2026-11-14T14:37:36.118673+00:00",
+        "content_type": "application/json",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.244
+      },
+      "listed_files": 3756,
+      "experimental_table_entries": 2,
+      "seconds": 0.714
+    }
+  ],
+  "context": [
+    {
+      "id": "apollo-1",
+      "topic": "Apollo 1 lessons learned",
+      "url": "https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/",
+      "requested_url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-1",
+      "source_attempts": [
+        {
+          "url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-1",
+          "status": "failed",
+          "error": "Source has insufficient readable text (possibly a JavaScript shell)"
+        },
+        {
+          "url": "https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": true,
+      "title": "55 Years Ago: The Apollo 1 Fire and its Aftermath - NASA",
+      "status": "success",
+      "receipt": {
+        "sha256": "4ff380ff0dcff02d89a87775e76dff4059eaa7549e152654bc92664f21b9736b",
+        "bytes": 304346,
+        "retrieved_at": "2026-11-14T14:37:43.911195+00:00",
+        "content_type": "text/html; charset=UTF-8",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.456
+      },
+      "text_file": "apollo-1.txt",
+      "selection": "configured_fallback_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "947f73da34be3c796ed51fe2eecddf9da4187be5da03debde65e2621fb10ad7c",
+        "bytes": 17735
+      }
+    },
+    {
+      "id": "apollo-13",
+      "topic": "Apollo 13 lessons learned",
+      "url": "https://www.nasa.gov/missions/apollo/apollo-13-mission-details/",
+      "requested_url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-13",
+      "source_attempts": [
+        {
+          "url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-13",
+          "status": "failed",
+          "error": "Source has insufficient readable text (possibly a JavaScript shell)"
+        },
+        {
+          "url": "https://www.nasa.gov/missions/apollo/apollo-13-mission-details/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": true,
+      "title": "Apollo 13: Mission Details - NASA",
+      "status": "success",
+      "receipt": {
+        "sha256": "e431727d30a9a32003c7bd900fa98694e934ac48cb5cd1567cc2c03539e8d84f",
+        "bytes": 306015,
+        "retrieved_at": "2026-11-14T14:37:44.641364+00:00",
+        "content_type": "text/html; charset=UTF-8",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.562
+      },
+      "text_file": "apollo-13.txt",
+      "selection": "configured_fallback_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "095b8ae340b15597cbd0878c1dc8a31353cabeaf6073366663412458c2436fef",
+        "bytes": 16073
+      }
+    },
+    {
+      "id": "mir",
+      "topic": "Fire aboard Mir",
+      "url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/",
+      "requested_url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/",
+      "source_attempts": [
+        {
+          "url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "25 Years Ago: Fire Aboard Space Station Mir - NASA",
+      "status": "success",
+      "receipt": {
+        "sha256": "4814e6bf6d5b8037edda1cc3c8642094db2bb7b93686c21d899edb9e745a97f7",
+        "bytes": 271840,
+        "retrieved_at": "2026-11-14T14:37:43.884472+00:00",
+        "content_type": "text/html; charset=UTF-8",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.611
+      },
+      "text_file": "mir.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "9cc25630aa474c1030630bb384c0b2b525ee575a2f4ddf9b47a3320a6028444c",
+        "bytes": 5952
+      }
+    },
+    {
+      "id": "spinoff-air-tanks",
+      "topic": "Fireman's air tanks",
+      "url": "https://spinoff.nasa.gov/node/9582",
+      "requested_url": "https://spinoff.nasa.gov/node/9582",
+      "source_attempts": [
+        {
+          "url": "https://spinoff.nasa.gov/node/9582",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "Fireman's Air Tanks | NASA Spinoff",
+      "status": "success",
+      "receipt": {
+        "sha256": "dd5b1203292e60120004a61ecd89f426c8e50d2bdfa75fcc560cf8e88f6d8764",
+        "bytes": 51727,
+        "retrieved_at": "2026-11-14T15:46:28.491606+00:00",
+        "content_type": "text/html; charset=utf-8",
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.98
+      },
+      "text_file": "spinoff-air-tanks.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "7d171bcc96fa3c51befb6f8fe5f1cc12bf8e6d3f875836bfdd280716f7ad230d",
+        "bytes": 2144
+      }
+    },
+    {
+      "id": "spinoff-fire-detector",
+      "topic": "Fire detector",
+      "url": "https://spinoff.nasa.gov/node/9407",
+      "requested_url": "https://spinoff.nasa.gov/node/9407",
+      "source_attempts": [
+        {
+          "url": "https://spinoff.nasa.gov/node/9407",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "Fire Detector | NASA Spinoff",
+      "status": "success",
+      "receipt": {
+        "sha256": "ae02ae678a75fec41696c3fab962b7c3b6e5ce68e1fb77ef3edf653f23a81367",
+        "bytes": 51684,
+        "retrieved_at": "2026-11-14T15:46:29.012712+00:00",
+        "content_type": "text/html; charset=utf-8",
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.425
+      },
+      "text_file": "spinoff-fire-detector.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "b4d548c15e768654162742f2313a6f37b40856501b0611a7b12851287b843251",
+        "bytes": 2174
+      }
+    },
+    {
+      "id": "spinoff-fire-attire",
+      "topic": "Fire attire",
+      "url": "https://spinoff.nasa.gov/node/9918",
+      "requested_url": "https://spinoff.nasa.gov/node/9918",
+      "source_attempts": [
+        {
+          "url": "https://spinoff.nasa.gov/node/9918",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "New Technology for the Fire Attire | NASA Spinoff",
+      "status": "success",
+      "receipt": {
+        "sha256": "fa5bbda2a2d09c46a14b27098677e5fd71c3f019c5eb6031fc5f71603fc52115",
+        "bytes": 52388,
+        "retrieved_at": "2026-11-14T15:46:29.552897+00:00",
+        "content_type": "text/html; charset=utf-8",
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.329
+      },
+      "text_file": "spinoff-fire-attire.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "8f8fdf01d644b3733d113219545c6235cc463c65faf3a582d24e702ed30e3c57",
+        "bytes": 2800
+      }
+    },
+    {
+      "id": "combustion",
+      "topic": "NASA combustion science",
+      "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/",
+      "requested_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/",
+      "source_attempts": [
+        {
+          "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "Combustion Science - NASA",
+      "status": "success",
+      "receipt": {
+        "sha256": "34a850143543cd19036ac3f6f1a80f4110aa7cfcd9c72b265ede0da90b27d5bd",
+        "bytes": 334304,
+        "retrieved_at": "2026-11-14T14:37:44.688702+00:00",
+        "content_type": "text/html; charset=UTF-8",
+        "cached": true,
+        "attempts": 0,
+        "seconds": 0.543
+      },
+      "text_file": "combustion.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "5b4fca6e02b36938cceb318e399120e71f4fc9e6518c22f9f18a5755a7ccd20e",
+        "bytes": 9839
+      }
+    },
+    {
+      "id": "researchers-guide",
+      "topic": "Researcher's Guide to Combustion Science",
+      "url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/",
+      "requested_url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/",
+      "source_attempts": [
+        {
+          "url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "A Researcher’s Guide to: Combustion Science - NASA",
+      "status": "success",
+      "receipt": {
+        "sha256": "c82ed80528d4ab0bc4174fe4c10051efa1ed306d5c363b8b611aa5799cfe9b99",
+        "bytes": 286454,
+        "retrieved_at": "2026-11-14T15:46:30.441919+00:00",
+        "content_type": "text/html; charset=UTF-8",
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.825
+      },
+      "text_file": "researchers-guide.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "pdf": {
+        "url": "https://www.nasa.gov/wp-content/uploads/2016/05/np-2015-10-034-jsc_combustion_in_reduced_gravity-iss-mini-book-011116-508.pdf?emrc=c9b273",
+        "file": "researchers-guide.pdf",
+        "receipt": {
+          "sha256": "5fe046efe4e35e506023e27a9784d041e893026f19c9987591483614aea5d6b6",
+          "bytes": 1500825,
+          "retrieved_at": "2026-11-14T14:37:46.772759+00:00",
+          "content_type": "application/pdf",
+          "cached": true,
+          "attempts": 0,
+          "seconds": 0.42
+        }
+      },
+      "text_integrity": {
+        "sha256": "4303beda2a62d937fab54fdac1bf2c28712f3a5758c78b9ba854ddbafab7edbc",
+        "bytes": 109534
+      }
+    }
+  ],
+  "workers": 3,
+  "offline": false,
+  "catalogue": {
+    "total_records": 133,
+    "advertised_total": 133,
+    "combustion_count": 24,
+    "pages": [
+      {
+        "source_url": "https://psi.nasa.gov/geode-py/ws/repo/search?source=psi&type=investigation&size=100&from=0",
+        "file": "page-00000.json",
+        "receipt": {
+          "sha256": "11b0a6f33ec6ea31ddc95ec6bc89de874cc9124780fd947153db260dd3c9615c",
+          "bytes": 688426,
+          "retrieved_at": "2026-11-14T14:35:05.855929+00:00",
+          "content_type": "application/json",
+          "cached": true,
+          "attempts": 0,
+          "seconds": 0.101
+        },
+        "returned": 100
+      },
+      {
+        "source_url": "https://psi.nasa.gov/geode-py/ws/repo/search?source=psi&type=investigation&size=100&from=100",
+        "file": "page-00100.json",
+        "receipt": {
+          "sha256": "4f8f6641a210eba55f59d50a74bd55b4cd36cc58c20da707641a3d160fe8f080",
+          "bytes": 382145,
+          "retrieved_at": "2026-11-14T14:35:06.332879+00:00",
+          "content_type": "application/json",
+          "cached": true,
+          "attempts": 0,
+          "seconds": 0.079
+        },
+        "returned": 33
+      }
+    ]
+  },
+  "challenge": {
+    "url": "https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=resources",
+    "status": "unavailable",
+    "error": "Network/timeout failure; request URL omitted"
+  },
+  "counts": {
+    "investigations": 24,
+    "manifests": 24,
+    "tables": 22,
+    "documents": 53,
+    "context_sources": 8,
+    "failures": 2,
+    "bytes": 128527122,
+    "cache_hits": 75
+  },
+  "seconds": 16.711
+}

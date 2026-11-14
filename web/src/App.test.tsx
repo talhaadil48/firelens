@@ -48,7 +48,7 @@ describe('Phase 2 preview', () => {
     render(<App />)
     await screen.findByText('Flame Extinguishment Experiment')
     fireEvent.change(screen.getByLabelText('Illustrative mission profile'), { target: { value: 'rover' } })
-    await waitFor(() => expect(screen.getByText(/No atmosphere supplied/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Supplied-plan rover scenario/)).toBeInTheDocument())
   })
 })
 
@@ -69,4 +69,22 @@ describe('offline client contracts', () => {
     expect(events.map(event => event.event)).toEqual(['progress', 'answer', 'done'])
     expect(events[1].data).toMatchObject({ status: 'insufficient_evidence', citations: [] })
   })
+})
+
+it('applies a custom scenario without fabricating relevance scores', async () => {
+  render(<App />)
+  await screen.findByText('Flame Extinguishment Experiment')
+  fireEvent.change(screen.getByLabelText('Illustrative mission profile'), { target: { value: 'custom' } })
+  fireEvent.change(screen.getByLabelText('Oxygen (%)'), { target: { value: '34' } })
+  fireEvent.change(screen.getByLabelText('Pressure (kPa)'), { target: { value: '70' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Apply custom conditions' }))
+  expect(await screen.findByText(/Applied: 34% O2 · 70 kPa/)).toBeInTheDocument()
+})
+
+it('requires custom oxygen and pressure in the shared client', async () => {
+  await expect(getRank('custom')).rejects.toThrow('require oxygen and pressure')
+  await expect(getRank('custom', { o2_fraction: 34, pressure_kpa: 70 })).rejects.toThrow('Invalid')
+  const result = await getRank('custom', { o2_fraction: 0.34, pressure_kpa: 70, gravity_level_g: 0.1667 })
+  expect(result.profile.gravity).toBe('reduced_gravity')
+  expect(result.items.every(item => item.score === null)).toBe(true)
 })

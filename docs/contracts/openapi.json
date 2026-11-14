@@ -220,7 +220,27 @@
                   "type": "null"
                 }
               ],
+              "deprecated": true,
               "title": "Oxygen Fraction"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "o2_fraction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "O2 Fraction"
             }
           },
           {
@@ -255,6 +275,38 @@
                 }
               ],
               "title": "Flow Cm S"
+            }
+          },
+          {
+            "name": "gravity_level_g",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Gravity Level G"
+            }
+          },
+          {
+            "name": "goal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "prevention",
+                "detection",
+                "suppression"
+              ],
+              "type": "string",
+              "default": "prevention",
+              "title": "Goal"
             }
           }
         ],
@@ -793,15 +845,38 @@
       },
       "ExperimentalTest": {
         "properties": {
+          "accession": {
+            "type": "string",
+            "pattern": "^PSI-\\d+$",
+            "title": "Accession"
+          },
+          "investigation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation"
+          },
           "test_id": {
             "type": "string",
             "minLength": 1,
             "title": "Test Id"
           },
-          "accession": {
-            "type": "string",
-            "pattern": "^PSI-\\d+$",
-            "title": "Accession"
+          "test_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Date"
           },
           "campaign_id": {
             "anyOf": [
@@ -814,7 +889,7 @@
             ],
             "title": "Campaign Id"
           },
-          "material": {
+          "fuel": {
             "anyOf": [
               {
                 "type": "string"
@@ -823,7 +898,7 @@
                 "type": "null"
               }
             ],
-            "title": "Material"
+            "title": "Fuel"
           },
           "fuel_phase": {
             "type": "string",
@@ -837,7 +912,7 @@
             "title": "Fuel Phase",
             "default": "unknown"
           },
-          "geometry": {
+          "sample_geometry": {
             "anyOf": [
               {
                 "type": "string"
@@ -846,7 +921,27 @@
                 "type": "null"
               }
             ],
-            "title": "Geometry"
+            "title": "Sample Geometry"
+          },
+          "sample_size_mm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Size Mm"
+          },
+          "sample_dimensions_mm": {
+            "additionalProperties": {
+              "type": "number",
+              "exclusiveMinimum": 0.0
+            },
+            "type": "object",
+            "title": "Sample Dimensions Mm"
           },
           "thickness_mm": {
             "anyOf": [
@@ -860,7 +955,7 @@
             ],
             "title": "Thickness Mm"
           },
-          "oxygen_fraction": {
+          "o2_fraction": {
             "anyOf": [
               {
                 "type": "number",
@@ -871,7 +966,7 @@
                 "type": "null"
               }
             ],
-            "title": "Oxygen Fraction"
+            "title": "O2 Fraction"
           },
           "oxygen_basis": {
             "type": "string",
@@ -895,6 +990,26 @@
               }
             ],
             "title": "Pressure Kpa"
+          },
+          "diluent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diluent"
+          },
+          "diluent_fractions": {
+            "additionalProperties": {
+              "type": "number",
+              "maximum": 1.0,
+              "minimum": 0.0
+            },
+            "type": "object",
+            "title": "Diluent Fractions"
           },
           "flow_cm_s": {
             "anyOf": [
@@ -923,6 +1038,18 @@
             "$ref": "#/components/schemas/Gravity",
             "default": "unknown"
           },
+          "gravity_level_g": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gravity Level G"
+          },
           "platform": {
             "anyOf": [
               {
@@ -937,13 +1064,27 @@
           "outcome": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                  "ignited",
+                  "extinguished",
+                  "cool_flame",
+                  "failed",
+                  "unknown"
+                ]
               },
               {
                 "type": "null"
               }
             ],
             "title": "Outcome"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Metric"
+            },
+            "type": "object",
+            "title": "Metrics"
           },
           "outcome_value": {
             "anyOf": [
@@ -954,7 +1095,8 @@
                 "type": "null"
               }
             ],
-            "title": "Outcome Value"
+            "title": "Outcome Value",
+            "deprecated": true
           },
           "outcome_unit": {
             "anyOf": [
@@ -965,7 +1107,8 @@
                 "type": "null"
               }
             ],
-            "title": "Outcome Unit"
+            "title": "Outcome Unit",
+            "deprecated": true
           },
           "baseline_test_id": {
             "anyOf": [
@@ -977,6 +1120,41 @@
               }
             ],
             "title": "Baseline Test Id"
+          },
+          "source_file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source File"
+          },
+          "source_row": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Row"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
           },
           "evidence_type": {
             "$ref": "#/components/schemas/EvidenceType"
@@ -999,8 +1177,8 @@
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "test_id",
           "accession",
+          "test_id",
           "evidence_type",
           "provenance"
         ],
@@ -1161,6 +1339,116 @@
               }
             ],
             "title": "Description"
+          },
+          "objectives": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objectives"
+          },
+          "approach": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approach"
+          },
+          "hypothesis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hypothesis"
+          },
+          "research_impacts": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Research Impacts"
+          },
+          "sub_area": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sub Area"
+          },
+          "sensors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sensors"
+          },
+          "measurements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Measurements"
+          },
+          "file_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Count"
+          },
+          "file_size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Size Bytes"
+          },
+          "publications": {
+            "items": {
+              "$ref": "#/components/schemas/Publication"
+            },
+            "type": "array",
+            "title": "Publications"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestigationSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "doi": {
             "anyOf": [
@@ -1359,6 +1647,71 @@
         ],
         "title": "InvestigationList"
       },
+      "InvestigationSummary": {
+        "properties": {
+          "objective": {
+            "type": "string",
+            "title": "Objective"
+          },
+          "fuels_and_geometry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuels And Geometry"
+          },
+          "conditions_tested": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions Tested"
+          },
+          "varied": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Varied"
+          },
+          "sensors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sensors"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "review_status": {
+            "$ref": "#/components/schemas/ReviewStatus",
+            "default": "unreviewed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "objective"
+        ],
+        "title": "InvestigationSummary"
+      },
       "MetaResponse": {
         "properties": {
           "mode": {
@@ -1428,6 +1781,54 @@
         ],
         "title": "MetaResponse"
       },
+      "Metric": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Unit",
+            "description": "Use '1' for dimensionless values"
+          },
+          "source_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Column"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Provenance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit"
+        ],
+        "title": "Metric"
+      },
       "MissionProfile": {
         "properties": {
           "id": {
@@ -1459,6 +1860,18 @@
           },
           "gravity": {
             "$ref": "#/components/schemas/Gravity"
+          },
+          "gravity_level_g": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gravity Level G"
           },
           "assumptions": {
             "items": {
@@ -1607,6 +2020,56 @@
         "title": "Provenance",
         "type": "object"
       },
+      "Publication": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "authors": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authors"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2083,
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "Publication"
+      },
       "RankItem": {
         "properties": {
           "accession": {
@@ -1667,6 +2130,16 @@
       },
       "RankResponse": {
         "properties": {
+          "safety_goal": {
+            "type": "string",
+            "enum": [
+              "prevention",
+              "detection",
+              "suppression"
+            ],
+            "title": "Safety Goal",
+            "default": "prevention"
+          },
           "profile": {
             "$ref": "#/components/schemas/MissionProfile"
           },
@@ -1712,32 +2185,32 @@
       },
       "RankWeights": {
         "properties": {
-          "oxygen": {
+          "conditions": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Oxygen",
+            "title": "Conditions",
             "default": 0.4
           },
-          "pressure": {
+          "fuel_realism": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Pressure",
+            "title": "Fuel Realism",
             "default": 0.25
           },
-          "flow": {
+          "safety_goal": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Flow",
+            "title": "Safety Goal",
             "default": 0.2
           },
-          "gravity": {
+          "data_richness": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Gravity",
+            "title": "Data Richness",
             "default": 0.15
           }
         },

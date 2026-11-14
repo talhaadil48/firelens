@@ -1,7 +1,12 @@
 {
   "ai_assisted": true,
   "tool": "OpenAI Codex",
-  "scope": ["code", "documentation", "tests"],
+  "scope": [
+    "code",
+    "documentation",
+    "tests",
+    "phase_3_harvest_and_audit"
+  ],
   "runtime_llm_enabled": false,
   "generated_scientific_measurements": false,
   "human_science_review": "pending",

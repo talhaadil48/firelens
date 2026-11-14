@@ -37,3 +37,17 @@ Full dependency versions are in `uv.lock` and `web/package-lock.json`; their lic
 remain with their owners. No remote fonts, NASA logos, stock imagery, paid services
 or production models are used in Phase 2. Azure and GoDaddy are planned later,
 not claimed as active integrations.
+
+## Phase 3 context references and extraction tools
+
+The exact configured NASA URLs are in `config/context_sources.yaml`; executed
+source URLs, hashes and retrieval times are in `docs/harvest/report.json`. They
+cover Apollo 1, Apollo 13, Mir, NASA Spinoffs, NASA combustion science and the
+Researcher's Guide, with its linked NASA PDF. This is not a verified complete
+list of official challenge resources.
+
+- Beautiful Soup: https://www.crummy.com/software/BeautifulSoup/
+- PyMuPDF: https://pymupdf.readthedocs.io/
+
+Upstream software and content retain their own licenses; PSI metadata licenses
+are retained per investigation rather than applied to all NASA web content.

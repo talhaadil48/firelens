@@ -1,6 +1,6 @@
 # AI usage disclosure
 
-AI (OpenAI Codex) assisted with the Phase 1–2 scaffold, implementation,
+AI (OpenAI Codex) assisted with the Phase 1–3 scaffold, collector implementation,
 documentation and automated tests under Talha Adil's direction. AI-generated code
 is identified here and in `docs/context/ai-usage.json`. Human science review is
 still required; passing software tests is not scientific validation.

@@ -150,10 +150,18 @@ def test_profiles_are_explicit_assumptions_and_weights_sum_to_one():
         "moon_base",
         "rover",
         "spacesuit",
+        "custom",
     }
     assert all(p.status == "illustrative" for p in config.profiles)
     rover = next(p for p in config.profiles if p.id == "rover")
-    assert rover.oxygen.minimum is None
+    assert rover.oxygen.minimum == 0.30
+    assert rover.pressure.maximum == pytest.approx(10.2 * 6.894757293168)
+    assert config.weights.model_dump() == {
+        "conditions": 0.4,
+        "fuel_realism": 0.25,
+        "safety_goal": 0.2,
+        "data_richness": 0.15,
+    }
 
 
 def test_generated_contracts_and_web_fixtures_are_current():
@@ -176,3 +184,46 @@ def test_openapi_defines_all_routes_and_sse_payloads():
     exported = json.loads((ROOT / "docs/contracts/openapi.json").read_text())
     assert exported == schema
     assert set(exported["paths"]["/chat"]["post"]["x-sse-events"]) == {"progress", "answer", "done"}
+
+
+def test_complete_plan_custom_environment_and_safety_goal():
+    response = client.get(
+        "/rank?profile=custom&o2_fraction=0.34&pressure_kpa=70&flow_cm_s=10&gravity_level_g=0.1667&goal=suppression"
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["profile"]["oxygen"]["minimum"] == 0.34
+    assert data["profile"]["gravity_level_g"] == 0.1667
+    assert data["safety_goal"] == "suppression"
+    assert set(data["items"][0]["breakdown"]) == {
+        "conditions",
+        "fuel_realism",
+        "safety_goal",
+        "data_richness",
+    }
+    assert all(item["score"] is None for item in data["items"])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "profile=custom",
+        "profile=custom&o2_fraction=0.34",
+        "pressure_kpa=inf",
+        "gravity_level_g=nan",
+        "o2_fraction=0.3&oxygen_fraction=0.4",
+        "goal=invalid",
+    ],
+)
+def test_custom_conditions_reject_missing_conflicting_or_nonfinite_values(query):
+    assert client.get("/rank?" + query).status_code == 422
+
+
+def test_metadata_fixtures_expose_actual_retained_plan_fields():
+    item = client.get("/investigations/PSI-26").json()
+    assert item["doi"] == "10.60555/58h4-dy80"
+    assert item["objectives"] and item["approach"] and item["hypothesis"]
+    assert item["hardware"] and item["publications"] and item["file_count"] > 0
+    assert item["summary"] is None  # no generated scientific interpretation
+    header = client.get("/export?format=csv").text.splitlines()[1].split(",")
+    assert {"test_date", "fuel", "sample_size_mm", "o2_fraction", "metrics", "doi"} <= set(header)

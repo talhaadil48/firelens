@@ -4,7 +4,8 @@ setup:
 	cd web && npm ci
 spike:
 	uv run python -m harvest.spike
-harvest: spike
+harvest:
+	uv run python -m harvest.run
 normalize:
 	uv run python -m harvest.pipeline normalize
 precompute:

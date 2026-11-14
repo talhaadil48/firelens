@@ -9,7 +9,7 @@ Phase 2 serves offline mock responses. No production inference is implemented.
 | GET | `/profiles` | Shared illustrative profiles and draft weights |
 | GET | `/investigations?q=&limit=100&offset=0` | Filtered/paginated list |
 | GET | `/investigations/{accession}` | Record, source links and citations |
-| GET | `/rank?profile=iss` | Null scores with gap explanations; optional `oxygen_fraction`, `pressure_kpa`, `flow_cm_s` overrides |
+| GET | `/rank?profile=iss` | Null scores with gap explanations; optional `o2_fraction`, `pressure_kpa`, `flow_cm_s`, `gravity_level_g` and `goal` overrides; `oxygen_fraction` remains a deprecated alias |
 | GET | `/tests` | Empty list until normalized data exists; accession/oxygen/pressure filters accepted |
 | GET | `/compare?ids=PSI-26,PSI-25` | 2–3 distinct records and metadata-only comparison |
 | GET | `/export?format=csv` | Citation line + CSV header; missing measurements not fabricated |
@@ -44,3 +44,16 @@ Production error recovery, rate limiting and token streaming are Phase 6.
 Fixtures: `snapshots/sample/responses.json`, `snapshots/sample/chat.sse`, and
 `web/public/fixtures.json`. Use `VITE_DATA_MODE=mock` (default) or `api` with
 `VITE_API_BASE_URL`. TypeScript declarations are generated from OpenAPI.
+
+## Complete-plan contract alignment
+
+Normalized row JSON uses `fuel`, `sample_geometry` and `o2_fraction`. Legacy input
+aliases remain accepted. Rows support dates, diluents, dimensions, multiple named
+metrics and DOI; flat source fields must match nested provenance. The shared
+Pydantic/Pandera contracts preserve evidence rather than dropping extra metrics.
+
+Ranking components are conditions/fuel_realism/safety_goal/data_richness with
+weights .40/.25/.20/.15. This defines the intended formula; mock scores stay null.
+`/rank?profile=custom&o2_fraction=0.34&pressure_kpa=70` applies custom conditions.
+Custom requests missing oxygen/pressure or using nonfinite/conflicting values fail
+with 422. Six profiles are now returned by `/profiles`, including the custom template.

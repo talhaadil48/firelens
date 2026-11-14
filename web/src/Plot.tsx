@@ -8,7 +8,7 @@ export default function CoveragePlot({ tests }: { tests: TestRow[] }) {
   return <Plot
     data={[{
       type: 'scatter', mode: 'markers',
-      x: tests.map(row => row.oxygen_fraction == null ? null : row.oxygen_fraction * 100),
+      x: tests.map(row => row.o2_fraction == null ? null : row.o2_fraction * 100),
       y: tests.map(row => row.pressure_kpa ?? null),
       text: tests.map(row => `${row.accession}: ${row.test_id}`),
       marker: { color: '#63caff', size: 9 },
