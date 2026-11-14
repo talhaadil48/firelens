@@ -5,10 +5,18 @@
     "code",
     "documentation",
     "tests",
-    "phase_3_harvest_and_audit"
+    "phase_3_harvest_and_audit",
+    "phase_7_web_and_cited_data_charts",
+    "phase_6_chat_hardening"
   ],
-  "runtime_llm_enabled": false,
+  "runtime_llm_enabled": "configuration_dependent",
   "generated_scientific_measurements": false,
   "human_science_review": "pending",
-  "generated_images_audio_video": false
+  "generated_images_audio_video": false,
+  "runtime_llm_providers": [
+    "offline",
+    "azure",
+    "openrouter"
+  ],
+  "verification_uses_live_llm": false
 }

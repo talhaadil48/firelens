@@ -2,11 +2,12 @@
 
 Evidence-linked exploration of NASA microgravity combustion research.
 
-**Status: Phases 1–2 foundation plus Phase 3 harvest implementation.** This repository contains a reproducible source
-spike, shared data models, API contracts, offline fixtures and a React scaffold.
-It is not yet the complete research dashboard. The preview uses five real NASA
-catalogue records, zero normalized measurements and no live LLM. Null relevance
-scores and an empty coverage map are intentional.
+**Status: Phase 7 dashboard on `feature/phase-7-web`.** Explorer, reviewed
+coverage charts, investigation detail, comparison, source-linked chat (including
+charts of cited measurements) and CSV/JSON exports connect to the Phase 6 API.
+Mock mode stays an explicitly empty metadata preview. A local ignored snapshot
+contains 24 investigations and 1,858 normalized tests; it must be generated on a
+fresh checkout. See [Phase 7 setup and verification](docs/PHASE_7_HANDOFF.md).
 
 ## Start locally
 
@@ -23,13 +24,16 @@ cd ..
 In two terminals:
 
 ```bash
-make api     # http://127.0.0.1:8000/docs — offline contract server
+make api     # http://127.0.0.1:8000/docs — mode configured in root .env
 make web     # http://127.0.0.1:5173 — offline fixtures by default
 ```
 
 Without Make: `uv run uvicorn api.main:app --reload` and `cd web && npm run dev`.
 To test the UI against the API, copy `web/.env.example` to `web/.env.local`, set
-`VITE_DATA_MODE=api`, and restart Vite. No API keys or cloud accounts are required.
+`VITE_DATA_MODE=api`, and restart Vite. For real data, set root `.env` to
+`FIRELENS_MODE=snapshot` and generate `snapshots/latest.json` using
+`uv run python -m harvest.pipeline all` after harvesting. Set `LLM_PROVIDER=offline`
+to verify without paid model calls. No cloud account is required.
 
 ## Harvest the full combustion collection (Phase 3)
 
@@ -45,8 +49,8 @@ Run folders and cache stay under ignored `raw/`. No API key is required.
 
 A partial run exits nonzero and records failures in its `HARVEST_LOG.md`. The
 observed run has 24 manifests, 22 CSVs and 53 supporting documents; two legacy
-NASA report URLs returned 404, so it is honestly labelled partial. The API/UI
-remain Phase 2 fixtures until normalization and reviewed snapshots exist.
+NASA report URLs returned 404, so it is honestly labelled partial. Normalization
+and snapshot generation are separate from collection; see the Phase 7 handoff.
 See [Phase 3 handoff](docs/PHASE_3_HANDOFF.md) and [harvest log](docs/harvest/HARVEST_LOG.md).
 
 ## Check NASA access (small Phase 2 spike)
@@ -87,8 +91,8 @@ also records differences that need resolution before implementing real rankings.
 
 | Folder | Responsibility |
 | --- | --- |
-| `harvest/` | Full Phase 3 collection, verified cache/audit, Phase 2 spike; normalization comes later |
-| `api/` | Shared Pydantic contracts and mock FastAPI server |
+| `harvest/` | Collection, reviewed column maps, normalization and snapshot precomputation |
+| `api/` | Typed API, DuckDB ranking/filtering, reviewed-evidence RAG and exports |
 | `web/` | Vite, React, TypeScript, Tailwind and lazy-loaded Plotly scaffold |
 | `config/` | Illustrative mission profiles and draft relevance weights |
 | `snapshots/sample/` | Checked metadata fixtures; real snapshots remain ignored |
@@ -101,7 +105,8 @@ also records differences that need resolution before implementing real rankings.
 
 Mission scenarios and weights are design assumptions, not NASA-approved mission
 specifications, material certifications or fire-risk predictions. The rank route
-returns no scores until reviewed normalized tests are available. A gap means no
+only scores investigations with eligible reviewed measurements and sufficient
+conditions; other scores stay null. A gap means no
 matching evidence in this collection, not proof that no research exists. CSV row
 counts include possible descriptions/units/blank rows and are not validated test counts.
 All displayed scientific claims must trace to evidence; missing values stay null.
@@ -117,5 +122,6 @@ No public production deployment is included in these phases.
 The complete-plan alignment adds canonical test/metric contracts, C/F/M/D ranking
 weights, rover/custom scenarios and the exact eight requested context sources.
 See [alignment status](docs/context/PLAN_ALIGNMENT.md) and
-[session handoff](docs/context/SESSION_HANDOFF.md). Actual normalization and science
-outputs remain later-phase work.
+[session handoff](docs/context/SESSION_HANDOFF.md) for history. Current normalization,
+API and dashboard behavior are documented in the [Phase 7 handoff](docs/PHASE_7_HANDOFF.md).
+Scientific evaluation, deployment and scheduled sync remain later-phase work.

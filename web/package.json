@@ -13,7 +13,8 @@
     "lint": "eslint . && tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:types": "openapi-typescript ../docs/contracts/openapi.json -o src/api.generated.ts"
+    "generate:types": "openapi-typescript ../docs/contracts/openapi.json -o src/api.generated.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.0",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
+    "@playwright/test": "^1.65.1",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.0.0",

@@ -1,3 +1,10 @@
+# Current checkpoint — Phase 7 web
+
+The active branch is `feature/phase-7-web`, created from hardened Phase 6 commit
+`15e94c9`. See [Phase 7 handoff](../PHASE_7_HANDOFF.md) for implementation, setup,
+tests and the additional graphical-chat requirement. The material below is the
+historical Phase 1–3 alignment checkpoint; its branch and scope are superseded.
+
 # Resume here — complete-plan alignment checkpoint
 
 Updated 14 November 2026. This is the durable handoff requested by the owner when
