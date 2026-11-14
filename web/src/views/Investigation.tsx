@@ -306,28 +306,35 @@ export default function Investigation({
             <p className="muted">No document links in this record.</p>
           )}
         </section>
-        <section className="panel">
-          <h2>Publications</h2>
+        <section className="panel publications-panel">
+          <h2 id="publications-heading">Publications</h2>
           {(study.publications ?? []).length ? (
-            <ul className="resource-list">
-              {(study.publications ?? []).map((pub, i) => (
-                <li key={i}>
-                  <span>{pub.title}</span>
-                  {pub.authors && (
-                    <span className="small muted">{pub.authors}</span>
-                  )}
-                  {(pub.url || pub.doi) && (
-                    <a
-                      href={pub.url ?? `https://doi.org/${pub.doi}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Open publication ↗
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <div
+              className="publications-scroll"
+              role="region"
+              aria-labelledby="publications-heading"
+              tabIndex={0}
+            >
+              <ul className="resource-list">
+                {(study.publications ?? []).map((pub, i) => (
+                  <li key={i}>
+                    <span>{pub.title}</span>
+                    {pub.authors && (
+                      <span className="small muted">{pub.authors}</span>
+                    )}
+                    {(pub.url || pub.doi) && (
+                      <a
+                        href={pub.url ?? `https://doi.org/${pub.doi}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open publication ↗
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <p className="muted">No publication links in this record.</p>
           )}

@@ -184,3 +184,9 @@ The additional targeted light-mode browser run also passed: bubble selection
 opened contributing study links, the export dialog used the light palette,
 source-backed chat pressure bars rendered correctly, and the 393-pixel mobile
 layout had no horizontal overflow. No application backend or source data changed.
+
+Publications refinement: the investigation publication list now scrolls inside a
+360-pixel maximum viewport (also bounded to half the screen height), with the
+section heading retained above it. The region is keyboard-focusable and uses
+theme-aware scrollbar colours. Verified on FLEX: 6,419 pixels of content stayed
+inside a 360-pixel list and Page Down scrolled it successfully.
