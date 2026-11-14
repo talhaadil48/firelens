@@ -376,3 +376,40 @@ class DoneEvent(Model):
 
 class ErrorResponse(Model):
     detail: str
+
+
+class TextChunk(Model):
+    """Schema for one line in chunks.jsonl (Phase 5 precompute -> Phase 6 RAG)."""
+
+    chunk_id: str = Field(min_length=1)
+    accession: Accession | None = None
+    source_kind: Literal["investigation_field", "summary", "document", "context_page"]
+    source_file: str = Field(min_length=1)
+    source_url: HttpUrl
+    source_version: str | None = None
+    doi: str | None = None
+    page: int | None = Field(default=None, ge=1, description="1-based PDF/DOCX page")
+    field_name: str | None = None
+    text: str = Field(min_length=1)
+    token_count: int | None = Field(default=None, ge=1)
+    sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+
+    @model_validator(mode="after")
+    def require_accession_for_investigation_sources(self) -> "TextChunk":
+        if self.source_kind != "context_page" and self.accession is None:
+            raise ValueError(f"{self.source_kind} chunks require an investigation accession")
+        return self
+
+
+class SnapshotPointer(Model):
+    """Schema for snapshots/latest.json (Phase 5 snapshot -> Phase 6 API & Phase 12 sync)."""
+
+    schema_version: Literal[1] = 1
+    snapshot_id: str = Field(min_length=1)
+    created_at: datetime
+    path: str = Field(min_length=1)
+    investigation_count: int = Field(ge=0)
+    test_count: int = Field(ge=0)
+    chunk_count: int = Field(ge=0)
+    files: list[str] = Field(min_length=1)
+    review_status: ReviewStatus = ReviewStatus.UNREVIEWED

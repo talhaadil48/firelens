@@ -1,0 +1,29 @@
+# Template for Phase 4 CSV column maps (copy to PSI-<n>.yaml and review before use).
+schema_version: 1
+accession: PSI-69
+source_file: PSI-69_Experimental table_FLEX.csv
+encoding: cp1252
+header_row: 1
+skip_rows: []
+id_column: "FLEX Test #"
+study_level_only: false
+review_status: unreviewed
+
+columns:
+  fuel:
+    source_column: "Fuel"
+  o2_fraction:
+    source_column: "O initial ambient composition; mole fraction"
+    unit: mole_fraction
+    multiplier: 1.0
+  pressure_kpa:
+    source_column: "Ambient pressure; mmHg"
+    unit: mmHg
+    multiplier: 0.1333223684
+
+metrics: {}
+
+outcome_map: {}
+
+notes:
+  - "Template example only; verify exact column headers and units against raw CSV before setting review_status: reviewed."

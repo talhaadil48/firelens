@@ -183,3 +183,48 @@ def test_invalid_nested_measurements_and_compositions_rejected(row):
     row["diluent_fractions"] = {"N2": 0.8, "He": 0.8}
     with pytest.raises(ValidationError):
         ExperimentalTest.model_validate(row)
+
+
+def test_text_chunk_and_snapshot_pointer_contracts():
+    from api.models import SnapshotPointer, TextChunk
+
+    context_chunk = TextChunk(
+        chunk_id="ctx-1",
+        source_kind="context_page",
+        source_file="apollo-1.txt",
+        source_url="https://www.nasa.gov/history/apollo-1/",
+        text="Apollo 1 context text.",
+    )
+    assert context_chunk.accession is None
+
+    with pytest.raises(ValidationError):
+        TextChunk(
+            chunk_id="doc-1",
+            source_kind="document",
+            source_file="report.pdf",
+            source_url="https://psi.nasa.gov/report.pdf",
+            text="Report text without accession.",
+        )
+
+    pointer = SnapshotPointer(
+        snapshot_id="20261115T020000Z",
+        created_at="2026-11-15T02:00:00Z",
+        path="snapshots/20261115T020000Z/",
+        investigation_count=24,
+        test_count=0,
+        chunk_count=1,
+        files=["tests.parquet", "investigations.json", "chunks.jsonl", "SNAPSHOT.md"],
+    )
+    assert pointer.schema_version == 1
+
+
+def test_column_map_template_validates():
+    import yaml
+
+    from api.config import ROOT
+    from harvest.maps_schema import ColumnMap
+
+    raw = yaml.safe_load((ROOT / "harvest/maps/TEMPLATE.yaml").read_text())
+    parsed = ColumnMap.model_validate(raw)
+    assert parsed.accession == "PSI-69"
+    assert parsed.review_status == "unreviewed"
