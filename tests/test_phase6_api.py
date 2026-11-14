@@ -950,8 +950,9 @@ def test_chat_sse_grounded_citations_abstention_out_of_scope_and_rate_limit(tmp_
     )
     assert r_limited.status_code == 429
 
-    # 4. Different IP is not rate-limited; unmatched gibberish abstains cleanly.
-    r_gibberish = client.post(
+    # 4. A different connection address has its own bucket; headers are not trusted.
+    other_client = TestClient(app, client=("198.51.100.20", 50000))
+    r_gibberish = other_client.post(
         "/chat",
         json={"question": "zzzzqqqq wwwwkkkk"},
         headers={"X-Forwarded-For": "198.51.100.20"},
@@ -963,7 +964,7 @@ def test_chat_sse_grounded_citations_abstention_out_of_scope_and_rate_limit(tmp_
     assert ans_g.citations == []
 
     # 5. Partial-gravity query returns grounded 0g context plus explicit partial-g gap notice.
-    r_lunar = client.post(
+    r_lunar = other_client.post(
         "/chat",
         json={"question": "What partial-gravity lunar fabric burning tests exist in PSI-25?"},
         headers={"X-Forwarded-For": "198.51.100.20"},
@@ -1220,3 +1221,171 @@ def test_real_local_snapshot_serves_phase6_api_when_present():
     ans = AnswerEvent.model_validate(frames[-2][1])
     assert ans.status == "supported"
     assert any(c.accession == "PSI-69" for c in ans.citations)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"claims": [{"citation_id": "chunk:unknown", "quote": "fabric"}]},
+        {"claims": [{"citation_id": "chunk:psi25-doc-1", "quote": "999% oxygen"}]},
+        {"claims": [{"citation_id": "chunk:psi25-doc-1", "quote": ""}]},
+        {
+            "claims": [
+                {"citation_id": "chunk:psi25-doc-1", "quote": "fabric"},
+                {"citation_id": "chunk:invented", "quote": "safe"},
+            ]
+        },
+        {"answer": "PSI-25 proves all materials safe at 999% oxygen"},
+    ],
+)
+def test_live_answer_rejects_unsupported_claims(tmp_path, payload):
+    _build_synthetic_snapshot(tmp_path)
+    runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
+    snap = runtime.snapshot_loader.get_snapshot()
+    from api.rag import build_citations
+
+    chunks = snap.chunks[:1]
+    citations = build_citations(snap, chunks, [])
+    fake = SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(
+                create=lambda **kwargs: SimpleNamespace(
+                    choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+                )
+            )
+        )
+    )
+    llm = LLMClient(Settings(mode="snapshot"), openai_client=fake)
+    answer = llm.generate_grounded_answer("fabric oxygen", chunks, [], citations)
+    assert "999%" not in answer
+    assert "chunk:invented" not in answer
+    assert "PSI-25" in answer
+
+
+def test_live_answer_renders_only_verified_quote(tmp_path):
+    _build_synthetic_snapshot(tmp_path)
+    runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
+    snap = runtime.snapshot_loader.get_snapshot()
+    from api.rag import build_citations
+
+    citations = build_citations(snap, snap.chunks[:1], [])
+    citation = citations[0]
+    payload = {"claims": [{"citation_id": citation.id, "quote": citation.supporting_text}]}
+    fake = SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(
+                create=lambda **kwargs: SimpleNamespace(
+                    choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+                )
+            )
+        )
+    )
+    llm = LLMClient(Settings(mode="snapshot"), openai_client=fake)
+    answer = llm.generate_grounded_answer("fabric", snap.chunks[:1], [], citations)
+    assert "Retrieved source excerpts" in answer
+    assert citation.supporting_text in answer
+    assert f", {citation.locator}]" in answer
+
+
+def test_chat_excludes_unreviewed_and_simulated_evidence(tmp_path):
+    _build_synthetic_snapshot(tmp_path)
+    runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
+    from api.llm import SqlRowFilter
+    from api.rag import retrieve_top_chunks
+
+    rows = runtime.snapshot_loader.query_tests_by_sql_filter(SqlRowFilter())
+    assert rows
+    assert all(r.review_status == ReviewStatus.REVIEWED for r in rows)
+    assert all(r.evidence_type == EvidenceType.MEASUREMENT for r in rows)
+    snap = runtime.snapshot_loader.get_snapshot()
+    snap.investigations_by_id["PSI-25"].review_status = ReviewStatus.UNREVIEWED
+    chunks = retrieve_top_chunks("PSI-25 fabric oxygen", snap, runtime.llm)
+    assert all(c.accession != "PSI-25" for c in chunks)
+    client = TestClient(app)
+    answer = _parse_sse(
+        client.post("/chat", json={"question": "fabric", "investigation_ids": ["PSI-999"]}).text
+    )[-2][1]
+    assert answer["status"] == "insufficient_evidence"
+    assert answer["citations"] == []
+
+
+def test_chat_abstention_is_not_labelled_supported(tmp_path, monkeypatch):
+    _build_synthetic_snapshot(tmp_path)
+    runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
+    monkeypatch.setattr(
+        runtime.llm,
+        "generate_grounded_answer",
+        lambda *a, **kw: "Insufficient evidence: sources do not answer the question.",
+    )
+    response = TestClient(app).post("/chat", json={"question": "PSI-25 fabric tests"})
+    frames = _parse_sse(response.text)
+    assert frames[-2][1]["status"] == "insufficient_evidence"
+    assert frames[-2][1]["citations"] == []
+    assert frames[-1][1]["finish_reason"] == "insufficient_evidence"
+
+
+def test_forwarding_headers_cannot_bypass_chat_limit(tmp_path):
+    _build_synthetic_snapshot(tmp_path)
+    configure_runtime(
+        Settings(mode="snapshot", snapshots_dir=tmp_path, chat_rate_limit_per_minute=1)
+    )
+    client = TestClient(app, client=("198.51.100.30", 50000))
+    assert (
+        client.post(
+            "/chat", json={"question": "fabric"}, headers={"X-Forwarded-For": "1.1.1.1"}
+        ).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            "/chat",
+            json={"question": "fabric"},
+            headers={"X-Forwarded-For": "2.2.2.2", "Forwarded": "for=3.3.3.3"},
+        ).status_code
+        == 429
+    )
+    other = TestClient(app, client=("198.51.100.31", 50000))
+    assert other.post("/chat", json={"question": "fabric"}).status_code == 200
+
+
+def test_unreviewed_summary_is_not_retrieved(tmp_path):
+    _build_synthetic_snapshot(tmp_path)
+    runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
+    snap = runtime.snapshot_loader.get_snapshot()
+    from api.rag import retrieve_top_chunks
+
+    summary = snap.chunks[0].model_copy(
+        update={"chunk_id": "unreviewed-summary", "source_kind": "summary"}
+    )
+    snap.chunks.append(summary)
+    snap.chunk_embeddings.append(runtime.llm.embed_text(summary.text))
+    assert snap.investigations_by_id["PSI-25"].summary.review_status == ReviewStatus.UNREVIEWED
+    chunks = retrieve_top_chunks("PSI-25 fabric", snap, runtime.llm)
+    assert all(c.chunk_id != "unreviewed-summary" for c in chunks)
+    assert any(c.accession == "PSI-25" for c in chunks)
+
+
+def test_live_model_abstention_survives_to_sse(tmp_path):
+    _build_synthetic_snapshot(tmp_path)
+    fake = SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(
+                create=lambda **kwargs: SimpleNamespace(
+                    choices=[
+                        SimpleNamespace(
+                            message=SimpleNamespace(
+                                content=json.dumps({"claims": [], "insufficient_evidence": True})
+                            )
+                        )
+                    ]
+                )
+            )
+        )
+    )
+    configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path), openai_client=fake)
+    frames = _parse_sse(
+        TestClient(app).post("/chat", json={"question": "PSI-25 fabric tests"}).text
+    )
+    assert frames[-2][1]["status"] == "insufficient_evidence"
+    assert frames[-2][1]["citations"] == []
+    assert frames[-1][1]["finish_reason"] == "insufficient_evidence"

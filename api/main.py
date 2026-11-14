@@ -681,9 +681,8 @@ def export(
 def _client_ip(http_request: Request | None) -> str:
     if http_request is None:
         return "local-test"
-    forwarded = http_request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
+    # Uvicorn may normalize the peer using explicitly trusted proxy addresses.
+    # Never parse caller-controlled forwarding headers here.
     if http_request.client and http_request.client.host:
         return http_request.client.host
     return "unknown"

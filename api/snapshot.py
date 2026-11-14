@@ -531,7 +531,7 @@ class SnapshotLoader:
         if snap.parquet_path is None:
             return []
 
-        clauses: list[str] = ["COALESCE(evidence_type, '') != 'mock'"]
+        clauses: list[str] = ["evidence_type = 'measurement'", "review_status = 'reviewed'"]
         params: list[Any] = []
 
         if sql_filter.accessions:

@@ -12,15 +12,17 @@ from collections.abc import Callable, Iterator
 
 from fastapi import HTTPException
 
-from api.llm import LLMClient, SqlRowFilter, cosine_similarity
+from api.llm import LLMClient, SqlRowFilter, cosine_similarity, format_citation_tag
 from api.models import (
     AnswerEvent,
     ChatRequest,
     Citation,
     DoneEvent,
+    EvidenceType,
     ExperimentalTest,
     ProgressEvent,
     Provenance,
+    ReviewStatus,
     TextChunk,
 )
 from api.snapshot import LoadedSnapshot, SnapshotLoader
@@ -181,6 +183,13 @@ def retrieve_top_chunks(
 
     scored: list[tuple[float, int, TextChunk]] = []
     for idx, chunk in enumerate(snap.chunks):
+        inv = snap.investigations_by_id.get(chunk.accession or "")
+        if inv is None or inv.fixture or inv.review_status != ReviewStatus.REVIEWED:
+            continue
+        if chunk.source_kind == "summary" and (
+            inv.summary is None or inv.summary.review_status != ReviewStatus.REVIEWED
+        ):
+            continue
         if allowed_ids and chunk.accession not in allowed_ids:
             continue
         vec = snap.chunk_embeddings[idx] if idx < len(snap.chunk_embeddings) else []
@@ -244,7 +253,13 @@ def retrieve_matching_rows(
             return []
         sql_filter = sql_filter.model_copy(update={"accessions": chunk_accessions})
 
-    return loader.query_tests_by_sql_filter(sql_filter)
+    return [
+        row
+        for row in loader.query_tests_by_sql_filter(sql_filter)
+        if row.review_status == ReviewStatus.REVIEWED
+        and row.evidence_type == EvidenceType.MEASUREMENT
+        and not row.provenance.is_mock
+    ]
 
 
 def build_citations(
@@ -282,7 +297,7 @@ def build_citations(
                 id=cid,
                 accession=chunk.accession,
                 locator=locator,
-                supporting_text=chunk.text[:300],
+                supporting_text=chunk.text,
                 provenance=provenance,
             )
         )
@@ -432,15 +447,29 @@ def stream_chat_events(
             citations,
             doi_by_accession=doi_by_accession,
         )
+        insufficient = not answer_text.strip() or answer_text.lstrip().lower().startswith(
+            "insufficient evidence"
+        )
+        used_citations = [
+            c
+            for c in citations
+            if format_citation_tag(c, doi_by_accession.get(c.accession)) in answer_text
+        ]
+        insufficient = insufficient or not used_citations
         yield sse_frame(
             "answer",
             AnswerEvent(
-                text=answer_text,
-                status="supported",
-                citations=citations,
+                text=answer_text if answer_text.strip() else "Insufficient evidence.",
+                status="insufficient_evidence" if insufficient else "supported",
+                citations=[] if insufficient else used_citations,
             ).model_dump(mode="json"),
         )
-        yield sse_frame("done", DoneEvent(finish_reason="stop").model_dump())
+        yield sse_frame(
+            "done",
+            DoneEvent(
+                finish_reason="insufficient_evidence" if insufficient else "stop"
+            ).model_dump(),
+        )
     except Exception as exc:
         logger.exception("Error while streaming /chat response (%s)", type(exc).__name__)
         yield sse_frame("done", DoneEvent(finish_reason="error").model_dump())
