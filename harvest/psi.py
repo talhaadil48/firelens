@@ -95,12 +95,14 @@ async def afetch(
     *,
     params: dict | None = None,
     attempts: int = 4,
+    timeout: float | None = None,
 ) -> httpx.Response:
-    """Async variant with exponential backoff (1, 2, 4 s)."""
+    """Async variant with exponential backoff (1, 2, 4 s). ``timeout`` overrides the client's."""
+    extra = {} if timeout is None else {"timeout": timeout}
     for attempt in range(attempts):
         last = attempt == attempts - 1
         try:
-            response = await client.get(url, params=params)
+            response = await client.get(url, params=params, **extra)
             if response.status_code in RETRY_STATUS and not last:
                 await asyncio.sleep(2**attempt)
                 continue
@@ -113,15 +115,25 @@ async def afetch(
     raise RuntimeError("Retry loop exhausted")
 
 
-async def download_table(client: httpx.AsyncClient, accession: str, file_name: str) -> bytes:
-    """Resolve a signed link for one experimental table and fetch it immediately."""
+async def download_file(
+    client: httpx.AsyncClient,
+    accession: str,
+    file_name: str,
+    version: int | str | None = None,
+    attempts: int = 4,
+) -> bytes:
+    """Resolve a signed link for one manifest file and fetch it immediately."""
+    params = {"file": file_name, "redirect": "false"}
+    if version not in (None, ""):
+        params["version"] = str(version)
     resolved = await afetch(
-        client,
-        download_resolver_url(accession),
-        params={"file": file_name, "redirect": "false"},
+        client, download_resolver_url(accession), params=params, attempts=attempts, timeout=45
     )
     signed_url = read_signed_url(resolved.text)
-    return (await afetch(client, signed_url)).content
+    return (await afetch(client, signed_url, attempts=attempts)).content
+
+
+download_table = download_file  # experimental tables use the same signed-link flow
 
 
 def async_client(timeout: float = 90) -> httpx.AsyncClient:

@@ -24,6 +24,18 @@ x-dev: &dev
 services:
   api:
     <<: *dev
+    # Optional local secrets (AZURE_OPENAI_* etc.); git-ignored. `environment` below wins.
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      WATCHFILES_FORCE_POLLING: "true"
+      # snapshot = snapshots/latest.json (committed v1); mock = Phase 2 fixtures.
+      FIRELENS_MODE: ${FIRELENS_MODE:-snapshot}
+      # Local preview only: rank rows from column maps nobody has reviewed yet. Responses
+      # carry a warning. Production keeps the default (false).
+      FIRELENS_ALLOW_UNREVIEWED: ${FIRELENS_ALLOW_UNREVIEWED:-true}
+      FIRELENS_CORS_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
     command: >-
       sh -c "uv sync --frozen
       && exec uvicorn api.main:app --reload --host 0.0.0.0 --port 8000"
@@ -36,7 +48,7 @@ services:
     environment:
       VITE_USE_POLLING: "true"
       # mock = bundled fixtures; api = the api service above (via your browser).
-      VITE_DATA_MODE: ${VITE_DATA_MODE:-mock}
+      VITE_DATA_MODE: ${VITE_DATA_MODE:-api}
       VITE_API_BASE_URL: http://localhost:8000
     # Reinstall node_modules only when package-lock.json changes.
     command: >-

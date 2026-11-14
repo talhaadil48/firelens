@@ -2,11 +2,13 @@
 
 Evidence-linked exploration of NASA microgravity combustion research.
 
-**Status: Phases 1–2 foundation.** This repository contains a reproducible source
-spike, shared data models, API contracts, offline fixtures and a React scaffold.
-It is not yet the complete research dashboard. The preview uses five real NASA
-catalogue records, zero normalized measurements and no live LLM. Null relevance
-scores and an empty coverage map are intentional.
+**Status: data and API in place; web screens, chat and deployment in progress.**
+The committed snapshot (`snapshots/latest.json`) holds 24 PSI Combustion Science
+investigations, normalized test rows from five investigations (CFI-G, SPICE, FLEX,
+BASS-II, BASS) and a text corpus of catalogue fields, report pages and context pages.
+Column maps are drafts until a person reviews them, so rows are marked unreviewed. No
+embeddings or AI summaries yet; `/chat` is still the offline contract stub. The web app
+is the Phase 2 scaffold. See `snapshots/<id>/SNAPSHOT.md` for exact counts.
 
 ## Start locally
 
@@ -43,7 +45,10 @@ docker compose run --rm dev bash               # shell with every tool installed
 docker compose down                            # stop (add -v to drop cached deps)
 ```
 
-`VITE_DATA_MODE=api docker compose up` points the web preview at the API container.
+By default the API serves the committed snapshot (unreviewed rows included, with a
+warning) and the web calls the API. `FIRELENS_MODE=mock VITE_DATA_MODE=mock docker compose up`
+brings back the Phase 2 fixtures. Model credentials, when you have them, go in `.env`
+(see `infra/README.md`); the API container reads it.
 In VS Code, **Dev Containers: Reopen in Container** uses `.devcontainer/` to open the
 whole repo inside the same image; then run `make api` and `make web` in its terminal.
 
@@ -85,7 +90,7 @@ then regenerate contracts and TypeScript types. This refresh changes source time
 | `config/` | Illustrative mission profiles and draft relevance weights |
 | `snapshots/sample/` | Checked metadata fixtures; real snapshots remain ignored |
 | `sync/` | Reserved for Phase 12; exits clearly rather than pretending to sync |
-| `infra/` | Environment readiness notes; deployment is a later phase |
+| `infra/` | Azure provisioning script (`provision.sh`) and runbook; a person runs it |
 | `docs/context/` | Supplied build plan, source inventory and scope decisions |
 | `scripts/` | Contract exports and explicit fixture refresh |
 

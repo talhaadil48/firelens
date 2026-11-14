@@ -3,7 +3,7 @@
 snapshots/<id>/
     tests.parquet        normalized test rows (one per test, provenance flattened)
     investigations.json  InvestigationList for every Combustion Science investigation
-    chunks.jsonl         text chunks for retrieval (catalogue fields, context pages)
+    chunks.jsonl         text chunks for retrieval (catalogue fields, report pages, context)
     snapshot.json        machine-readable identity, counts and per-accession versions
     SNAPSHOT.md          human-readable summary
 snapshots/latest.json    pointer to the live snapshot
@@ -30,6 +30,7 @@ from api.models import (
     SourceDocument,
 )
 from harvest import psi
+from harvest.documents import MEDIA_TYPES, extract
 from harvest.normalize import HARVEST_DIR, TableResult, load_maps, normalize_all
 from harvest.validation import validate_tests
 
@@ -130,6 +131,8 @@ def build_investigations(
             ),
         )
         size = man.get("total_size_bytes")
+        docs = [d for d in entry.get("documents", []) if d["success"]]
+        file_counts = man.get("file_counts") or {"Experimental table": len(entry.get("tables", []))}
         items.append(
             Investigation(
                 accession=accession,
@@ -165,11 +168,21 @@ def build_investigations(
                         size_bytes=t.get("bytes"),
                     )
                     for t in tables
+                ]
+                + [
+                    # Linked to the PSI page, never to a copy on our server.
+                    SourceDocument(
+                        name=d["file"],
+                        url=man["page_url"],
+                        media_type=MEDIA_TYPES.get(Path(d["file"]).suffix.lower()),
+                        size_bytes=d.get("bytes"),
+                    )
+                    for d in docs
                 ],
                 related_investigations=[a for a in cat["related"] if a != accession],
                 citations=[citation],
                 test_count=len(rows),
-                file_counts={"Experimental table": len(entry.get("tables", []))},
+                file_counts=file_counts,
                 total_size_bytes=int(float(size)) if size not in (None, "", "None") else None,
                 review_status=ReviewStatus.REVIEWED
                 if review == "reviewed"
@@ -207,7 +220,9 @@ def build_chunks(investigations: list[Investigation], raw_dir: Path) -> list[dic
                         "text": f"{inv.acronym or inv.title} ({inv.accession}) {label}: {part}",
                     }
                 )
-    for path in sorted((raw_dir / "context").glob("*.txt")):
+    for path in (
+        sorted((raw_dir / "context").glob("*.txt")) if (raw_dir / "context").exists() else []
+    ):
         content = path.read_text(encoding="utf-8")
         url = content.splitlines()[0].removeprefix("SOURCE: ").strip()
         body = content.split("\n", 2)[-1]
@@ -231,7 +246,58 @@ def build_chunks(investigations: list[Investigation], raw_dir: Path) -> list[dic
     return chunks
 
 
-def write_summary(path: Path, meta: dict, investigations, results: list[TableResult]) -> None:
+def document_chunks(
+    investigations: list[Investigation], raw_dir: Path, report: dict
+) -> tuple[list[dict], list[dict]]:
+    """Report/science-document text, chunked within each page so every chunk has one page."""
+    by_id = {inv.accession: inv for inv in investigations}
+    chunks, stats = [], []
+    for entry in report["investigations"]:
+        inv = by_id.get(entry["catalogue"]["accession"])
+        if inv is None:
+            continue
+        for doc in entry.get("documents", []):
+            if not doc["success"]:
+                continue
+            text = extract(raw_dir / inv.accession / "documents" / doc["file"])
+            stat = {
+                "accession": inv.accession,
+                "file": doc["file"],
+                "folder": doc["folder"],
+                "pages": text.page_count,
+                "text_pages": len(text.pages),
+                "empty_pages": text.empty_pages,
+                "chunks": 0,
+                "error": text.error,
+            }
+            label = inv.acronym or inv.title
+            for page, body in text.pages:
+                where = f"p. {page}" if page else "document"
+                for n, part in enumerate(split_text(body), start=1):
+                    chunks.append(
+                        {
+                            "id": f"{inv.accession}:doc:{doc['file']}:{page or 0}:{n}",
+                            "kind": "document",
+                            "accession": inv.accession,
+                            "acronym": inv.acronym,
+                            "doi": inv.doi,
+                            "version": inv.version,
+                            "source_file": doc["file"],
+                            "source_folder": doc["folder"],
+                            "source_sha256": doc.get("sha256"),
+                            "page": page,
+                            "url": str(inv.source_url),
+                            "text": f"{label} ({inv.accession}) {doc['file']}, {where}: {part}",
+                        }
+                    )
+                    stat["chunks"] += 1
+            stats.append(stat)
+    return chunks, stats
+
+
+def write_summary(
+    path: Path, meta: dict, investigations, results: list[TableResult], doc_stats: list[dict]
+) -> None:
     lines = [
         f"# Snapshot {meta['snapshot_id']}",
         "",
@@ -241,7 +307,9 @@ def write_summary(path: Path, meta: dict, investigations, results: list[TableRes
         f"- Normalized tests: {meta['test_count']} "
         f"(reviewed: {meta['reviewed_test_count']}; unreviewed rows must not support "
         "mission-safety conclusions)",
-        f"- Text chunks: {meta['chunk_count']}",
+        f"- Text chunks: {meta['chunk_count']} ({meta['chunk_kinds']})",
+        f"- Documents read: {meta['document_count']}",
+        "- Embeddings: none in this build (vectors/ is added by the embed step)",
         "- Source: NASA Physical Sciences Informatics (CC0-1.0). Cite each dataset by its DOI.",
         "",
         "## Normalized tables",
@@ -250,6 +318,19 @@ def write_summary(path: Path, meta: dict, investigations, results: list[TableRes
         "| --- | --- | --- | --- |",
     ]
     lines += [f"| {r.accession} | {r.file} | {len(r.rows)} | {r.blank_rows} |" for r in results]
+    if doc_stats:
+        lines += [
+            "",
+            "## Documents (text corpus)",
+            "",
+            "| Accession | File | Pages | Pages with text | Chunks | Note |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        lines += [
+            f"| {d['accession']} | {d['file']} | {d['pages'] or '-'} | {d['text_pages']} | "
+            f"{d['chunks']} | {d['error'] or ('no extractable text' if not d['chunks'] else '')} |"
+            for d in doc_stats
+        ]
     lines += [
         "",
         "## Investigations",
@@ -277,6 +358,8 @@ def build(raw_dir: Path = Path("raw"), out_root: Path = Path("snapshots")) -> Pa
     review_by_accession = {m["accession"]: m.get("review", {}).get("status") for m in load_maps()}
     investigations = build_investigations(report, rows_by_accession, review_by_accession, curation)
     chunks = build_chunks(investigations, raw_dir)
+    doc_chunks, doc_stats = document_chunks(investigations, raw_dir, report)
+    chunks += doc_chunks
 
     created = datetime.now(UTC)
     snapshot_id = created.strftime("%Y%m%dT%H%M%SZ")
@@ -299,11 +382,13 @@ def build(raw_dir: Path = Path("raw"), out_root: Path = Path("snapshots")) -> Pa
         "test_count": len(rows),
         "reviewed_test_count": sum(r.review_status == ReviewStatus.REVIEWED for r in rows),
         "chunk_count": len(chunks),
+        "chunk_kinds": dict(Counter(c["kind"] for c in chunks)),
+        "document_count": sum(1 for d in doc_stats if d["chunks"]),
         "versions": {i.accession: i.version for i in investigations},
         "psi_base_url": psi.BASE_URL,
     }
     (folder / "snapshot.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-    write_summary(folder / "SNAPSHOT.md", meta, investigations, results)
+    write_summary(folder / "SNAPSHOT.md", meta, investigations, results, doc_stats)
     pointer = {"snapshot_id": snapshot_id, "path": f"{snapshot_id}/"}
     (out_root / "latest.json").write_text(json.dumps(pointer, indent=2) + "\n", encoding="utf-8")
     return folder

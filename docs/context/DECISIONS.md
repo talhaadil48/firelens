@@ -45,3 +45,18 @@
     corpus is a few thousand chunks at most, so exact search takes milliseconds, and
     dropping LanceDB and pyarrow cuts ~330 MB from the API image, which keeps the
     scale-from-zero cold start short on Container Apps.
+16. The text corpus includes Reports and Science Documents (PDF/DOCX under 20 MB) from each
+    manifest, downloaded to `raw/PSI-<n>/documents/` through the same signed-link flow
+    (with the file's `version`). Text is extracted per page with PyMuPDF and chunked within
+    a page, so every document chunk cites one file and page. No OCR: pages without a text
+    layer are counted as empty, never guessed. Presentations, Engineering Documents and
+    Raw Data are linked only. Investigation `documents` link to the PSI page, not a copy.
+17. One snapshot is committed (`latest.json` plus the folder it names); local rebuilds stay
+    ignored. A CI test fails if the pointer names an uncommitted folder, because the API
+    image would otherwise crash at startup in a clean build.
+18. Context pages that scrape to under 200 characters are logged as failures, not "ok".
+    The HTML extractor no longer skips `<form>`: ASP.NET pages (the Apollo 1 and 13
+    lessons-learned pages) wrap their whole body in one form.
+19. Local `docker compose up` serves the committed snapshot with unreviewed rows included
+    (responses carry a warning) and the web in API mode. The `dev` toolbox stays in mock
+    mode so tests are unaffected. Production keeps `FIRELENS_ALLOW_UNREVIEWED=false`.

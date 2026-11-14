@@ -4,6 +4,7 @@ Layout (all under the git-ignored ``raw/``):
     raw/catalogue.json            search response as received
     raw/PSI-<n>/manifest.json     investigation detail as received
     raw/PSI-<n>/<table>.csv       experimental tables, original bytes
+    raw/PSI-<n>/documents/<file>  Reports and Science Documents (PDF/DOCX under 20 MB)
     raw/context/<slug>.txt        challenge context pages as text, with their URL
     raw/harvest.json              inventory: provenance, hashes, headers, failures
     raw/HARVEST_LOG.md            human-readable counts, failures and timings
@@ -28,6 +29,12 @@ from harvest import psi
 RAW = Path("raw")
 CONCURRENCY = 4
 COMBUSTION = "Combustion Science"
+# Documents for the text corpus (build-steps 3.4). Everything else, Raw Data above all,
+# is only linked from the PSI page.
+DOC_FOLDERS = ("Reports", "Science Documents")
+DOC_TYPES = {".pdf": b"%PDF", ".docx": b"PK"}  # extension -> leading bytes
+DOC_MAX_BYTES = 20_000_000
+MIN_CONTEXT_CHARS = 200  # less than this means the page did not scrape
 
 # Challenge resource pages (plan: Data pipeline step 5). Text only; links are cited.
 CONTEXT_PAGES = {
@@ -128,8 +135,84 @@ async def get_table(
     return entry
 
 
+def manifest_folder(entry: dict) -> str:
+    """PSI folder of a manifest file: /Home/psi-data/PSI-<n>/<folder>/<file>."""
+    parts = (entry.get("remote_path") or "").strip("/").split("/")
+    return parts[3] if len(parts) >= 5 else "Other"
+
+
+def folder_counts(manifest: dict) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for entry in manifest.get("added") or []:
+        folder = manifest_folder(entry)
+        counts[folder] = counts.get(folder, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def document_candidates(manifest: dict) -> list[dict]:
+    """Reports and Science Documents worth reading: PDF/DOCX, public, under 20 MB."""
+    picked = []
+    for entry in manifest.get("added") or []:
+        folder = manifest_folder(entry)
+        name = entry.get("file_name") or ""
+        size = int(float(entry.get("file_size") or 0))
+        if (
+            folder in DOC_FOLDERS
+            and Path(name).suffix.lower() in DOC_TYPES
+            and 0 < size < DOC_MAX_BYTES
+            and str(entry.get("restricted", False)).lower() != "true"
+            and entry.get("visible", True) is not False
+        ):
+            picked.append(
+                {"file": name, "folder": folder, "size": size, "version": entry.get("version")}
+            )
+    return sorted(picked, key=lambda d: (d["folder"], d["file"]))
+
+
+async def get_document(
+    client: httpx.AsyncClient,
+    sem: asyncio.Semaphore,
+    accession: str,
+    doc: dict,
+    refresh: bool,
+) -> dict:
+    name = safe_name(doc["file"])
+    entry = {
+        "file": name,
+        "folder": doc["folder"],
+        "version": doc["version"],
+        "size_bytes": doc["size"],
+        "success": False,
+    }
+    path = RAW / accession / "documents" / name
+    t0 = time.perf_counter()
+    try:
+        if path.exists() and not refresh and path.stat().st_size == doc["size"]:
+            content = path.read_bytes()
+            entry["cached"] = True
+        else:
+            async with sem:
+                content = await psi.download_file(
+                    client, accession, name, doc["version"], attempts=3
+                )
+            if not content.startswith(DOC_TYPES[path.suffix.lower()]):
+                raise ValueError(f"Not a {path.suffix} file (unexpected leading bytes)")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(content)
+        entry.update(success=True, bytes=len(content), sha256=hashlib.sha256(content).hexdigest())
+    except httpx.HTTPStatusError as exc:
+        entry["error"] = f"HTTP {exc.response.status_code}; signed URL omitted"
+    except httpx.TransportError:
+        entry["error"] = "Network/timeout failure; signed URL omitted"
+    except ValueError as exc:
+        entry["error"] = str(exc)
+    entry["seconds"] = round(time.perf_counter() - t0, 3)
+    return entry
+
+
 class _TextExtractor(HTMLParser):
-    SKIP = {"script", "style", "nav", "header", "footer", "noscript", "svg", "form"}
+    # Not "form": ASP.NET pages (sma.nasa.gov Apollo pages) wrap the whole body in one form.
+    SKIP = {"script", "style", "nav", "header", "footer", "noscript", "svg"}
 
     def __init__(self) -> None:
         super().__init__()
@@ -166,12 +249,15 @@ async def get_context(client: httpx.AsyncClient, sem: asyncio.Semaphore, slug: s
             response = await psi.afetch(client, url, attempts=2)
         text = html_to_text(response.text)
         (folder / f"{slug}.txt").write_text(f"SOURCE: {url}\n\n{text}\n", encoding="utf-8")
-        return {"slug": slug, "url": url, "chars": len(text), "success": True}
+        result = {"slug": slug, "url": url, "chars": len(text), "success": True}
+        if len(text) < MIN_CONTEXT_CHARS:
+            result.update(success=False, error=f"Only {len(text)} chars of text extracted")
+        return result
     except httpx.HTTPError as exc:
         return {"slug": slug, "url": url, "success": False, "error": type(exc).__name__}
 
 
-async def harvest(only: set[str] | None, refresh: bool, context: bool) -> dict:
+async def harvest(only: set[str] | None, refresh: bool, context: bool, docs: bool = True) -> dict:
     RAW.mkdir(exist_ok=True)
     started = time.perf_counter()
     sem = asyncio.Semaphore(CONCURRENCY)
@@ -229,6 +315,7 @@ async def harvest(only: set[str] | None, refresh: bool, context: bool) -> dict:
                 "description": manifest.get("description") or None,
                 "objective": manifest.get("objective") or None,
                 "total_size_bytes": manifest.get("totalFileSize"),
+                "file_counts": folder_counts(manifest),
                 "release_date": manifest.get("releaseDate"),
                 "modified_date": manifest.get("modifiedDate"),
                 "publications": [
@@ -242,7 +329,15 @@ async def harvest(only: set[str] | None, refresh: bool, context: bool) -> dict:
                 *(get_table(client, sem, accession, t, refresh) for t in tables)
             )
             ok = sum(t["success"] for t in item["tables"])
-            print(f"{accession}: v{item['manifest']['version']}, {ok}/{len(tables)} tables")
+            line = f"{accession}: v{item['manifest']['version']}, {ok}/{len(tables)} tables"
+            if docs:
+                candidates = document_candidates(manifest)
+                item["documents"] = await asyncio.gather(
+                    *(get_document(client, sem, accession, d, refresh) for d in candidates)
+                )
+                got = sum(d["success"] for d in item["documents"])
+                line += f", {got}/{len(candidates)} documents"
+            print(line)
             report["investigations"].append(item)
 
         if context:
@@ -259,6 +354,8 @@ def write_log(report: dict) -> None:
     items = report["investigations"]
     tables = [t for i in items for t in i.get("tables", [])]
     ok = [t for t in tables if t["success"]]
+    docs = [d for i in items for d in i.get("documents", [])]
+    docs_ok = [d for d in docs if d["success"]]
     lines = [
         "# Harvest log",
         "",
@@ -269,20 +366,28 @@ def write_log(report: dict) -> None:
         f"- Manifests: {sum('manifest' in i for i in items)}/{len(items)}",
         f"- Experimental tables: {len(ok)}/{len(tables)} downloaded, "
         f"{sum(t['physical_data_rows'] for t in ok)} physical CSV rows (not verified test counts)",
+        f"- Documents (Reports, Science Documents; PDF/DOCX < 20 MB): {len(docs_ok)}/{len(docs)}, "
+        f"{round(sum(d['bytes'] for d in docs_ok) / 1e6, 1)} MB",
         f"- Total time: {report['total_seconds']} s",
         "",
-        "| Accession | Acronym | Version | DOI | Tables (ok/total) | CSV rows |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Accession | Acronym | Version | DOI | Tables (ok/total) | CSV rows | Documents |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for i in sorted(items, key=lambda x: int(x["catalogue"]["accession"].split("-")[1])):
         c, m, t = i["catalogue"], i.get("manifest", {}), i.get("tables", [])
+        d = i.get("documents", [])
         rows = sum(x.get("physical_data_rows", 0) for x in t if x["success"])
         lines.append(
             f"| {c['accession']} | {c['acronym'] or ''} | {m.get('version', '')} | "
-            f"{m.get('doi') or ''} | {sum(x['success'] for x in t)}/{len(t)} | {rows} |"
+            f"{m.get('doi') or ''} | {sum(x['success'] for x in t)}/{len(t)} | {rows} | "
+            f"{sum(x['success'] for x in d)}/{len(d)} |"
         )
-    failures = [(i["catalogue"]["accession"], t) for i in items for t in i.get("tables", [])]
-    failures = [(a, t) for a, t in failures if not t["success"]]
+    failures = [
+        (i["catalogue"]["accession"], f)
+        for i in items
+        for f in [*i.get("tables", []), *i.get("documents", [])]
+    ]
+    failures = [(a, f) for a, f in failures if not f["success"]]
     errors = [i for i in items if "error" in i]
     if failures or errors:
         lines += ["", "## Failures", ""]
@@ -303,10 +408,16 @@ def main() -> None:
     parser.add_argument("--only", nargs="*", help="Limit to these accessions, e.g. PSI-69")
     parser.add_argument("--refresh", action="store_true", help="Ignore the on-disk cache")
     parser.add_argument("--no-context", action="store_true", help="Skip context pages")
+    parser.add_argument("--no-docs", action="store_true", help="Skip report/science documents")
     args = parser.parse_args()
     try:
         report = asyncio.run(
-            harvest(set(args.only) if args.only else None, args.refresh, not args.no_context)
+            harvest(
+                set(args.only) if args.only else None,
+                args.refresh,
+                not args.no_context,
+                not args.no_docs,
+            )
         )
     except (httpx.HTTPError, ValueError) as exc:
         # Do not stringify HTTP errors: they may embed temporary signed credentials.

@@ -17,6 +17,9 @@ artifacts/
 snapshots/*
 !snapshots/sample/
 !snapshots/README.md
+# The frozen snapshot the API image bakes in (DECISIONS 14). Local rebuilds stay ignored;
+# a new snapshot is committed on purpose: see snapshots/README.md.
+!snapshots/latest.json
 .DS_Store
 *.log
 *.tsbuildinfo
