@@ -11,7 +11,7 @@ scores and an empty coverage map are intentional.
 ## Start locally
 
 Prerequisites: Git, [uv](https://docs.astral.sh/uv/), Python 3.12 (uv can install it),
-Node.js 22.12+ (use `.nvmrc`; Node 24 also works), npm, and optionally GNU Make.
+Node.js 22.13+ (use `.nvmrc`; Node 24 also works), npm, and optionally GNU Make.
 
 ```bash
 uv sync --frozen

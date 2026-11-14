@@ -1,0 +1,9 @@
+{
+  "ai_assisted": true,
+  "tool": "OpenAI Codex",
+  "scope": ["code", "documentation", "tests"],
+  "runtime_llm_enabled": false,
+  "generated_scientific_measurements": false,
+  "human_science_review": "pending",
+  "generated_images_audio_video": false
+}

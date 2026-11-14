@@ -19,3 +19,4 @@ snapshots/*
 !snapshots/README.md
 .DS_Store
 *.log
+*.tsbuildinfo

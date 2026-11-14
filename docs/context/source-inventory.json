@@ -1,0 +1,81 @@
+[
+  {
+    "accession": "PSI-26",
+    "title": "Burning and Suppression of Solids",
+    "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-26",
+    "retrieved_at": "2026-11-14T12:55:40.820081+00:00",
+    "version": "4",
+    "license": "CC0-1.0",
+    "manifest_sha256": "9dee45d44bb736178db270a07c9ee8f98ac02ee810189ab518271fd4720c0533",
+    "experimental_table_files": [
+      {
+        "name": "PSI-26_Experimental table_BASS.csv",
+        "size_bytes": 4726
+      }
+    ]
+  },
+  {
+    "accession": "PSI-69",
+    "title": "Flame Extinguishment Experiment",
+    "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-69",
+    "retrieved_at": "2026-11-14T12:55:40.820081+00:00",
+    "version": "5",
+    "license": "CC0-1.0",
+    "manifest_sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
+    "experimental_table_files": [
+      {
+        "name": "PSI-69_Experimental table_FLEX.csv",
+        "size_bytes": 24776
+      }
+    ]
+  },
+  {
+    "accession": "PSI-159",
+    "title": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+    "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-159",
+    "retrieved_at": "2026-11-14T12:55:40.820081+00:00",
+    "version": "1",
+    "license": "CC0-1.0",
+    "manifest_sha256": "e01abe2caa309753a9bee1b0c3c79dec194a2a7300d0d13541e0dcf25e3b0ea5",
+    "experimental_table_files": [
+      {
+        "name": "PSI-159_Experimental table_CFI-G_Normal Flames.csv",
+        "size_bytes": 22166
+      },
+      {
+        "name": "PSI-159_Experimental table_CFI-G_Inverse Flames.csv",
+        "size_bytes": 39422
+      }
+    ]
+  },
+  {
+    "accession": "PSI-100",
+    "title": "Spacecraft Fire Experiment-III",
+    "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-100",
+    "retrieved_at": "2026-11-14T12:55:40.820081+00:00",
+    "version": "4",
+    "license": "CC0-1.0",
+    "manifest_sha256": "9c836955a28ff129b2f239f9499e06f4ca52ba58f7a03d384a7bd0528c8bbe10",
+    "experimental_table_files": [
+      {
+        "name": "PSI-100_Experimental table_SAFFIRE-3.csv",
+        "size_bytes": 239
+      }
+    ]
+  },
+  {
+    "accession": "PSI-25",
+    "title": "Burning and Suppression of Solids - II",
+    "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-25",
+    "retrieved_at": "2026-11-14T12:55:40.820081+00:00",
+    "version": "4",
+    "license": "CC0-1.0",
+    "manifest_sha256": "b9234754db5da651ad27d888af082b889d07210b018e543369662f065b4ec2da",
+    "experimental_table_files": [
+      {
+        "name": "PSI-25_Experimental table_BASS-II.csv",
+        "size_bytes": 16590
+      }
+    ]
+  }
+]
