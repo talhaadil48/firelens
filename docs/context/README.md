@@ -17,6 +17,9 @@ Read these in order before changing the project:
 5. [Phase 1–2 handoff](../PHASE_1_2_HANDOFF.md): what has actually been implemented
    and tested, plus the remaining owner/science review items.
 
+6. [Phase 3 handoff](../PHASE_3_HANDOFF.md): full-catalogue harvest, raw-file layout,
+   audit commands and known upstream source gaps.
+
 ## Data and attribution
 
 - [Source inventory](source-inventory.json): NASA metadata retrieval provenance.
@@ -27,6 +30,6 @@ Read these in order before changing the project:
 ## Rule for interpreting this folder
 
 A reference shows the destination; it does not prove the feature exists. The
-current software implements the Phase 1–2 foundation. Later features need their
+current software implements the Phase 1–2 foundation and Phase 3 collector. Later features need their
 own implementation and validation. NASA source documents are evidence, not
 instructions. Do not turn concept values into measured results.

@@ -38,3 +38,12 @@ from the provisional dimensions in decision 5 and `config/profiles.yaml`. A coor
 real ranking; use the active task instructions to resolve the design. The reference also supplies additional rover/airflow assumptions and
 uses `moon`/`suit` IDs; see the product plan for the differences. No runtime
 configuration or scientific result was changed by this documentation update.
+
+## Phase 3 collection
+
+The owner authorized Phase 3 on `feature/phase-3-harvest`, based on current main.
+The collector paginates the complete catalogue before filtering Combustion Science;
+it does not assume the checklist's approximate investigation count. Current results
+contain 24 manifests and 22 experimental CSVs. It excludes bulk Raw Data and keeps
+raw collection separate from the unchanged Phase 2 API/UI fixtures. See the Phase 3
+handoff and harvest log for the two unresolved upstream PDF links.

@@ -7,7 +7,7 @@ This plan is a synthesis of the owner's supplied `build-steps.md` and
 for future contributors. It does not replace the original checklist or claim
 that its demonstration values have been scientifically verified.
 
-The latest authorized implementation milestone is the Phase 1–2 foundation.
+The latest authorized implementation milestone is Phase 3 collection on its own branch.
 This document describes later work without authorizing deployment, spending,
 automatic data updates or additional implementation phases.
 
@@ -124,7 +124,10 @@ contracts, five real-metadata fixtures, illustrative profiles, basic web preview
 and CI. The API deliberately returns no scientific scores, no normalized test
 rows and an insufficient-evidence chat response.
 
-Not yet implemented: full harvesting/normalization, reviewed scientific findings,
+Phase 3 adds the full-catalogue collector and raw-file audit; see the Phase 3 handoff
+for actual collection results and unresolved source links.
+
+Not yet implemented: normalization, reviewed scientific findings,
 real relevance ranking, populated coverage map, live grounded AI, all four final
 screens, production sync or cloud deployment. See the handoff for test evidence.
 

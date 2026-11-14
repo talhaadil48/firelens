@@ -1,0 +1,23 @@
+# Primary NASA resources selected for the six topics in Phase 3.5.
+# They are not claimed to be the complete official challenge resource list.
+challenge_url: https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=resources
+sources:
+  - id: apollo-1
+    topic: Apollo 1
+    url: https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/
+  - id: apollo-13
+    topic: Apollo 13
+    url: https://www.nasa.gov/missions/apollo/apollo-13-mission-details/
+  - id: mir
+    topic: Mir fire
+    url: https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/
+  - id: spinoffs
+    topic: NASA Spinoffs
+    url: https://spinoff.nasa.gov/Spinoff2020/ps_4.html
+  - id: combustion
+    topic: NASA combustion science
+    url: https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/
+  - id: researchers-guide
+    topic: Researcher's Guide to Combustion Science
+    url: https://www.nasa.gov/science-research/for-researchers/a-researchers-guide-to-combustion-science/
+    follow_pdf: true
