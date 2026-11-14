@@ -2,6 +2,21 @@
 
 This plan assumes **`feature/phase-3-harvest`** is merged into `main` (PR #2) and all four teammates branch from `main` to work in parallel.
 
+## Conflict-Free Rules ("Fixed Borders, Free Inside")
+
+To move fast in parallel without merge conflicts or incompatible structures, **lock only the borders (handshakes) and give each teammate full freedom inside their own folder**:
+
+| Track | Branch | Folders You Own (Edit Freely) | Do Not Edit Without Team Sync |
+| --- | --- | --- | --- |
+| **Data** | `feature/phase-4-5-data` | `harvest/`, `snapshots/` | `api/`, `web/`, `infra/` |
+| **API & SI** | `feature/phase-6-api` | `api/` | `harvest/`, `web/`, `infra/` |
+| **Web** | `feature/phase-7-web` | `web/` | `harvest/`, `api/`, `infra/` |
+| **Cloud & Story** | `feature/phase-9-infra` | `infra/`, `sync/`, `.github/`, `REFERENCES.md` | `harvest/`, `api/`, `web/` |
+
+1. **Zero-conflict folder ownership:** Only edit files in your own folder(s) plus your own unit tests in `tests/`.
+2. **Never silently change a handshake file:** `api/models.py`, `harvest/validation.py`, `config/profiles.yaml`, `docs/contracts/openapi.json`, and `web/src/api.generated.ts` are shared borders. If a change is needed, agree in team chat first, update `api/models.py`, and immediately run `uv run python -m scripts.export_contracts` + `npm run generate:types --prefix web`.
+3. **Run checks before every PR to `main`:** Run `uv run ruff check .`, `uv run ruff format --check .`, `uv run pytest`, `uv run python -m scripts.export_contracts --check`, and `npm run lint && npm test && npm run build` inside `web/`.
+
 ## Shared Locked Contracts (Do Not Break)
 
 All four tracks integrate through these existing contracts—no track needs to wait for another to start:
