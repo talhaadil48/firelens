@@ -190,3 +190,14 @@ Publications refinement: the investigation publication list now scrolls inside a
 section heading retained above it. The region is keyboard-focusable and uses
 theme-aware scrollbar colours. Verified on FLEX: 6,419 pixels of content stayed
 inside a 360-pixel list and Page Down scrolled it successfully.
+
+Investigation layout refinement: all seven content sections now use named,
+keyboard-focusable scroll regions with height limits. Overview content is capped
+at 440 px, findings/documents/publications at 360 px, source metadata and test
+rows at 340 px, and related studies at 260 px; viewport-relative mobile limits
+reduce those sizes on shorter screens. Short content retains its natural height.
+Headings remain outside the scrolled content. The test table scrolls on both axes
+inside one region and retains a sticky, theme-aware header. No source text,
+publication or test data was discarded. Browser verification against FLEX passed
+for all seven height bounds, Page Down scrolling, retained headings, light-mode
+table headers and a 393 px mobile layout without horizontal page overflow.

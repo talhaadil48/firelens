@@ -1891,7 +1891,9 @@ td a {
   }
 }
 
-.publications-panel { align-self: start; }
+.publications-panel {
+  align-self: start;
+}
 .publications-scroll {
   max-height: min(360px, 50dvh);
   overflow-y: auto;
@@ -1901,5 +1903,87 @@ td a {
   scrollbar-color: var(--muted) transparent;
   padding-right: 12px;
 }
-.publications-scroll .resource-list li:first-child { padding-top: 0; }
-.publications-scroll .resource-list li:last-child { border-bottom: 0; }
+.publications-scroll .resource-list li:first-child {
+  padding-top: 0;
+}
+.publications-scroll .resource-list li:last-child {
+  border-bottom: 0;
+}
+
+/* Keep investigation cards compact while retaining every source and test row. */
+.investigation-page .detail-layout {
+  align-items: start;
+}
+.investigation-page .detail-main,
+.investigation-page .detail-aside {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+.investigation-page .detail-layout .panel {
+  margin-bottom: 0;
+}
+.investigation-page .detail-layout {
+  margin-bottom: 24px;
+}
+.investigation-page .two-column {
+  align-items: start;
+}
+.detail-panel-body {
+  max-height: min(360px, 55dvh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+  padding-right: 12px;
+  overflow-wrap: anywhere;
+}
+.detail-overview-scroll {
+  max-height: min(440px, 60dvh);
+}
+.detail-source-scroll {
+  max-height: min(340px, 55dvh);
+}
+.detail-related-scroll {
+  max-height: min(260px, 45dvh);
+}
+.detail-tests-scroll {
+  max-height: min(340px, 55dvh);
+  padding-right: 0;
+}
+.detail-tests-scroll > .table-scroll {
+  overflow: visible;
+}
+.detail-tests-scroll table {
+  min-width: 760px;
+}
+.detail-tests-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: #111b25;
+  z-index: 1;
+}
+:root[data-theme="light"] .detail-tests-scroll thead th {
+  background: #fff;
+}
+.detail-panel-body > .reading-text:first-child {
+  margin-top: 0;
+}
+.detail-panel-body > .resource-list > li:first-child {
+  padding-top: 0;
+}
+.detail-panel-body > .resource-list > li:last-child {
+  border-bottom: 0;
+}
+@media (max-width: 760px) {
+  .detail-panel-body {
+    max-height: min(320px, 50dvh);
+  }
+  .detail-overview-scroll {
+    max-height: min(400px, 60dvh);
+  }
+  .detail-related-scroll {
+    max-height: min(240px, 40dvh);
+  }
+}
