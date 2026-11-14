@@ -3,12 +3,22 @@
 import argparse
 import json
 
-from api.config import ROOT, load_profiles
-from api.main import app, compare, export, investigation, list_investigations, meta, rank
+from api.config import ROOT, Settings, load_profiles
+from api.main import (
+    app,
+    compare,
+    configure_runtime,
+    export,
+    investigation,
+    list_investigations,
+    meta,
+    rank,
+)
 from api.models import AnswerEvent, DoneEvent, ProgressEvent, TestList
 
 
 def outputs() -> dict:
+    configure_runtime(Settings(mode="mock", _env_file=None))
     schema = app.openapi()
     fixture = {
         "meta": meta().model_dump(mode="json"),

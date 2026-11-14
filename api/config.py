@@ -1,5 +1,6 @@
 """API configuration and illustrative mission profiles."""
 
+import sys
 from pathlib import Path
 from typing import Literal
 
@@ -15,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="FIRELENS_",
-        env_file=ROOT / ".env",
+        env_file=None if "pytest" in sys.modules else ROOT / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
         populate_by_name=True,
