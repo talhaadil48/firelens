@@ -14,7 +14,7 @@ def row():
     return {
         "test_id": "synthetic-unit-test-1",
         "accession": "PSI-69",
-        "oxygen_fraction": 0.21,
+        "o2_fraction": 0.21,
         "pressure_kpa": 101.325,
         "flow_cm_s": None,
         "evidence_type": "mock",
@@ -30,22 +30,22 @@ def row():
 
 
 def test_missing_conditions_remain_null(row):
-    row["oxygen_fraction"] = None
+    row["o2_fraction"] = None
     row["pressure_kpa"] = None
     parsed = ExperimentalTest.model_validate(row)
-    assert parsed.oxygen_fraction is None
+    assert parsed.o2_fraction is None
     frame = validate_tests([parsed])
-    assert frame["oxygen_fraction"].isna().all()
+    assert frame["o2_fraction"].isna().all()
 
 
 @pytest.mark.parametrize(
     ("field", "value"),
     [
-        ("oxygen_fraction", -0.1),
-        ("oxygen_fraction", 1.1),
+        ("o2_fraction", -0.1),
+        ("o2_fraction", 1.1),
         ("pressure_kpa", 0),
         ("flow_cm_s", -1),
-        ("oxygen_fraction", float("nan")),
+        ("o2_fraction", float("nan")),
         ("pressure_kpa", float("inf")),
     ],
 )
@@ -60,7 +60,7 @@ def test_provenance_and_units_are_required(row):
     with pytest.raises(ValidationError):
         ExperimentalTest.model_validate(row)
     row["provenance"]["source_row"] = 2
-    row["outcome_value"] = 3
+    row["metrics"] = {"burn_time": {"value": 3}}  # a measured value needs its original unit
     with pytest.raises(ValidationError):
         ExperimentalTest.model_validate(row)
 
@@ -86,7 +86,7 @@ def test_same_local_id_in_different_investigations_is_allowed(row):
 
 def test_pandera_independently_rejects_out_of_range_values(row):
     frame = validate_tests([ExperimentalTest.model_validate(row)])
-    frame.loc[0, "oxygen_fraction"] = 21  # percent accidentally passed as fraction
+    frame.loc[0, "o2_fraction"] = 21  # percent accidentally passed as fraction
     with pytest.raises(pandera.errors.SchemaErrors):
         FrameSchema.validate(frame, lazy=True)
 
@@ -103,7 +103,7 @@ def test_empty_table_validates_without_fake_rows():
 
 def test_weights_must_sum_to_one():
     with pytest.raises(ValidationError):
-        RankWeights(oxygen=0.9)
+        RankWeights(condition=0.9)
 
 
 def test_finding_cannot_reference_nonexistent_citation():

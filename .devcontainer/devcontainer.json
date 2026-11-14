@@ -1,0 +1,36 @@
+{
+  "name": "FireLens",
+  "build": {
+    "context": "..",
+    "dockerfile": "../docker/dev.Dockerfile"
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "mounts": [
+    "source=firelens-devc-venv,target=/opt/venv,type=volume",
+    "source=firelens-devc-node-modules,target=/workspace/web/node_modules,type=volume"
+  ],
+  "containerEnv": {
+    "WATCHFILES_FORCE_POLLING": "true",
+    "VITE_USE_POLLING": "true"
+  },
+  "forwardPorts": [8000, 5173],
+  "portsAttributes": {
+    "8000": { "label": "API (docs at /docs)" },
+    "5173": { "label": "Web" }
+  },
+  "postCreateCommand": "git config --global --add safe.directory /workspace && uv sync --frozen && cd web && npm ci --no-audit --no-fund",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/venv/bin/python"
+      }
+    }
+  }
+}

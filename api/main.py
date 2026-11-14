@@ -1,10 +1,10 @@
-"""Phase 2 contract server. No live model, scientific ranking, or normalized data yet."""
+"""Contract server (v2). Mock mode serves Phase 2 fixtures; snapshot mode lands in Phase 6."""
 
 import csv
 import io
 import json
 from collections.abc import Iterator
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +12,7 @@ from fastapi.responses import Response, StreamingResponse
 
 from api.config import ROOT, Settings, load_profiles
 from api.models import (
+    MAX_TEST_PAGE,
     AnswerEvent,
     ChatRequest,
     CompareResponse,
@@ -30,7 +31,7 @@ from api.models import (
 
 settings = Settings()
 if settings.mode != "mock":
-    raise RuntimeError("Only FIRELENS_MODE=mock is implemented in Phase 2")
+    raise RuntimeError("Only FIRELENS_MODE=mock is implemented until the Phase 6 loader")
 
 app = FastAPI(
     title="FireLens contract API",
@@ -91,7 +92,8 @@ def investigation(accession: str) -> Investigation:
 @app.get("/rank", response_model=RankResponse)
 def rank(
     profile: str = "iss",
-    oxygen_fraction: Annotated[float | None, Query(ge=0, le=1)] = None,
+    goal: Literal["prevention", "detection", "suppression"] | None = None,
+    o2_fraction: Annotated[float | None, Query(ge=0, le=1)] = None,
     pressure_kpa: Annotated[float | None, Query(gt=0)] = None,
     flow_cm_s: Annotated[float | None, Query(ge=0)] = None,
 ) -> RankResponse:
@@ -101,7 +103,7 @@ def rank(
         raise HTTPException(404, f"Unknown profile: {profile}")
     selected = selected.model_copy(deep=True)
     for name, value in [
-        ("oxygen", oxygen_fraction),
+        ("oxygen", o2_fraction),
         ("pressure", pressure_kpa),
         ("flow", flow_cm_s),
     ]:
@@ -110,6 +112,7 @@ def rank(
             condition.minimum = condition.maximum = value
     return RankResponse(
         profile=selected,
+        goal=goal,
         weights=config.weights,
         items=[
             RankItem(
@@ -132,16 +135,16 @@ def rank(
 @app.get("/tests", response_model=TestList)
 def tests(
     accession: str | None = None,
-    oxygen_min: Annotated[float | None, Query(ge=0, le=1)] = None,
-    oxygen_max: Annotated[float | None, Query(ge=0, le=1)] = None,
+    o2_min: Annotated[float | None, Query(ge=0, le=1)] = None,
+    o2_max: Annotated[float | None, Query(ge=0, le=1)] = None,
     pressure_min: Annotated[float | None, Query(gt=0)] = None,
     pressure_max: Annotated[float | None, Query(gt=0)] = None,
-    limit: Annotated[int, Query(ge=1, le=100)] = 100,
+    limit: Annotated[int, Query(ge=1, le=MAX_TEST_PAGE)] = MAX_TEST_PAGE,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> TestList:
     if accession:
         by_id(accession)
-    for lower, upper in [(oxygen_min, oxygen_max), (pressure_min, pressure_max)]:
+    for lower, upper in [(o2_min, o2_max), (pressure_min, pressure_max)]:
         if lower is not None and upper is not None and lower > upper:
             raise HTTPException(422, "Minimum filter cannot exceed maximum")
     # No normalized measurements are fabricated to make an empty plot look populated.
@@ -174,13 +177,19 @@ def compare(ids: str) -> CompareResponse:
 CSV_FIELDS = [
     "test_id",
     "accession",
-    "material",
-    "oxygen_fraction",
+    "investigation",
+    "test_date",
+    "fuel",
+    "fuel_phase",
+    "sample_geometry",
+    "sample_size_mm",
+    "o2_fraction",
     "pressure_kpa",
+    "diluent",
     "flow_cm_s",
+    "flow_direction",
     "outcome",
-    "outcome_value",
-    "outcome_unit",
+    "doi",
     "source_url",
     "source_file",
     "source_row",

@@ -1,12 +1,30 @@
-schema_version: 1
+schema_version: 2
 score_label: research relevance
 review_status: draft_requires_science_review
 # Design choices, NOT NASA-approved specifications or safety weights.
+# R = 0.40 C + 0.25 F + 0.20 M + 0.15 D (project plan, SI layer 2).
 weights:
-  oxygen: 0.40
-  pressure: 0.25
-  flow: 0.20
-  gravity: 0.15
+  condition: 0.40  # C: share of the investigation's tests near the profile envelope
+  fuel: 0.25       # F: fuel realism for habitats (solids such as fabrics/plastics high)
+  category: 0.20   # M: fire-safety category match to the user's goal
+  richness: 0.15   # D: data richness (rows, reports)
+# C: a test counts as near when every reported condition lies inside the profile
+# envelope widened by these tolerances. Unreported conditions are not counted as near.
+tolerances:
+  o2_fraction: 0.03
+  pressure_kpa: 15.0
+  flow_cm_s: 5.0
+# F per fuel phase. A phase not listed (e.g. unknown) scores null, never zero.
+fuel_realism:
+  solid: 1.0
+  mixed: 0.7
+  liquid: 0.5
+  gas: 0.3
+# D = row_share * min(1, log(rows+1) / log(rows_for_full_score+1)) + documents_share * has_reports
+richness:
+  rows_for_full_score: 500
+  row_share: 0.7
+  documents_share: 0.3
 missing_data_policy: >-
   Missing or unreviewed conditions yield no score (null); never zero-fill or
   silently renormalize. Exclude simulated and mock rows from measured coverage.
@@ -18,6 +36,7 @@ profiles:
     pressure: {minimum: 101.325, maximum: 101.325, unit: kPa}
     flow: {minimum: null, maximum: null, unit: cm/s}
     gravity: normal_gravity
+    nominal: {o2_fraction: 0.21, pressure_kpa: 101.325}
     assumptions: [Rounded oxygen value, Airflow unspecified, Not a safety specification]
   - id: iss
     label: ISS-like cabin
@@ -26,6 +45,7 @@ profiles:
     pressure: {minimum: 101.325, maximum: 101.325, unit: kPa}
     flow: {minimum: null, maximum: null, unit: cm/s}
     gravity: microgravity
+    nominal: {o2_fraction: 0.21, pressure_kpa: 101.325}
     assumptions: [Airflow unspecified, No inference of spacecraft material approval]
   - id: moon_base
     label: Moon-base scenario
@@ -34,15 +54,17 @@ profiles:
     pressure: {minimum: null, maximum: 70.0, unit: kPa}
     flow: {minimum: null, maximum: null, unit: cm/s}
     gravity: reduced_gravity
+    nominal: {o2_fraction: 0.34, pressure_kpa: 70.0}  # plan pitch: 34 % O2, 0.7 atm
     assumptions: [Oxygen at least 30 percent from the project plan, Positive pressure up to 70 kPa, Lunar gravity differs from microgravity, Envelope requires scientific review]
   - id: rover
-    label: Rover (configure conditions)
-    description: No atmosphere supplied in the project plan; conditions intentionally unset.
-    oxygen: {minimum: null, maximum: null, unit: fraction}
-    pressure: {minimum: null, maximum: null, unit: kPa}
+    label: Pressurized rover scenario
+    description: Plan groups pressurized rovers with the Moon-base cabin (at least 30 % O2, at most 10.2 psi); not a NASA vehicle requirement.
+    oxygen: {minimum: 0.30, maximum: 1.0, unit: fraction}
+    pressure: {minimum: null, maximum: 70.0, unit: kPa}
     flow: {minimum: null, maximum: null, unit: cm/s}
-    gravity: unknown
-    assumptions: [User must supply operating conditions, No default relevance ranking]
+    gravity: reduced_gravity
+    nominal: {o2_fraction: 0.34, pressure_kpa: 70.0}
+    assumptions: [Same envelope as the Moon-base scenario per the project plan, Cabin ventilation unspecified, Envelope requires scientific review]
   - id: spacesuit
     label: Spacesuit scenario
     description: User-plan pure-oxygen scenario; not an approved suit specification.
@@ -50,4 +72,5 @@ profiles:
     pressure: {minimum: 30.0, maximum: 30.0, unit: kPa}
     flow: {minimum: null, maximum: null, unit: cm/s}
     gravity: unknown
+    nominal: {o2_fraction: 1.0, pressure_kpa: 30.0}
     assumptions: [100 percent oxygen and 30 kPa from project plan, Gravity and ventilation unspecified]

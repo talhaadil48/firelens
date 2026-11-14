@@ -55,12 +55,18 @@ def test_metadata_has_real_sources_without_fabricated_measurements():
     assert all(item["citations"][0]["provenance"]["source_sha256"] for item in items)
     assert all(item["fixture"] and item["test_count"] == 0 for item in items)
     assert client.get("/tests").json()["items"] == []
-    ranking = client.get("/rank").json()
+    ranking = client.get("/rank?goal=prevention").json()
+    assert ranking["goal"] == "prevention"
     assert all(item["score"] is None for item in ranking["items"])
+    assert all(item["status"] == "metadata_only" for item in ranking["items"])
+    assert all(
+        set(item["breakdown"]) == {"condition", "fuel", "category", "richness"}
+        for item in ranking["items"]
+    )
 
 
 def test_profile_override_is_returned_and_does_not_mutate_defaults():
-    result = client.get("/rank?profile=iss&oxygen_fraction=0.4&pressure_kpa=70&flow_cm_s=3").json()
+    result = client.get("/rank?profile=iss&o2_fraction=0.4&pressure_kpa=70&flow_cm_s=3").json()
     assert result["profile"]["oxygen"]["minimum"] == 0.4
     assert result["profile"]["pressure"]["maximum"] == 70
     assert result["profile"]["flow"]["minimum"] == 3
@@ -90,10 +96,12 @@ def test_unknown_resources_return_404(url):
     [
         "/compare?ids=PSI-26",
         "/compare?ids=PSI-26,PSI-26",
-        "/rank?oxygen_fraction=1.1",
+        "/rank?o2_fraction=1.1",
+        "/rank?goal=rockets",
         "/rank?pressure_kpa=0",
         "/rank?flow_cm_s=-1",
-        "/tests?oxygen_min=0.5&oxygen_max=0.2",
+        "/tests?o2_min=0.5&o2_max=0.2",
+        "/tests?limit=5001",
         "/tests?pressure_min=100&pressure_max=50",
         "/investigations?limit=0",
         "/export?format=xml",
@@ -152,8 +160,13 @@ def test_profiles_are_explicit_assumptions_and_weights_sum_to_one():
         "spacesuit",
     }
     assert all(p.status == "illustrative" for p in config.profiles)
-    rover = next(p for p in config.profiles if p.id == "rover")
-    assert rover.oxygen.minimum is None
+    assert set(config.weights.model_dump()) == {"condition", "fuel", "category", "richness"}
+    assert config.weights.model_dump() == pytest.approx(
+        {"condition": 0.40, "fuel": 0.25, "category": 0.20, "richness": 0.15}
+    )
+    moon = next(p for p in config.profiles if p.id == "moon_base")
+    assert moon.oxygen.minimum == 0.30 and moon.pressure.maximum == 70.0
+    assert moon.nominal and moon.nominal.o2_fraction == 0.34
 
 
 def test_generated_contracts_and_web_fixtures_are_current():

@@ -1,0 +1,60 @@
+# Local development in Docker. No host Python, uv or Node needed.
+#   docker compose up --build          -> API :8000/docs, web :5173
+#   docker compose run --rm dev make test
+# Production images stay in api/Dockerfile and sync/Dockerfile.
+
+x-dev: &dev
+  build:
+    context: .
+    dockerfile: docker/dev.Dockerfile
+  image: firelens-dev
+  volumes:
+    - .:/workspace
+    - venv:/opt/venv
+    - uv-cache:/root/.cache/uv
+    - node-modules:/workspace/web/node_modules
+    - npm-cache:/root/.npm
+  environment:
+    # Windows/macOS bind mounts do not deliver file events; poll instead.
+    WATCHFILES_FORCE_POLLING: "true"
+    VITE_USE_POLLING: "true"
+    FIRELENS_MODE: mock
+    FIRELENS_CORS_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
+
+services:
+  api:
+    <<: *dev
+    command: >-
+      sh -c "uv sync --frozen
+      && exec uvicorn api.main:app --reload --host 0.0.0.0 --port 8000"
+    ports:
+      - "127.0.0.1:8000:8000"
+
+  web:
+    <<: *dev
+    working_dir: /workspace/web
+    environment:
+      VITE_USE_POLLING: "true"
+      # mock = bundled fixtures; api = the api service above (via your browser).
+      VITE_DATA_MODE: ${VITE_DATA_MODE:-mock}
+      VITE_API_BASE_URL: http://localhost:8000
+    # Reinstall node_modules only when package-lock.json changes.
+    command: >-
+      sh -c "h=$$(sha256sum package-lock.json | cut -d' ' -f1);
+      [ \"$$(cat node_modules/.lockhash 2>/dev/null)\" = \"$$h\" ]
+      || { npm ci --no-audit --no-fund && echo $$h > node_modules/.lockhash; };
+      exec npm run dev -- --host 0.0.0.0 --port 5173 --strictPort"
+    ports:
+      - "127.0.0.1:5173:5173"
+
+  # Toolbox for one-off commands: lint, tests, contracts, NASA spike, shell.
+  dev:
+    <<: *dev
+    profiles: ["tools"]
+    command: bash
+
+volumes:
+  venv:
+  uv-cache:
+  node-modules:
+  npm-cache:

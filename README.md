@@ -31,6 +31,22 @@ Without Make: `uv run uvicorn api.main:app --reload` and `cd web && npm run dev`
 To test the UI against the API, copy `web/.env.example` to `web/.env.local`, set
 `VITE_DATA_MODE=api`, and restart Vite. No API keys or cloud accounts are required.
 
+## Start with Docker (no local Python/uv/Node needed)
+
+Only Docker is required. The dev image (`docker/dev.Dockerfile`) has Python 3.12,
+uv, Node 22, make and git; the repo is bind-mounted, so edits reload live.
+
+```bash
+docker compose up --build        # API http://localhost:8000/docs, web http://localhost:5173
+docker compose run --rm dev make test          # or: make lint, make contracts, make spike
+docker compose run --rm dev bash               # shell with every tool installed
+docker compose down                            # stop (add -v to drop cached deps)
+```
+
+`VITE_DATA_MODE=api docker compose up` points the web preview at the API container.
+In VS Code, **Dev Containers: Reopen in Container** uses `.devcontainer/` to open the
+whole repo inside the same image; then run `make api` and `make web` in its terminal.
+
 ## Check NASA access
 
 ```bash

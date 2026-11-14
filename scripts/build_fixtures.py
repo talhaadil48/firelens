@@ -56,6 +56,7 @@ def build() -> None:
                 license=data.get("licenseIdentifier") or None,
                 source_url=BASE_URL + "/physci/repo/data/investigations/" + accession,
                 retrieved_at=now,
+                fixture=True,
                 citations=[citation],
                 findings=[
                     Finding(

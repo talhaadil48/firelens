@@ -13,13 +13,29 @@
     ]
   },
   "profiles": {
-    "schema_version": 1,
+    "schema_version": 2,
     "score_label": "research relevance",
     "weights": {
-      "oxygen": 0.4,
-      "pressure": 0.25,
-      "flow": 0.2,
-      "gravity": 0.15
+      "condition": 0.4,
+      "fuel": 0.25,
+      "category": 0.2,
+      "richness": 0.15
+    },
+    "tolerances": {
+      "o2_fraction": 0.03,
+      "pressure_kpa": 15.0,
+      "flow_cm_s": 5.0
+    },
+    "fuel_realism": {
+      "solid": 1.0,
+      "mixed": 0.7,
+      "liquid": 0.5,
+      "gas": 0.3
+    },
+    "richness": {
+      "rows_for_full_score": 500,
+      "row_share": 0.7,
+      "documents_share": 0.3
     },
     "profiles": [
       {
@@ -43,6 +59,11 @@
           "unit": "cm/s"
         },
         "gravity": "normal_gravity",
+        "nominal": {
+          "o2_fraction": 0.21,
+          "pressure_kpa": 101.325,
+          "flow_cm_s": null
+        },
         "assumptions": [
           "Rounded oxygen value",
           "Airflow unspecified",
@@ -70,6 +91,11 @@
           "unit": "cm/s"
         },
         "gravity": "microgravity",
+        "nominal": {
+          "o2_fraction": 0.21,
+          "pressure_kpa": 101.325,
+          "flow_cm_s": null
+        },
         "assumptions": [
           "Airflow unspecified",
           "No inference of spacecraft material approval"
@@ -96,6 +122,11 @@
           "unit": "cm/s"
         },
         "gravity": "reduced_gravity",
+        "nominal": {
+          "o2_fraction": 0.34,
+          "pressure_kpa": 70.0,
+          "flow_cm_s": null
+        },
         "assumptions": [
           "Oxygen at least 30 percent from the project plan",
           "Positive pressure up to 70 kPa",
@@ -105,17 +136,17 @@
       },
       {
         "id": "rover",
-        "label": "Rover (configure conditions)",
+        "label": "Pressurized rover scenario",
         "status": "illustrative",
-        "description": "No atmosphere supplied in the project plan; conditions intentionally unset.",
+        "description": "Plan groups pressurized rovers with the Moon-base cabin (at least 30 % O2, at most 10.2 psi); not a NASA vehicle requirement.",
         "oxygen": {
-          "minimum": null,
-          "maximum": null,
+          "minimum": 0.3,
+          "maximum": 1.0,
           "unit": "fraction"
         },
         "pressure": {
           "minimum": null,
-          "maximum": null,
+          "maximum": 70.0,
           "unit": "kPa"
         },
         "flow": {
@@ -123,10 +154,16 @@
           "maximum": null,
           "unit": "cm/s"
         },
-        "gravity": "unknown",
+        "gravity": "reduced_gravity",
+        "nominal": {
+          "o2_fraction": 0.34,
+          "pressure_kpa": 70.0,
+          "flow_cm_s": null
+        },
         "assumptions": [
-          "User must supply operating conditions",
-          "No default relevance ranking"
+          "Same envelope as the Moon-base scenario per the project plan",
+          "Cabin ventilation unspecified",
+          "Envelope requires scientific review"
         ]
       },
       {
@@ -150,6 +187,11 @@
           "unit": "cm/s"
         },
         "gravity": "unknown",
+        "nominal": {
+          "o2_fraction": 1.0,
+          "pressure_kpa": 30.0,
+          "flow_cm_s": null
+        },
         "assumptions": [
           "100 percent oxygen and 30 kPa from project plan",
           "Gravity and ventilation unspecified"
@@ -166,7 +208,14 @@
         "title": "Burning and Suppression of Solids",
         "acronym": "BASS",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -191,6 +240,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-26:catalogue-title",
@@ -210,6 +260,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -219,7 +271,14 @@
         "title": "Flame Extinguishment Experiment",
         "acronym": "FLEX",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "5",
         "license": "CC0-1.0",
@@ -244,6 +303,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-69:catalogue-title",
@@ -263,6 +323,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -272,7 +334,14 @@
         "title": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
         "acronym": "ACME CFI-G",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "1",
         "license": "CC0-1.0",
@@ -297,6 +366,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-159:catalogue-title",
@@ -316,6 +386,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -325,7 +397,14 @@
         "title": "Spacecraft Fire Experiment-III",
         "acronym": "SAFFIRE-III",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -350,6 +429,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-100:catalogue-title",
@@ -369,6 +449,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -378,7 +460,14 @@
         "title": "Burning and Suppression of Solids - II",
         "acronym": "BASS-II",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -403,6 +492,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-25:catalogue-title",
@@ -422,6 +512,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -437,7 +529,14 @@
     "title": "Flame Extinguishment Experiment",
     "acronym": "FLEX",
     "research_area": "Combustion Science",
+    "sub_area": null,
     "description": null,
+    "objectives": null,
+    "approach": null,
+    "hypothesis": null,
+    "research_impacts": null,
+    "keywords": [],
+    "publications": [],
     "doi": null,
     "version": "5",
     "license": "CC0-1.0",
@@ -462,6 +561,7 @@
         "uncertainty_note": null
       }
     ],
+    "summary": null,
     "citations": [
       {
         "id": "PSI-69:catalogue-title",
@@ -481,6 +581,8 @@
       }
     ],
     "test_count": 0,
+    "file_counts": {},
+    "total_size_bytes": null,
     "review_status": "unreviewed",
     "data_status": "metadata_only",
     "fixture": true
@@ -507,27 +609,36 @@
         "unit": "cm/s"
       },
       "gravity": "microgravity",
+      "nominal": {
+        "o2_fraction": 0.21,
+        "pressure_kpa": 101.325,
+        "flow_cm_s": null
+      },
       "assumptions": [
         "Airflow unspecified",
         "No inference of spacecraft material approval"
       ]
     },
+    "goal": null,
     "weights": {
-      "oxygen": 0.4,
-      "pressure": 0.25,
-      "flow": 0.2,
-      "gravity": 0.15
+      "condition": 0.4,
+      "fuel": 0.25,
+      "category": 0.2,
+      "richness": 0.15
     },
     "items": [
       {
         "accession": "PSI-26",
         "score": null,
         "breakdown": {
-          "oxygen": null,
-          "pressure": null,
-          "flow": null,
-          "gravity": null
+          "condition": null,
+          "fuel": null,
+          "category": null,
+          "richness": null
         },
+        "status": "metadata_only",
+        "test_count": 0,
+        "tests_near_profile": null,
         "gaps": [
           "No reviewed normalized tests in Phase 2 fixture"
         ],
@@ -537,11 +648,14 @@
         "accession": "PSI-69",
         "score": null,
         "breakdown": {
-          "oxygen": null,
-          "pressure": null,
-          "flow": null,
-          "gravity": null
+          "condition": null,
+          "fuel": null,
+          "category": null,
+          "richness": null
         },
+        "status": "metadata_only",
+        "test_count": 0,
+        "tests_near_profile": null,
         "gaps": [
           "No reviewed normalized tests in Phase 2 fixture"
         ],
@@ -551,11 +665,14 @@
         "accession": "PSI-159",
         "score": null,
         "breakdown": {
-          "oxygen": null,
-          "pressure": null,
-          "flow": null,
-          "gravity": null
+          "condition": null,
+          "fuel": null,
+          "category": null,
+          "richness": null
         },
+        "status": "metadata_only",
+        "test_count": 0,
+        "tests_near_profile": null,
         "gaps": [
           "No reviewed normalized tests in Phase 2 fixture"
         ],
@@ -565,11 +682,14 @@
         "accession": "PSI-100",
         "score": null,
         "breakdown": {
-          "oxygen": null,
-          "pressure": null,
-          "flow": null,
-          "gravity": null
+          "condition": null,
+          "fuel": null,
+          "category": null,
+          "richness": null
         },
+        "status": "metadata_only",
+        "test_count": 0,
+        "tests_near_profile": null,
         "gaps": [
           "No reviewed normalized tests in Phase 2 fixture"
         ],
@@ -579,11 +699,14 @@
         "accession": "PSI-25",
         "score": null,
         "breakdown": {
-          "oxygen": null,
-          "pressure": null,
-          "flow": null,
-          "gravity": null
+          "condition": null,
+          "fuel": null,
+          "category": null,
+          "richness": null
         },
+        "status": "metadata_only",
+        "test_count": 0,
+        "tests_near_profile": null,
         "gaps": [
           "No reviewed normalized tests in Phase 2 fixture"
         ],
@@ -611,7 +734,14 @@
         "title": "Burning and Suppression of Solids",
         "acronym": "BASS",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -636,6 +766,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-26:catalogue-title",
@@ -655,6 +786,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -664,7 +797,14 @@
         "title": "Burning and Suppression of Solids - II",
         "acronym": "BASS-II",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -689,6 +829,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-25:catalogue-title",
@@ -708,6 +849,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -737,7 +880,14 @@
         "title": "Burning and Suppression of Solids",
         "acronym": "BASS",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -762,6 +912,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-26:catalogue-title",
@@ -781,6 +932,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -790,7 +943,14 @@
         "title": "Flame Extinguishment Experiment",
         "acronym": "FLEX",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "5",
         "license": "CC0-1.0",
@@ -815,6 +975,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-69:catalogue-title",
@@ -834,6 +995,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -843,7 +1006,14 @@
         "title": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
         "acronym": "ACME CFI-G",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "1",
         "license": "CC0-1.0",
@@ -868,6 +1038,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-159:catalogue-title",
@@ -887,6 +1058,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -896,7 +1069,14 @@
         "title": "Spacecraft Fire Experiment-III",
         "acronym": "SAFFIRE-III",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -921,6 +1101,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-100:catalogue-title",
@@ -940,6 +1121,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true
@@ -949,7 +1132,14 @@
         "title": "Burning and Suppression of Solids - II",
         "acronym": "BASS-II",
         "research_area": "Combustion Science",
+        "sub_area": null,
         "description": null,
+        "objectives": null,
+        "approach": null,
+        "hypothesis": null,
+        "research_impacts": null,
+        "keywords": [],
+        "publications": [],
         "doi": null,
         "version": "4",
         "license": "CC0-1.0",
@@ -974,6 +1164,7 @@
             "uncertainty_note": null
           }
         ],
+        "summary": null,
         "citations": [
           {
             "id": "PSI-25:catalogue-title",
@@ -993,6 +1184,8 @@
           }
         ],
         "test_count": 0,
+        "file_counts": {},
+        "total_size_bytes": null,
         "review_status": "unreviewed",
         "data_status": "metadata_only",
         "fixture": true

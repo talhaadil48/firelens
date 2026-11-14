@@ -1,6 +1,6 @@
-# Phase 1–2 decisions and unresolved review items
+# Decisions and unresolved review items
 
-1. Only the build checklist was supplied. The referenced `flame-in-freefall-plan.md`
+1. *(Superseded by 11.)* Only the build checklist was supplied. The referenced `flame-in-freefall-plan.md`
    and original `CLAUDE.md` were not supplied. This repository records a provisional,
    explicit schema instead of pretending the missing pipeline specification was read.
 2. FLEX has one experimental CSV; CFI-G has two (normal/inverse flames). Download
@@ -10,10 +10,10 @@
    The empty tests response is intentional until Phase 4 normalization.
 4. Frozen contract routes use `/investigations/{accession}` (the same identifier as
    the plan's `{id}`). `/profiles` is an additional typed route for shared UI config.
-5. Assign weights 0.40/0.25/0.20/0.15 to oxygen/pressure/flow/gravity respectively.
+5. *(Superseded by 12.)* Assign weights 0.40/0.25/0.20/0.15 to oxygen/pressure/flow/gravity respectively.
    The supplied checklist gave weights but not dimension definitions. This is a
    provisional design choice requiring human/science approval before real ranking.
-6. Earth/ISS use rounded illustrative values. Moon-base and spacesuit use the
+6. *(Rover part superseded by 13.)* Earth/ISS use rounded illustrative values. Moon-base and spacesuit use the
    user-plan conditions, not official specifications. Rover was unspecified, so
    its conditions stay null. All scenarios are labelled illustrative.
 7. No scores are computed in the Phase 2 server. Null never means zero relevance.
@@ -25,3 +25,18 @@
    `talhaadil48 <talhaadil48@icloud.com>`. Software copyright uses Talha Adil.
 10. Do not require cloud accounts for Phase 2. The development server is local only;
     production LLM access, rate limits, sync, provisioning and deployment are later phases.
+11. The project plan (`flame-in-freefall-plan.md`), UI concept (`ui-design/`) and
+    deployment diagram (`deployment-flow.png`) are now in `docs/context/`. Contract v2
+    aligns `api/models.py` with the plan's unified test schema: `o2_fraction`, `fuel`,
+    `sample_geometry`, `sample_size_mm`, `test_date`, `diluent`, `metrics` (value plus
+    original unit), and `outcome` / `flow_direction` enums. The investigation record gains
+    catalogue text fields, a cited structured `summary`, publications and file counts.
+12. Ranking follows the plan: R = 0.40 C + 0.25 F + 0.20 M + 0.15 D (condition proximity,
+    fuel realism, fire-safety category match to `goal`, data richness). Tolerances,
+    fuel-realism scores and the richness scale live in `config/profiles.yaml` as labelled
+    design choices. An investigation without normalized tests is `metadata_only` with a
+    null score, never zero.
+13. The rover uses the plan's shared "Moon base / pressurized rover" envelope (≥30 % O2,
+    ≤70 kPa, nominal 34 % / 70 kPa). Still illustrative, not a NASA requirement.
+14. Responses carry `mode: mock | snapshot`. Snapshot v1 is committed and baked into the
+    API image (the plan's fallback). Blob Storage `latest.json` loading follows after G2.

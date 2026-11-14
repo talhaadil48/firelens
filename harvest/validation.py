@@ -10,9 +10,10 @@ from api.models import ExperimentalTest
 class TestFrame(pa.DataFrameModel):
     test_id: Series[str] = pa.Field(str_length={"min_value": 1})
     accession: Series[str] = pa.Field(str_matches=r"^PSI-\d+$")
-    oxygen_fraction: Series[float] = pa.Field(nullable=True, ge=0, le=1)
+    o2_fraction: Series[float] = pa.Field(nullable=True, ge=0, le=1)
     pressure_kpa: Series[float] = pa.Field(nullable=True, gt=0)
     flow_cm_s: Series[float] = pa.Field(nullable=True, ge=0)
+    sample_size_mm: Series[float] = pa.Field(nullable=True, gt=0)
     source_url: Series[str] = pa.Field(str_matches=r"^https://")
     source_file: Series[str] = pa.Field(str_length={"min_value": 1})
     source_version: Series[str] = pa.Field(str_length={"min_value": 1})
@@ -36,9 +37,10 @@ def validate_tests(rows: list[ExperimentalTest]) -> pd.DataFrame:
                     for key in [
                         "test_id",
                         "accession",
-                        "oxygen_fraction",
+                        "o2_fraction",
                         "pressure_kpa",
                         "flow_cm_s",
+                        "sample_size_mm",
                     ]
                 },
                 **{

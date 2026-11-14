@@ -1,6 +1,6 @@
-"""Shared Phase 2 contracts. Missing science values remain null, never guessed."""
+"""Shared contracts (v2, aligned with the project plan). Missing science values stay null."""
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
@@ -10,6 +10,10 @@ Accession = Annotated[str, Field(pattern=r"^PSI-\d+$")]
 Fraction = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)]
 NonNegative = Annotated[float, Field(ge=0, allow_inf_nan=False)]
 Positive = Annotated[float, Field(gt=0, allow_inf_nan=False)]
+FuelPhase = Literal["solid", "liquid", "gas", "mixed", "unknown"]
+FireSafetyTag = Literal["prevention", "detection", "suppression"]
+# "mock" = Phase 2 contract fixtures; "snapshot" = a harvested, normalized PSI snapshot.
+DataMode = Literal["mock", "snapshot"]
 
 
 class Model(BaseModel):
@@ -57,24 +61,51 @@ class Citation(Model):
     provenance: Provenance
 
 
+class Outcome(StrEnum):
+    IGNITED = "ignited"
+    EXTINGUISHED = "extinguished"
+    COOL_FLAME = "cool_flame"
+    FAILED = "failed"
+    UNKNOWN = "unknown"
+
+
+class FlowDirection(StrEnum):
+    OPPOSED = "opposed"
+    CONCURRENT = "concurrent"
+    QUIESCENT = "quiescent"
+    UNKNOWN = "unknown"
+
+
+class Metric(Model):
+    """A measured quantity kept in its original unit (burn time, extinction diameter, ...)."""
+
+    value: float = Field(allow_inf_nan=False)
+    unit: str = Field(min_length=1)
+
+
 class ExperimentalTest(Model):
+    """One row of the unified test schema (plan: Data pipeline, unified test schema)."""
+
     test_id: str = Field(min_length=1)
     accession: Accession
+    investigation: str | None = Field(default=None, description="Acronym, e.g. FLEX")
     campaign_id: str | None = None
-    material: str | None = None
-    fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] = "unknown"
-    geometry: str | None = None
-    thickness_mm: Positive | None = None
-    oxygen_fraction: Fraction | None = None
+    test_date: date | None = None
+    fuel: str | None = None
+    fuel_phase: FuelPhase = "unknown"
+    sample_geometry: str | None = None
+    sample_size_mm: Positive | None = None
+    o2_fraction: Fraction | None = None
     oxygen_basis: Literal["mole", "volume", "mass", "unknown"] = "unknown"
     pressure_kpa: Positive | None = None
+    diluent: str | None = Field(default=None, description="As reported, e.g. N2, He, CO2")
     flow_cm_s: NonNegative | None = None
-    flow_direction: str | None = None
+    flow_direction: FlowDirection = FlowDirection.UNKNOWN
     gravity: Gravity = Gravity.UNKNOWN
     platform: str | None = None
-    outcome: str | None = None
-    outcome_value: float | None = Field(default=None, allow_inf_nan=False)
-    outcome_unit: str | None = None
+    outcome: Outcome = Outcome.UNKNOWN
+    metrics: dict[str, Metric] = Field(default_factory=dict)
+    doi: str | None = None
     baseline_test_id: str | None = None
     evidence_type: EvidenceType
     review_status: ReviewStatus = ReviewStatus.UNREVIEWED
@@ -85,8 +116,6 @@ class ExperimentalTest(Model):
     def check_evidence(self) -> "ExperimentalTest":
         if self.provenance.source_row is None:
             raise ValueError("Experimental test requires the original source row")
-        if self.outcome_value is not None and not self.outcome_unit:
-            raise ValueError("An outcome value needs its original unit")
         if self.evidence_type == EvidenceType.MOCK and not self.provenance.is_mock:
             raise ValueError("Mock evidence must carry is_mock=true")
         if self.provenance.is_mock and self.review_status == ReviewStatus.REVIEWED:
@@ -112,12 +141,32 @@ class Finding(Model):
     uncertainty_note: str | None = None
 
 
+class InvestigationSummary(Model):
+    """LLM-written from supplied facts only; every key finding cites (plan: SI layer 1)."""
+
+    objective: str
+    fuels_geometry: str | None = None
+    conditions_tested: str | None = None
+    what_varied: str | None = None
+    sensors: str | None = None
+    key_findings: list[Finding] = Field(default_factory=list, max_length=3)
+    fire_safety_tags: list[FireSafetyTag] = Field(default_factory=list)
+    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
+
+
 class Investigation(Model):
     accession: Accession
     title: str
     acronym: str | None = None
     research_area: str
+    sub_area: str | None = None
     description: str | None = None
+    objectives: str | None = None
+    approach: str | None = None
+    hypothesis: str | None = None
+    research_impacts: str | None = None
+    keywords: list[str] = Field(default_factory=list)
+    publications: list[str] = Field(default_factory=list)
     doi: str | None = None
     version: str
     license: str | None = None
@@ -125,26 +174,30 @@ class Investigation(Model):
     retrieved_at: datetime
     hardware: list[str] = Field(default_factory=list)
     platform: str | None = None
-    fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] = "unknown"
-    fire_safety_tags: list[Literal["prevention", "detection", "suppression"]] = Field(
-        default_factory=list
-    )
+    fuel_phase: FuelPhase = "unknown"
+    fire_safety_tags: list[FireSafetyTag] = Field(default_factory=list)
     condition_ranges: dict[str, "ConditionRange"] = Field(default_factory=dict)
     documents: list[SourceDocument] = Field(default_factory=list)
     related_investigations: list[Accession] = Field(default_factory=list)
     findings: list[Finding] = Field(default_factory=list)
+    summary: InvestigationSummary | None = None
     citations: list[Citation] = Field(default_factory=list)
     test_count: int = Field(default=0, ge=0)
+    file_counts: dict[str, int] = Field(
+        default_factory=dict, description="Manifest files per PSI folder (not downloaded)"
+    )
+    total_size_bytes: int | None = Field(default=None, ge=0)
     review_status: ReviewStatus = ReviewStatus.UNREVIEWED
     data_status: Literal["metadata_only", "raw_downloaded", "normalized", "reviewed"] = (
         "metadata_only"
     )
-    fixture: bool = True
+    fixture: bool = False
 
     @model_validator(mode="after")
     def check_citations(self) -> "Investigation":
         known = {citation.id for citation in self.citations}
-        for finding in self.findings:
+        summary_findings = self.summary.key_findings if self.summary else []
+        for finding in [*self.findings, *summary_findings]:
             if not set(finding.citation_ids) <= known:
                 raise ValueError("Finding refers to an unknown citation")
         return self
@@ -155,11 +208,11 @@ class InvestigationList(Model):
     total: int = Field(ge=0)
     limit: int = Field(ge=1, le=100)
     offset: int = Field(ge=0)
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
 
 
 class MetaResponse(Model):
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
     snapshot_id: str
     snapshot_date: datetime
     investigation_count: int = Field(ge=0)
@@ -190,6 +243,14 @@ class ConditionRange(Model):
         return self
 
 
+class ConditionPoint(Model):
+    """A single readout for a profile, e.g. Moon base 34 % O2 / 70 kPa from the plan."""
+
+    o2_fraction: Fraction | None = None
+    pressure_kpa: Positive | None = None
+    flow_cm_s: NonNegative | None = None
+
+
 class MissionProfile(Model):
     id: str
     label: str
@@ -199,6 +260,7 @@ class MissionProfile(Model):
     pressure: ConditionRange
     flow: ConditionRange
     gravity: Gravity
+    nominal: ConditionPoint | None = None
     assumptions: list[str]
 
     @model_validator(mode="after")
@@ -209,10 +271,12 @@ class MissionProfile(Model):
 
 
 class RankWeights(Model):
-    oxygen: Fraction = 0.40
-    pressure: Fraction = 0.25
-    flow: Fraction = 0.20
-    gravity: Fraction = 0.15
+    """R = 0.40 C + 0.25 F + 0.20 M + 0.15 D (plan: SI layer 2)."""
+
+    condition: Fraction = Field(0.40, description="C: share of tests near the profile")
+    fuel: Fraction = Field(0.25, description="F: fuel realism for habitats")
+    category: Fraction = Field(0.20, description="M: fire-safety category match to the goal")
+    richness: Fraction = Field(0.15, description="D: data richness")
 
     @model_validator(mode="after")
     def normalized(self) -> "RankWeights":
@@ -221,10 +285,37 @@ class RankWeights(Model):
         return self
 
 
+class Tolerances(Model):
+    """How far a test may sit outside a profile envelope and still count as near it (C)."""
+
+    o2_fraction: NonNegative
+    pressure_kpa: NonNegative
+    flow_cm_s: NonNegative
+
+
+class RichnessScale(Model):
+    """D = row_share * min(1, log(rows+1)/log(full+1)) + documents_share * has_reports."""
+
+    rows_for_full_score: int = Field(ge=1)
+    row_share: Fraction
+    documents_share: Fraction
+
+    @model_validator(mode="after")
+    def shares_sum_to_one(self) -> "RichnessScale":
+        if abs(self.row_share + self.documents_share - 1) > 1e-9:
+            raise ValueError("Richness shares must sum to 1")
+        return self
+
+
 class ProfileConfig(Model):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     score_label: Literal["research relevance"] = "research relevance"
     weights: RankWeights
+    tolerances: Tolerances
+    fuel_realism: dict[FuelPhase, Fraction] = Field(
+        description="F per fuel phase; a phase missing here scores null, not zero"
+    )
+    richness: RichnessScale
     profiles: list[MissionProfile]
     missing_data_policy: str
     review_status: Literal["draft_requires_science_review"]
@@ -233,26 +324,33 @@ class ProfileConfig(Model):
 class RankItem(Model):
     accession: Accession
     score: Fraction | None = None
-    breakdown: dict[str, Fraction | None]
+    breakdown: dict[Literal["condition", "fuel", "category", "richness"], Fraction | None]
+    status: Literal["scored", "metadata_only"] = "metadata_only"
+    test_count: int = Field(default=0, ge=0)
+    tests_near_profile: int | None = Field(default=None, ge=0)
     gaps: list[str]
     rationale: str
 
 
 class RankResponse(Model):
     profile: MissionProfile
+    goal: FireSafetyTag | None = None
     weights: RankWeights
     items: list[RankItem]
     score_label: Literal["research relevance"] = "research relevance"
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
     warnings: list[str]
+
+
+MAX_TEST_PAGE = 5000  # the coverage map draws every row in one request
 
 
 class TestList(Model):
     items: list[ExperimentalTest]
     total: int = Field(ge=0)
-    limit: int = Field(ge=1, le=100)
+    limit: int = Field(ge=1, le=MAX_TEST_PAGE)
     offset: int = Field(ge=0)
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
 
 
 class CompareResponse(Model):
@@ -261,13 +359,13 @@ class CompareResponse(Model):
     different: list[str]
     summary: str
     warnings: list[str]
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
 
 
 class ExportResponse(Model):
     format: Literal["json"] = "json"
     source_credit: str
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
     tests: list[ExperimentalTest]
     investigations: list[Investigation]
 
@@ -285,7 +383,7 @@ class ProgressEvent(Model):
 class AnswerEvent(Model):
     text: str
     status: Literal["supported", "insufficient_evidence"]
-    mode: Literal["mock"] = "mock"
+    mode: DataMode = "mock"
     citations: list[Citation]
 
     @model_validator(mode="after")

@@ -195,9 +195,21 @@ export interface components {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
+        };
+        /**
+         * ConditionPoint
+         * @description A single readout for a profile, e.g. Moon base 34 % O2 / 70 kPa from the plan.
+         */
+        ConditionPoint: {
+            /** O2 Fraction */
+            o2_fraction?: number | null;
+            /** Pressure Kpa */
+            pressure_kpa?: number | null;
+            /** Flow Cm S */
+            flow_cm_s?: number | null;
         };
         /** ConditionRange */
         ConditionRange: {
@@ -221,28 +233,38 @@ export interface components {
          * @enum {string}
          */
         EvidenceType: "measurement" | "simulation" | "author_interpretation" | "metadata" | "mock";
-        /** ExperimentalTest */
+        /**
+         * ExperimentalTest
+         * @description One row of the unified test schema (plan: Data pipeline, unified test schema).
+         */
         ExperimentalTest: {
             /** Test Id */
             test_id: string;
             /** Accession */
             accession: string;
+            /**
+             * Investigation
+             * @description Acronym, e.g. FLEX
+             */
+            investigation?: string | null;
             /** Campaign Id */
             campaign_id?: string | null;
-            /** Material */
-            material?: string | null;
+            /** Test Date */
+            test_date?: string | null;
+            /** Fuel */
+            fuel?: string | null;
             /**
              * Fuel Phase
              * @default unknown
              * @enum {string}
              */
             fuel_phase: "solid" | "liquid" | "gas" | "mixed" | "unknown";
-            /** Geometry */
-            geometry?: string | null;
-            /** Thickness Mm */
-            thickness_mm?: number | null;
-            /** Oxygen Fraction */
-            oxygen_fraction?: number | null;
+            /** Sample Geometry */
+            sample_geometry?: string | null;
+            /** Sample Size Mm */
+            sample_size_mm?: number | null;
+            /** O2 Fraction */
+            o2_fraction?: number | null;
             /**
              * Oxygen Basis
              * @default unknown
@@ -251,20 +273,27 @@ export interface components {
             oxygen_basis: "mole" | "volume" | "mass" | "unknown";
             /** Pressure Kpa */
             pressure_kpa?: number | null;
+            /**
+             * Diluent
+             * @description As reported, e.g. N2, He, CO2
+             */
+            diluent?: string | null;
             /** Flow Cm S */
             flow_cm_s?: number | null;
-            /** Flow Direction */
-            flow_direction?: string | null;
+            /** @default unknown */
+            flow_direction: components["schemas"]["FlowDirection"];
             /** @default unknown */
             gravity: components["schemas"]["Gravity"];
             /** Platform */
             platform?: string | null;
-            /** Outcome */
-            outcome?: string | null;
-            /** Outcome Value */
-            outcome_value?: number | null;
-            /** Outcome Unit */
-            outcome_unit?: string | null;
+            /** @default unknown */
+            outcome: components["schemas"]["Outcome"];
+            /** Metrics */
+            metrics?: {
+                [key: string]: components["schemas"]["Metric"];
+            };
+            /** Doi */
+            doi?: string | null;
             /** Baseline Test Id */
             baseline_test_id?: string | null;
             evidence_type: components["schemas"]["EvidenceType"];
@@ -287,9 +316,9 @@ export interface components {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
             /** Tests */
             tests: components["schemas"]["ExperimentalTest"][];
             /** Investigations */
@@ -314,6 +343,11 @@ export interface components {
             uncertainty_note?: string | null;
         };
         /**
+         * FlowDirection
+         * @enum {string}
+         */
+        FlowDirection: "opposed" | "concurrent" | "quiescent" | "unknown";
+        /**
          * Gravity
          * @enum {string}
          */
@@ -333,8 +367,22 @@ export interface components {
             acronym?: string | null;
             /** Research Area */
             research_area: string;
+            /** Sub Area */
+            sub_area?: string | null;
             /** Description */
             description?: string | null;
+            /** Objectives */
+            objectives?: string | null;
+            /** Approach */
+            approach?: string | null;
+            /** Hypothesis */
+            hypothesis?: string | null;
+            /** Research Impacts */
+            research_impacts?: string | null;
+            /** Keywords */
+            keywords?: string[];
+            /** Publications */
+            publications?: string[];
             /** Doi */
             doi?: string | null;
             /** Version */
@@ -373,6 +421,7 @@ export interface components {
             related_investigations?: string[];
             /** Findings */
             findings?: components["schemas"]["Finding"][];
+            summary?: components["schemas"]["InvestigationSummary"] | null;
             /** Citations */
             citations?: components["schemas"]["Citation"][];
             /**
@@ -380,6 +429,15 @@ export interface components {
              * @default 0
              */
             test_count: number;
+            /**
+             * File Counts
+             * @description Manifest files per PSI folder (not downloaded)
+             */
+            file_counts?: {
+                [key: string]: number;
+            };
+            /** Total Size Bytes */
+            total_size_bytes?: number | null;
             /** @default unreviewed */
             review_status: components["schemas"]["ReviewStatus"];
             /**
@@ -390,7 +448,7 @@ export interface components {
             data_status: "metadata_only" | "raw_downloaded" | "normalized" | "reviewed";
             /**
              * Fixture
-             * @default true
+             * @default false
              */
             fixture: boolean;
         };
@@ -407,18 +465,40 @@ export interface components {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
+        };
+        /**
+         * InvestigationSummary
+         * @description LLM-written from supplied facts only; every key finding cites (plan: SI layer 1).
+         */
+        InvestigationSummary: {
+            /** Objective */
+            objective: string;
+            /** Fuels Geometry */
+            fuels_geometry?: string | null;
+            /** Conditions Tested */
+            conditions_tested?: string | null;
+            /** What Varied */
+            what_varied?: string | null;
+            /** Sensors */
+            sensors?: string | null;
+            /** Key Findings */
+            key_findings?: components["schemas"]["Finding"][];
+            /** Fire Safety Tags */
+            fire_safety_tags?: ("prevention" | "detection" | "suppression")[];
+            /** @default unreviewed */
+            review_status: components["schemas"]["ReviewStatus"];
         };
         /** MetaResponse */
         MetaResponse: {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
             /** Snapshot Id */
             snapshot_id: string;
             /**
@@ -436,6 +516,16 @@ export interface components {
             catalogue_checked_at?: string | null;
             /** Warnings */
             warnings: string[];
+        };
+        /**
+         * Metric
+         * @description A measured quantity kept in its original unit (burn time, extinction diameter, ...).
+         */
+        Metric: {
+            /** Value */
+            value: number;
+            /** Unit */
+            unit: string;
         };
         /** MissionProfile */
         MissionProfile: {
@@ -455,17 +545,23 @@ export interface components {
             pressure: components["schemas"]["ConditionRange"];
             flow: components["schemas"]["ConditionRange"];
             gravity: components["schemas"]["Gravity"];
+            nominal?: components["schemas"]["ConditionPoint"] | null;
             /** Assumptions */
             assumptions: string[];
         };
+        /**
+         * Outcome
+         * @enum {string}
+         */
+        Outcome: "ignited" | "extinguished" | "cool_flame" | "failed" | "unknown";
         /** ProfileConfig */
         ProfileConfig: {
             /**
              * Schema Version
-             * @default 1
+             * @default 2
              * @constant
              */
-            schema_version: 1;
+            schema_version: 2;
             /**
              * Score Label
              * @default research relevance
@@ -473,6 +569,15 @@ export interface components {
              */
             score_label: "research relevance";
             weights: components["schemas"]["RankWeights"];
+            tolerances: components["schemas"]["Tolerances"];
+            /**
+             * Fuel Realism
+             * @description F per fuel phase; a phase missing here scores null, not zero
+             */
+            fuel_realism: {
+                [key: string]: number;
+            };
+            richness: components["schemas"]["RichnessScale"];
             /** Profiles */
             profiles: components["schemas"]["MissionProfile"][];
             /** Missing Data Policy */
@@ -532,6 +637,19 @@ export interface components {
             breakdown: {
                 [key: string]: number | null;
             };
+            /**
+             * Status
+             * @default metadata_only
+             * @enum {string}
+             */
+            status: "scored" | "metadata_only";
+            /**
+             * Test Count
+             * @default 0
+             */
+            test_count: number;
+            /** Tests Near Profile */
+            tests_near_profile?: number | null;
             /** Gaps */
             gaps: string[];
             /** Rationale */
@@ -540,6 +658,8 @@ export interface components {
         /** RankResponse */
         RankResponse: {
             profile: components["schemas"]["MissionProfile"];
+            /** Goal */
+            goal?: ("prevention" | "detection" | "suppression") | null;
             weights: components["schemas"]["RankWeights"];
             /** Items */
             items: components["schemas"]["RankItem"][];
@@ -552,40 +672,59 @@ export interface components {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
             /** Warnings */
             warnings: string[];
         };
-        /** RankWeights */
+        /**
+         * RankWeights
+         * @description R = 0.40 C + 0.25 F + 0.20 M + 0.15 D (plan: SI layer 2).
+         */
         RankWeights: {
             /**
-             * Oxygen
+             * Condition
+             * @description C: share of tests near the profile
              * @default 0.4
              */
-            oxygen: number;
+            condition: number;
             /**
-             * Pressure
+             * Fuel
+             * @description F: fuel realism for habitats
              * @default 0.25
              */
-            pressure: number;
+            fuel: number;
             /**
-             * Flow
+             * Category
+             * @description M: fire-safety category match to the goal
              * @default 0.2
              */
-            flow: number;
+            category: number;
             /**
-             * Gravity
+             * Richness
+             * @description D: data richness
              * @default 0.15
              */
-            gravity: number;
+            richness: number;
         };
         /**
          * ReviewStatus
          * @enum {string}
          */
         ReviewStatus: "unreviewed" | "reviewed" | "rejected";
+        /**
+         * RichnessScale
+         * @description D = row_share * min(1, log(rows+1)/log(full+1)) + documents_share * has_reports.
+         */
+        RichnessScale: {
+            /** Rows For Full Score */
+            rows_for_full_score: number;
+            /** Row Share */
+            row_share: number;
+            /** Documents Share */
+            documents_share: number;
+        };
         /** SourceDocument */
         SourceDocument: {
             /** Name */
@@ -613,9 +752,21 @@ export interface components {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
+        };
+        /**
+         * Tolerances
+         * @description How far a test may sit outside a profile envelope and still count as near it (C).
+         */
+        Tolerances: {
+            /** O2 Fraction */
+            o2_fraction: number;
+            /** Pressure Kpa */
+            pressure_kpa: number;
+            /** Flow Cm S */
+            flow_cm_s: number;
         };
         /** ValidationError */
         ValidationError: {
@@ -652,9 +803,9 @@ export interface components {
             /**
              * Mode
              * @default mock
-             * @constant
+             * @enum {string}
              */
-            mode: "mock";
+            mode: "mock" | "snapshot";
             /** Citations */
             citations: components["schemas"]["Citation"][];
         };
@@ -819,7 +970,8 @@ export interface operations {
         parameters: {
             query?: {
                 profile?: string;
-                oxygen_fraction?: number | null;
+                goal?: ("prevention" | "detection" | "suppression") | null;
+                o2_fraction?: number | null;
                 pressure_kpa?: number | null;
                 flow_cm_s?: number | null;
             };
@@ -862,8 +1014,8 @@ export interface operations {
         parameters: {
             query?: {
                 accession?: string | null;
-                oxygen_min?: number | null;
-                oxygen_max?: number | null;
+                o2_min?: number | null;
+                o2_max?: number | null;
                 pressure_min?: number | null;
                 pressure_max?: number | null;
                 limit?: number;

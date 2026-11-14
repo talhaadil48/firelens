@@ -48,7 +48,7 @@ describe('Phase 2 preview', () => {
     render(<App />)
     await screen.findByText('Flame Extinguishment Experiment')
     fireEvent.change(screen.getByLabelText('Illustrative mission profile'), { target: { value: 'rover' } })
-    await waitFor(() => expect(screen.getByText(/No atmosphere supplied/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/not a NASA vehicle requirement/)).toBeInTheDocument())
   })
 })
 

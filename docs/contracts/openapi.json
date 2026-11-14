@@ -206,7 +206,28 @@
             }
           },
           {
-            "name": "oxygen_fraction",
+            "name": "goal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "prevention",
+                    "detection",
+                    "suppression"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Goal"
+            }
+          },
+          {
+            "name": "o2_fraction",
             "in": "query",
             "required": false,
             "schema": {
@@ -220,7 +241,7 @@
                   "type": "null"
                 }
               ],
-              "title": "Oxygen Fraction"
+              "title": "O2 Fraction"
             }
           },
           {
@@ -314,7 +335,7 @@
             }
           },
           {
-            "name": "oxygen_min",
+            "name": "o2_min",
             "in": "query",
             "required": false,
             "schema": {
@@ -328,11 +349,11 @@
                   "type": "null"
                 }
               ],
-              "title": "Oxygen Min"
+              "title": "O2 Min"
             }
           },
           {
-            "name": "oxygen_max",
+            "name": "o2_max",
             "in": "query",
             "required": false,
             "schema": {
@@ -346,7 +367,7 @@
                   "type": "null"
                 }
               ],
-              "title": "Oxygen Max"
+              "title": "O2 Max"
             }
           },
           {
@@ -389,9 +410,9 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "maximum": 100,
+              "maximum": 5000,
               "minimum": 1,
-              "default": 100,
+              "default": 5000,
               "title": "Limit"
             }
           },
@@ -709,7 +730,10 @@
           },
           "mode": {
             "type": "string",
-            "const": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "default": "mock"
           }
@@ -724,6 +748,51 @@
           "warnings"
         ],
         "title": "CompareResponse"
+      },
+      "ConditionPoint": {
+        "properties": {
+          "o2_fraction": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "O2 Fraction"
+          },
+          "pressure_kpa": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressure Kpa"
+          },
+          "flow_cm_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flow Cm S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ConditionPoint",
+        "description": "A single readout for a profile, e.g. Moon base 34 % O2 / 70 kPa from the plan."
       },
       "ConditionRange": {
         "properties": {
@@ -803,6 +872,18 @@
             "pattern": "^PSI-\\d+$",
             "title": "Accession"
           },
+          "investigation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation",
+            "description": "Acronym, e.g. FLEX"
+          },
           "campaign_id": {
             "anyOf": [
               {
@@ -814,7 +895,19 @@
             ],
             "title": "Campaign Id"
           },
-          "material": {
+          "test_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Date"
+          },
+          "fuel": {
             "anyOf": [
               {
                 "type": "string"
@@ -823,7 +916,7 @@
                 "type": "null"
               }
             ],
-            "title": "Material"
+            "title": "Fuel"
           },
           "fuel_phase": {
             "type": "string",
@@ -837,7 +930,7 @@
             "title": "Fuel Phase",
             "default": "unknown"
           },
-          "geometry": {
+          "sample_geometry": {
             "anyOf": [
               {
                 "type": "string"
@@ -846,9 +939,9 @@
                 "type": "null"
               }
             ],
-            "title": "Geometry"
+            "title": "Sample Geometry"
           },
-          "thickness_mm": {
+          "sample_size_mm": {
             "anyOf": [
               {
                 "type": "number",
@@ -858,9 +951,9 @@
                 "type": "null"
               }
             ],
-            "title": "Thickness Mm"
+            "title": "Sample Size Mm"
           },
-          "oxygen_fraction": {
+          "o2_fraction": {
             "anyOf": [
               {
                 "type": "number",
@@ -871,7 +964,7 @@
                 "type": "null"
               }
             ],
-            "title": "Oxygen Fraction"
+            "title": "O2 Fraction"
           },
           "oxygen_basis": {
             "type": "string",
@@ -896,6 +989,18 @@
             ],
             "title": "Pressure Kpa"
           },
+          "diluent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diluent",
+            "description": "As reported, e.g. N2, He, CO2"
+          },
           "flow_cm_s": {
             "anyOf": [
               {
@@ -909,15 +1014,8 @@
             "title": "Flow Cm S"
           },
           "flow_direction": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Flow Direction"
+            "$ref": "#/components/schemas/FlowDirection",
+            "default": "unknown"
           },
           "gravity": {
             "$ref": "#/components/schemas/Gravity",
@@ -935,6 +1033,17 @@
             "title": "Platform"
           },
           "outcome": {
+            "$ref": "#/components/schemas/Outcome",
+            "default": "unknown"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Metric"
+            },
+            "type": "object",
+            "title": "Metrics"
+          },
+          "doi": {
             "anyOf": [
               {
                 "type": "string"
@@ -943,29 +1052,7 @@
                 "type": "null"
               }
             ],
-            "title": "Outcome"
-          },
-          "outcome_value": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Outcome Value"
-          },
-          "outcome_unit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Outcome Unit"
+            "title": "Doi"
           },
           "baseline_test_id": {
             "anyOf": [
@@ -1004,7 +1091,8 @@
           "evidence_type",
           "provenance"
         ],
-        "title": "ExperimentalTest"
+        "title": "ExperimentalTest",
+        "description": "One row of the unified test schema (plan: Data pipeline, unified test schema)."
       },
       "ExportResponse": {
         "properties": {
@@ -1020,7 +1108,10 @@
           },
           "mode": {
             "type": "string",
-            "const": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "default": "mock"
           },
@@ -1101,6 +1192,16 @@
         ],
         "title": "Finding"
       },
+      "FlowDirection": {
+        "type": "string",
+        "enum": [
+          "opposed",
+          "concurrent",
+          "quiescent",
+          "unknown"
+        ],
+        "title": "FlowDirection"
+      },
       "Gravity": {
         "type": "string",
         "enum": [
@@ -1151,6 +1252,17 @@
             "type": "string",
             "title": "Research Area"
           },
+          "sub_area": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sub Area"
+          },
           "description": {
             "anyOf": [
               {
@@ -1161,6 +1273,64 @@
               }
             ],
             "title": "Description"
+          },
+          "objectives": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objectives"
+          },
+          "approach": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approach"
+          },
+          "hypothesis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hypothesis"
+          },
+          "research_impacts": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Research Impacts"
+          },
+          "keywords": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Keywords"
+          },
+          "publications": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Publications"
           },
           "doi": {
             "anyOf": [
@@ -1271,6 +1441,16 @@
             "type": "array",
             "title": "Findings"
           },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestigationSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "citations": {
             "items": {
               "$ref": "#/components/schemas/Citation"
@@ -1283,6 +1463,26 @@
             "minimum": 0.0,
             "title": "Test Count",
             "default": 0
+          },
+          "file_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "File Counts",
+            "description": "Manifest files per PSI folder (not downloaded)"
+          },
+          "total_size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Size Bytes"
           },
           "review_status": {
             "$ref": "#/components/schemas/ReviewStatus",
@@ -1302,7 +1502,7 @@
           "fixture": {
             "type": "boolean",
             "title": "Fixture",
-            "default": true
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -1344,7 +1544,10 @@
           },
           "mode": {
             "type": "string",
-            "const": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "default": "mock"
           }
@@ -1359,11 +1562,97 @@
         ],
         "title": "InvestigationList"
       },
+      "InvestigationSummary": {
+        "properties": {
+          "objective": {
+            "type": "string",
+            "title": "Objective"
+          },
+          "fuels_geometry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuels Geometry"
+          },
+          "conditions_tested": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions Tested"
+          },
+          "what_varied": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "What Varied"
+          },
+          "sensors": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensors"
+          },
+          "key_findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Key Findings"
+          },
+          "fire_safety_tags": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "prevention",
+                "detection",
+                "suppression"
+              ]
+            },
+            "type": "array",
+            "title": "Fire Safety Tags"
+          },
+          "review_status": {
+            "$ref": "#/components/schemas/ReviewStatus",
+            "default": "unreviewed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "objective"
+        ],
+        "title": "InvestigationSummary",
+        "description": "LLM-written from supplied facts only; every key finding cites (plan: SI layer 1)."
+      },
       "MetaResponse": {
         "properties": {
           "mode": {
             "type": "string",
-            "const": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "default": "mock"
           },
@@ -1428,6 +1717,27 @@
         ],
         "title": "MetaResponse"
       },
+      "Metric": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Unit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "unit"
+        ],
+        "title": "Metric",
+        "description": "A measured quantity kept in its original unit (burn time, extinction diameter, ...)."
+      },
       "MissionProfile": {
         "properties": {
           "id": {
@@ -1460,6 +1770,16 @@
           "gravity": {
             "$ref": "#/components/schemas/Gravity"
           },
+          "nominal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConditionPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "assumptions": {
             "items": {
               "type": "string"
@@ -1482,13 +1802,24 @@
         ],
         "title": "MissionProfile"
       },
+      "Outcome": {
+        "type": "string",
+        "enum": [
+          "ignited",
+          "extinguished",
+          "cool_flame",
+          "failed",
+          "unknown"
+        ],
+        "title": "Outcome"
+      },
       "ProfileConfig": {
         "properties": {
           "schema_version": {
             "type": "integer",
-            "const": 1,
+            "const": 2,
             "title": "Schema Version",
-            "default": 1
+            "default": 2
           },
           "score_label": {
             "type": "string",
@@ -1498,6 +1829,31 @@
           },
           "weights": {
             "$ref": "#/components/schemas/RankWeights"
+          },
+          "tolerances": {
+            "$ref": "#/components/schemas/Tolerances"
+          },
+          "fuel_realism": {
+            "additionalProperties": {
+              "type": "number",
+              "maximum": 1.0,
+              "minimum": 0.0
+            },
+            "propertyNames": {
+              "enum": [
+                "solid",
+                "liquid",
+                "gas",
+                "mixed",
+                "unknown"
+              ]
+            },
+            "type": "object",
+            "title": "Fuel Realism",
+            "description": "F per fuel phase; a phase missing here scores null, not zero"
+          },
+          "richness": {
+            "$ref": "#/components/schemas/RichnessScale"
           },
           "profiles": {
             "items": {
@@ -1520,6 +1876,9 @@
         "type": "object",
         "required": [
           "weights",
+          "tolerances",
+          "fuel_realism",
+          "richness",
           "profiles",
           "missing_data_policy",
           "review_status"
@@ -1640,8 +1999,43 @@
                 }
               ]
             },
+            "propertyNames": {
+              "enum": [
+                "condition",
+                "fuel",
+                "category",
+                "richness"
+              ]
+            },
             "type": "object",
             "title": "Breakdown"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scored",
+              "metadata_only"
+            ],
+            "title": "Status",
+            "default": "metadata_only"
+          },
+          "test_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Test Count",
+            "default": 0
+          },
+          "tests_near_profile": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tests Near Profile"
           },
           "gaps": {
             "items": {
@@ -1670,6 +2064,22 @@
           "profile": {
             "$ref": "#/components/schemas/MissionProfile"
           },
+          "goal": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "prevention",
+                  "detection",
+                  "suppression"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal"
+          },
           "weights": {
             "$ref": "#/components/schemas/RankWeights"
           },
@@ -1688,7 +2098,10 @@
           },
           "mode": {
             "type": "string",
-            "const": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "default": "mock"
           },
@@ -1712,38 +2125,43 @@
       },
       "RankWeights": {
         "properties": {
-          "oxygen": {
+          "condition": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Oxygen",
+            "title": "Condition",
+            "description": "C: share of tests near the profile",
             "default": 0.4
           },
-          "pressure": {
+          "fuel": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Pressure",
+            "title": "Fuel",
+            "description": "F: fuel realism for habitats",
             "default": 0.25
           },
-          "flow": {
+          "category": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Flow",
+            "title": "Category",
+            "description": "M: fire-safety category match to the goal",
             "default": 0.2
           },
-          "gravity": {
+          "richness": {
             "type": "number",
             "maximum": 1.0,
             "minimum": 0.0,
-            "title": "Gravity",
+            "title": "Richness",
+            "description": "D: data richness",
             "default": 0.15
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "title": "RankWeights"
+        "title": "RankWeights",
+        "description": "R = 0.40 C + 0.25 F + 0.20 M + 0.15 D (plan: SI layer 2)."
       },
       "ReviewStatus": {
         "type": "string",
@@ -1753,6 +2171,36 @@
           "rejected"
         ],
         "title": "ReviewStatus"
+      },
+      "RichnessScale": {
+        "properties": {
+          "rows_for_full_score": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Rows For Full Score"
+          },
+          "row_share": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Row Share"
+          },
+          "documents_share": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Documents Share"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rows_for_full_score",
+          "row_share",
+          "documents_share"
+        ],
+        "title": "RichnessScale",
+        "description": "D = row_share * min(1, log(rows+1)/log(full+1)) + documents_share * has_reports."
       },
       "SourceDocument": {
         "properties": {
@@ -1815,7 +2263,7 @@
           },
           "limit": {
             "type": "integer",
-            "maximum": 100.0,
+            "maximum": 5000.0,
             "minimum": 1.0,
             "title": "Limit"
           },
@@ -1826,7 +2274,10 @@
           },
           "mode": {
             "type": "string",
-            "const": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "default": "mock"
           }
@@ -1840,6 +2291,34 @@
           "offset"
         ],
         "title": "TestList"
+      },
+      "Tolerances": {
+        "properties": {
+          "o2_fraction": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "O2 Fraction"
+          },
+          "pressure_kpa": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Pressure Kpa"
+          },
+          "flow_cm_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Flow Cm S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "o2_fraction",
+          "pressure_kpa",
+          "flow_cm_s"
+        ],
+        "title": "Tolerances",
+        "description": "How far a test may sit outside a profile envelope and still count as near it (C)."
       },
       "ValidationError": {
         "properties": {
@@ -1920,8 +2399,11 @@
             "type": "string"
           },
           "mode": {
-            "const": "mock",
             "default": "mock",
+            "enum": [
+              "mock",
+              "snapshot"
+            ],
             "title": "Mode",
             "type": "string"
           },

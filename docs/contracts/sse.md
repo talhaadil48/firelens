@@ -1,7 +1,7 @@
 # API contract and SSE protocol
 
 `openapi.json` is generated from `api/models.py` and `api/main.py`.
-Phase 2 serves offline mock responses. No production inference is implemented.
+Contract v2 (aligned with the project plan). Mock mode serves offline fixtures; no production inference yet.
 
 | Method | Route | Result |
 | --- | --- | --- |
@@ -9,8 +9,8 @@ Phase 2 serves offline mock responses. No production inference is implemented.
 | GET | `/profiles` | Shared illustrative profiles and draft weights |
 | GET | `/investigations?q=&limit=100&offset=0` | Filtered/paginated list |
 | GET | `/investigations/{accession}` | Record, source links and citations |
-| GET | `/rank?profile=iss` | Null scores with gap explanations; optional `oxygen_fraction`, `pressure_kpa`, `flow_cm_s` overrides |
-| GET | `/tests` | Empty list until normalized data exists; accession/oxygen/pressure filters accepted |
+| GET | `/rank?profile=iss&goal=prevention` | R = 0.40 C + 0.25 F + 0.20 M + 0.15 D with a per-term breakdown; null when evidence is missing. Optional `o2_fraction`, `pressure_kpa`, `flow_cm_s` overrides; `goal` is prevention/detection/suppression |
+| GET | `/tests` | Unified test rows (up to 5000 per page); `accession`, `o2_min`/`o2_max`, `pressure_min`/`pressure_max` filters. Empty in mock mode |
 | GET | `/compare?ids=PSI-26,PSI-25` | 2–3 distinct records and metadata-only comparison |
 | GET | `/export?format=csv` | Citation line + CSV header; missing measurements not fabricated |
 | GET | `/export?format=json` | Metadata and empty tests array |
