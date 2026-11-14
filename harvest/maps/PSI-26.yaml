@@ -1,0 +1,24 @@
+# Column map: BASS (Burning and Suppression of Solids). Draft; needs human review.
+# The PSI table lists samples only: no oxygen, pressure or flow columns, so those stay null.
+accession: PSI-26
+investigation: BASS
+review:
+  status: draft
+  reviewer: null
+  notes:
+    - "No O2/pressure/flow in the source table; conditions stay empty (never assumed cabin air)."
+    - "sample_size_mm is parsed from the material text (e.g. 'PMMA sphere 2 cm' -> 20 mm). Check."
+    - "'As Run Test #' has duplicates; duplicates get a row suffix (@r<row>)."
+tables:
+  - file: PSI-26_Experimental table_BASS.csv
+    defaults:
+      fuel_phase: solid
+      gravity: microgravity
+      platform: ISS (MSG)
+    fields:
+      test_id: {source: "As Run Test #", fallback: "Test #"}
+      campaign_id: {source: "Sample #", prefix: "Sample "}
+      test_date: {source: "Date", parse: date_mdy}
+      fuel: {source: "Fuel Sample Material"}
+      sample_geometry: {source: "Fuel Sample Material", extract: geometry}
+      sample_size_mm: {source: "Fuel Sample Material", extract: size}

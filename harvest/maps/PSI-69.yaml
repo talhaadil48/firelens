@@ -1,0 +1,42 @@
+# Column map: FLEX (Flame Extinguishment Experiment). Drafted by Claude Code from the
+# CSV headers; a person must review it before its rows count as reviewed (build-steps 4.2).
+accession: PSI-69
+investigation: FLEX
+review:
+  status: draft            # draft | reviewed | rejected
+  reviewer: null
+  notes:
+    - "'CO initial ambient composition' read as CO2 (subscript lost in the export). Check."
+    - "Test end: Extinction -> extinguished, Completion -> ignited (droplet burned out), Disruption -> unknown. Check."
+    - "'Burning rate; mm' unit kept exactly as reported."
+tables:
+  - file: PSI-69_Experimental table_FLEX.csv
+    defaults:
+      fuel_phase: liquid
+      sample_geometry: free-floating droplet
+      flow_direction: quiescent
+      oxygen_basis: mole
+      gravity: microgravity
+      platform: ISS (CIR / MDCA)
+    fields:
+      test_id: {source: "FLEX Test #"}
+      campaign_id: {source: "FLEX Identifier"}
+      test_date: {source: "Test Date", parse: date_mdy}
+      fuel: {source: "Fuel"}
+      sample_size_mm: {source: "Droplet initial diameter; mm", unit: mm}
+      o2_fraction: {source: "O initial ambient composition; mole fraction", unit: fraction}
+      pressure_kpa: {source: "Ambient pressure; mmHg", unit: mmHg}
+      diluent:
+        compose:
+          N2: "N initial ambient composition; mole fraction"
+          CO2: "CO initial ambient composition; mole fraction"
+          He: "He initial ambient composition; mole fraction"
+      outcome:
+        rules:
+          - {when: {"Test end": "^extinction$"}, then: extinguished}
+          - {when: {"Test end": "^completion$"}, then: ignited}
+        keep_label: "Test end"
+    metrics:
+      extinction_diameter: {source: "Visible flame extinction diameter; mm", unit: mm}
+      burning_rate: {source: "Burning rate; mm", unit: "mm (as reported)"}
+      burn_time: {source: "Burn time; s", unit: s}

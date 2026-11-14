@@ -1,0 +1,18 @@
+# Unit conversions to the unified schema (CLAUDE.md rule 4: no inline magic numbers).
+# target field -> source unit -> multiply-by factor
+pressure_kpa:
+  kPa: 1.0
+  mmHg: 0.133322368    # 1 mmHg = 133.322368 Pa
+  atm: 101.325
+  bar: 100.0
+  psi: 6.894757293
+o2_fraction:
+  fraction: 1.0
+  percent: 0.01
+sample_size_mm:
+  mm: 1.0
+  cm: 10.0
+  micron: 0.001
+flow_cm_s:
+  cm/s: 1.0
+  mm/s: 0.1

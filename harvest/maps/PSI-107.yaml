@@ -1,0 +1,28 @@
+# Column map: SPICE (Smoke Point In Co-flow Experiment). Draft; needs human review.
+accession: PSI-107
+investigation: SPICE
+review:
+  status: draft
+  reviewer: null
+  notes:
+    - "No test ID column: test_id = '<GMT day>/<GMT ignition>' with a row suffix for repeats."
+    - "Only GMT day-of-year is given, without a year, so test_date stays null."
+    - "No O2/pressure columns; they stay null. 'Air Rate (cm/s)' is the co-flow air velocity (concurrent)."
+tables:
+  - file: PSI-107_Experimental table_Spice.csv
+    defaults:
+      fuel_phase: gas
+      sample_geometry: co-flow nozzle (gas jet)
+      flow_direction: concurrent
+      gravity: microgravity
+      platform: ISS (CIR / ACME)
+    fields:
+      test_id: {template: "{GMT date}/{GMT ignition}"}
+      campaign_id: {source: "GMT date", prefix: "GMT day "}
+      fuel: {source: "Fuel"}
+      sample_size_mm: {source: "Nozzle (mm)", unit: mm}
+      flow_cm_s: {source: "Air Rate (cm/s)", unit: cm/s}
+    metrics:
+      fuel_rate_sccm: {source: "Fuel Rate (sccm)", unit: sccm}
+      fuel_rate_mg_s: {source: "Fuel Rate (mg/s)", unit: mg/s}
+      hc_fuel_rate_mg_s: {source: "HC Fuel Rate (mg/s)", unit: mg/s}

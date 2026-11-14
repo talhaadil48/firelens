@@ -1,0 +1,62 @@
+# Investigation-level facts used by precompute (build-steps 5.1). Design choices, reviewable.
+review_status: draft_requires_review
+
+# Fuel phase for investigations whose tables are not mapped yet. Mapped investigations take
+# the phase of their normalized rows instead. Curated from PSI titles and catalogue keywords;
+# "unknown" where the catalogue does not make it clear (scores null, never guessed).
+fuel_phase:
+  PSI-10: gas      # ACME Flame Design: gaseous diffusion flames
+  PSI-20: gas      # ACME BRE: gaseous burner emulating condensed-fuel burning
+  PSI-21: gas      # ACME CLD Flame: coflow laminar diffusion flames
+  PSI-22: gas      # ACME E-FIELD Flames: methane flames
+  PSI-23: gas      # ACME s-Flame: gaseous flames
+  PSI-39: liquid   # CFI: fuel droplets (MDCA)
+  PSI-47: unknown  # DAFT: dust/aerosol measurement, not combustion of a named fuel
+  PSI-60: gas      # analysis of SPICE gas-jet data
+  PSI-62: solid    # concurrent flame spread over solids (modeling)
+  PSI-68: liquid   # FLEX-2: fuel droplets
+  PSI-98: solid    # SAFFIRE-I: large-scale spacecraft material samples
+  PSI-99: solid    # SAFFIRE-II
+  PSI-100: solid   # SAFFIRE-III
+  PSI-101: solid   # SAME-R: smoke from heated spacecraft materials
+  PSI-102: solid   # SAME
+  PSI-106: gas     # SLICE: gas jet flames
+  PSI-115: solid   # analysis of SAME smoke data
+  PSI-117: unknown
+  PSI-142: unknown
+
+# Fire-safety category per investigation (prevention / detection / suppression), curated
+# from titles and catalogue objectives. Empty = not primarily a fire-safety study. Reviewable;
+# the AI summaries (build-steps 5.4) propose tags too, but these are what the ranking uses.
+fire_safety_tags:
+  PSI-10: []                          # ACME Flame Design: flame structure / soot
+  PSI-20: [prevention]                # ACME BRE: burning-rate emulator for condensed fuels
+  PSI-21: []                          # ACME CLD Flame: laminar flame structure
+  PSI-22: []                          # E-FIELD: catalogue states no space application aimed
+  PSI-23: []                          # ACME s-Flame: flame structure
+  PSI-25: [prevention, suppression]   # BASS-II: burning and suppression of solids
+  PSI-26: [prevention, suppression]   # BASS
+  PSI-39: [prevention]                # CFI: cool-flame / low-temperature ignition
+  PSI-47: [detection]                 # DAFT: dust and aerosol measurement for smoke detection
+  PSI-60: [detection]                 # SPICE analysis: smoke point / soot emission
+  PSI-62: [prevention]                # concurrent flame spread over solids
+  PSI-68: [suppression]               # FLEX-2: flame extinguishment
+  PSI-69: [suppression]               # FLEX: flame extinguishment, diluent suppressants
+  PSI-98: [prevention]                # SAFFIRE-I: spacecraft material flammability at scale
+  PSI-99: [prevention]                # SAFFIRE-II
+  PSI-100: [prevention]               # SAFFIRE-III
+  PSI-101: [detection]                # SAME-R: smoke and aerosol measurement
+  PSI-102: [detection]                # SAME
+  PSI-106: []                         # SLICE: lifted jet flame structure
+  PSI-107: [detection]                # SPICE: smoke point (soot emission)
+  PSI-115: [detection]                # analysis of SAME smoke data
+  PSI-117: [prevention]               # cool-flame perturbation (ignition hazards)
+  PSI-142: [prevention]               # cool-flame transitions
+  PSI-159: [prevention]               # CFI-G: cool flames with gaseous fuels
+
+# Fallback only for investigations not listed above (e.g. a new release found by sync):
+# a tag applies when one of its stems appears in the title, sub-area or keywords.
+fire_safety_keywords:
+  suppression: [extinguish, suppress, extinction]
+  detection: [smoke, aerosol, detector, detection, particulate, soot]
+  prevention: [flammab, fire safety, flame spread, ignition, material, spacecraft fire]

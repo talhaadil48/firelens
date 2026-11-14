@@ -1,0 +1,31 @@
+# Column map: BASS-II. Draft; needs human review.
+accession: PSI-25
+investigation: BASS-II
+review:
+  status: draft
+  reviewer: null
+  notes:
+    - "O2 from 'Calibrated initial O2 % by vol' / 100 (volume basis)."
+    - "No pressure column; pressure stays null."
+    - "'Air display' / 'Fan display' are instrument settings, not cm/s; not mapped to flow."
+    - "Sample sizes (thickness and width) are mixed in free text; not parsed."
+tables:
+  - file: PSI-25_Experimental table_BASS-II.csv
+    defaults:
+      fuel_phase: solid
+      oxygen_basis: volume
+      gravity: microgravity
+      platform: ISS (MSG)
+    fields:
+      test_id: {source: "Test #"}
+      campaign_id: {source: "PI", prefix: "PI "}
+      test_date: {source: "Date", parse: date_mdy}
+      fuel: {source: "Fuel Sample Material"}
+      sample_geometry: {source: "Fuel Sample Material", extract: geometry}
+      o2_fraction: {source: "Calibrated initial O2 % by vol", unit: percent}
+    metrics:
+      final_o2: {source: "Calibrated final O2 % by vol", unit: "% by vol"}
+      initial_co2: {source: "Initial CO2 % by vol", unit: "% by vol"}
+      final_co2: {source: "Final CO2 % by vol", unit: "% by vol"}
+      initial_co: {source: "Initial CO (ppm)", unit: ppm}
+      final_co: {source: "Final CO (ppm)", unit: ppm}

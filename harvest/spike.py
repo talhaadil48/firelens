@@ -4,73 +4,16 @@ Signed URLs are consumed immediately and NEVER written to disk or console.
 """
 
 import argparse
-import csv
-import hashlib
-import io
 import json
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.parse import urlsplit
 
 import httpx
 
-BASE_URL = "https://psi.nasa.gov"
-USER_AGENT = "FireLens/0.1 NASA-Space-Apps-source-feasibility-check"
+from harvest.psi import BASE_URL, USER_AGENT, csv_summary, fetch, read_signed_url
 
-
-def read_signed_url(text: str) -> str:
-    """PSI returns text, sometimes quoted; preserve the complete query string."""
-    value = text.strip()
-    if value.startswith('"'):
-        value = json.loads(value)
-    elif value.startswith("'") and value.endswith("'"):
-        value = value[1:-1]
-    parsed = urlsplit(value)
-    host = parsed.hostname or ""
-    if parsed.scheme != "https" or not (host == "psi.nasa.gov" or host.endswith(".amazonaws.com")):
-        raise ValueError("PSI resolver did not return an expected HTTPS download URL")
-    return value
-
-
-def csv_summary(content: bytes) -> dict:
-    encoding = "utf-8-sig"
-    try:
-        text = content.decode(encoding)
-    except UnicodeDecodeError:
-        # FLEX is a legacy Windows export (e.g. en dash byte 0x96).
-        # Preserve bytes on disk and record the explicit decoding choice.
-        encoding = "cp1252"
-        text = content.decode(encoding)
-    if text.lstrip().lower().startswith(("<!doctype", "<html", "<?xml", "<error")):
-        raise ValueError("Expected CSV, received HTML/XML")
-    rows = list(csv.reader(io.StringIO(text)))
-    if not rows or len(rows[0]) < 2:
-        raise ValueError("Expected a nonempty table with multiple columns")
-    return {
-        "headers": rows[0],
-        "physical_data_rows": max(0, len(rows) - 1),
-        "sha256": hashlib.sha256(content).hexdigest(),
-        "bytes": len(content),
-        "encoding": encoding,
-    }
-
-
-def fetch(client: httpx.Client, url: str, *, params: dict | None = None) -> httpx.Response:
-    """Retry temporary failures; never include URLs containing signatures in errors."""
-    for attempt in range(3):
-        try:
-            response = client.get(url, params=params)
-            if response.status_code in (429, 500, 502, 503, 504) and attempt < 2:
-                time.sleep(2**attempt)
-                continue
-            response.raise_for_status()
-            return response
-        except httpx.TransportError:
-            if attempt == 2:
-                raise
-            time.sleep(2**attempt)
-    raise RuntimeError("Retry loop exhausted")
+__all__ = ["BASE_URL", "USER_AGENT", "csv_summary", "fetch", "read_signed_url", "run"]
 
 
 def run(output: Path, report_path: Path) -> dict:

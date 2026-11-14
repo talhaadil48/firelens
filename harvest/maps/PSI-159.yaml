@@ -1,0 +1,66 @@
+# Column map: ACME CFI-G (Cool Flames Investigation with Gases). Draft; needs human review.
+accession: PSI-159
+investigation: CFI-G
+review:
+  status: draft
+  reviewer: null
+  notes:
+    - "Normal flames: o2_fraction = 'XO2 before test' (ambient mole fraction)."
+    - "Inverse flames: 'XO2' is the burner (oxidizer) stream, NOT ambient; kept as a metric, o2_fraction stays null."
+    - "Pressure from 'approx p (bar)' x 100 (approximate, as labelled)."
+    - "Outcome precedence: cool flame > failed (no hot ignition) > self-extinguished > ignited. Check."
+    - "'Day' is a campaign day, not a calendar date; test_date stays null."
+tables:
+  - file: PSI-159_Experimental table_CFI-G_Normal Flames.csv
+    defaults:
+      fuel_phase: gas
+      sample_geometry: normal flame, spherical porous burner
+      oxygen_basis: mole
+      gravity: microgravity
+      platform: ISS (CIR / ACME)
+    fields:
+      test_id: {source: "Test"}
+      campaign_id: {source: "Day", prefix: "Day "}
+      fuel: {source: "Fuel"}
+      o2_fraction: {source: "XO2 before test", unit: fraction}
+      pressure_kpa: {source: "approx p (bar)", unit: bar}
+      outcome:
+        rules:
+          - {when: {"Cool flame?": "^yes"}, then: cool_flame}
+          - {when: {"Hot ignition": "^no$"}, then: failed}
+          - {when: {"Self-ext or flow term": "^SE$"}, then: extinguished}
+          - {when: {"Hot ignition": "^yes$"}, then: ignited}
+        keep_label: "Cool flame?"
+    metrics:
+      xo2_after: {source: "XO2 after test", unit: mole fraction}
+      fuel_fraction_xf: {source: "Xf", unit: mole fraction}
+      fuel_rate: {source: "mHC (mg/s)", unit: mg/s}
+      adiabatic_flame_temperature: {source: "Tad (K)", unit: K}
+      stoichiometric_mixture_fraction: {source: "Zst", unit: "-"}
+      burn_time: {source: "burn time (sec)", unit: s}
+      peak_burner_temperature: {source: "Peak burner T (C )", unit: C}
+  - file: PSI-159_Experimental table_CFI-G_Inverse Flames.csv
+    defaults:
+      fuel_phase: gas
+      sample_geometry: inverse flame, spherical porous burner
+      gravity: microgravity
+      platform: ISS (CIR / ACME)
+    fields:
+      test_id: {source: "Test"}
+      campaign_id: {source: "Day", prefix: "Day "}
+      fuel: {source: "Fuel"}
+      pressure_kpa: {source: "approx p (bar)", unit: bar}
+      outcome:
+        rules:
+          - {when: {"Hot ignition": "^no$"}, then: failed}
+          - {when: {"Self -ext or flow term": "^SE$"}, then: extinguished}
+          - {when: {"Hot ignition": "^yes$"}, then: ignited}
+        keep_label: "Hot ignition"
+    metrics:
+      burner_stream_xo2: {source: "XO2", unit: mole fraction}
+      fuel_fraction_before: {source: "Xf before test", unit: mole fraction}
+      hc_burn_rate: {source: "HC burnrate (mg/s)", unit: mg/s}
+      o2_flow_rate: {source: "O2 flow rate (mg/s)", unit: mg/s}
+      adiabatic_flame_temperature: {source: "Tad (K)", unit: K}
+      burn_time: {source: "burn time (sec)", unit: s}
+      peak_burner_temperature: {source: "Peak burner temp (K)", unit: K}
