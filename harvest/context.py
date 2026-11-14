@@ -44,19 +44,38 @@ def pdf_text(content: bytes) -> str:
 
 def capture(source: dict, folder: Path, client: SourceClient) -> dict:
     identifier = safe_name(source["id"])
-    url = public_url(source["url"])
     target = folder / (identifier + ".html")
-    receipt = client.resource(url, target, json_resource=True, validator=html_text)
-    title, text = html_text(target.read_bytes())
+    attempts = []
+    urls = [source["url"], *source.get("fallback_urls", [])]
+    for candidate in urls:
+        url = public_url(candidate)
+        try:
+            receipt = client.resource(url, target, json_resource=True, validator=html_text)
+            title, text = html_text(target.read_bytes())
+            attempts.append({"url": url, "status": "success"})
+            break
+        except (HarvestError, ValueError, OSError) as exc:
+            error = str(exc) if isinstance(exc, HarvestError) else type(exc).__name__
+            attempts.append({"url": url, "status": "failed", "error": error})
+    else:
+        raise HarvestError("No readable context source; " + "; ".join(a["error"] for a in attempts))
+
     record = {
         "id": identifier,
         "topic": source["topic"],
         "url": url,
+        "requested_url": source["url"],
+        "source_attempts": attempts,
+        "used_fallback": url != source["url"],
         "title": title,
         "status": "success",
         "receipt": asdict(receipt),
         "text_file": identifier + ".txt",
-        "selection": "configured_primary_NASA_source",
+        "selection": (
+            "configured_fallback_NASA_source"
+            if url != source["url"]
+            else "configured_primary_NASA_source"
+        ),
         "review_status": "unreviewed",
     }
     if source.get("follow_pdf"):
@@ -93,5 +112,7 @@ def context_sources(path: Path) -> dict:
         raise HarvestError("Context source IDs must be unique")
     for source in data["sources"]:
         public_url(source["url"])
+        for fallback in source.get("fallback_urls", []):
+            public_url(fallback)
         safe_name(source["id"])
     return data

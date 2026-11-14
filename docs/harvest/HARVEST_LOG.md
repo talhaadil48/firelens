@@ -1,20 +1,20 @@
 # Phase 3 harvest log
 
-Run: `phase3-final-20261114`
-Started (UTC): 2026-11-14T14:46:32.926698+00:00
+Run: `plan-aligned-20261114`
+Started (UTC): 2026-11-14T15:46:18.797447+00:00
 Status: **partial**
 
-Raw folder: `/mnt/d/projects/hackathon/nasa-space-challenge/firelens/raw/phase3-final-20261114`
+Raw folder: `/mnt/d/projects/hackathon/nasa-space-challenge/firelens/raw/plan-aligned-20261114`
 
 - Combustion investigations: 24
 - Successful manifests: 24
 - Experimental CSVs saved: 22
 - Supporting documents saved: 53
-- Context sources captured: 6
+- Context sources captured: 8
 - File downloads restored from verified cache: 75
 - Downloaded bytes (saved files): 128,527,122
 - Failures: 2
-- Elapsed seconds: 13.773
+- Elapsed seconds: 16.711
 
 CSV row counts include possible unit/description/blank rows and are not validated test counts.
 Data is unnormalized and unreviewed. Bulk Raw Data was not downloaded.
@@ -53,9 +53,11 @@ Data is unnormalized and unreviewed. Bulk Raw Data was not downloaded.
 - apollo-1: success — https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/
 - apollo-13: success — https://www.nasa.gov/missions/apollo/apollo-13-mission-details/
 - mir: success — https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/
-- spinoffs: success — https://spinoff.nasa.gov/Spinoff2020/ps_4.html
+- spinoff-air-tanks: success — https://spinoff.nasa.gov/node/9582
+- spinoff-fire-detector: success — https://spinoff.nasa.gov/node/9407
+- spinoff-fire-attire: success — https://spinoff.nasa.gov/node/9918
 - combustion: success — https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/
-- researchers-guide: success — https://www.nasa.gov/science-research/for-researchers/a-researchers-guide-to-combustion-science/
+- researchers-guide: success — https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/
 
 ## Failures and caveats
 
@@ -65,6 +67,8 @@ Data is unnormalized and unreviewed. Bulk Raw Data was not downloaded.
 - PSI-62: No experimental table listed; metadata/documents only.
 - PSI-115: No experimental table listed; metadata/documents only.
 - PSI-117: No experimental table listed; metadata/documents only.
+- apollo-1: requested https://sma.nasa.gov/sma-disciplines/accllp/apollo-1 unavailable; fallback captured at https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/
+- apollo-13: requested https://sma.nasa.gov/sma-disciplines/accllp/apollo-13 unavailable; fallback captured at https://www.nasa.gov/missions/apollo/apollo-13-mission-details/
 - Official challenge resource page could not be captured: Network/timeout failure; request URL omitted
 - Context URLs are configured primary NASA references, not a verified complete official resource list.
 - Software/data collection success does not establish scientific validity or mission safety.

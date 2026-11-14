@@ -232,3 +232,33 @@ def test_malformed_catalogue_response_still_produces_a_failure_log(tmp_path):
     assert report["status"] == "failed"
     assert "JSON object" in report["fatal_error"]
     assert "JSON object" in (tmp_path / "raw/malformed/HARVEST_LOG.md").read_text()
+
+
+def test_context_fallback_keeps_failed_requested_url_visible(tmp_path):
+    from harvest.context import capture
+
+    def handler(request):
+        if request.url.path == "/missing":
+            return httpx.Response(404)
+        return httpx.Response(
+            200,
+            text="<html><title>Fallback</title><main>"
+            + "Synthetic context source. " * 30
+            + "</main></html>",
+        )
+
+    client = SourceClient(Cache(tmp_path / "cache"), transport=httpx.MockTransport(handler))
+    record = capture(
+        {
+            "id": "fallback",
+            "topic": "test",
+            "url": "https://www.nasa.gov/missing",
+            "fallback_urls": ["https://www.nasa.gov/fallback"],
+        },
+        tmp_path / "context",
+        client,
+    )
+    assert record["used_fallback"]
+    assert record["requested_url"].endswith("/missing") and record["url"].endswith("/fallback")
+    assert [a["status"] for a in record["source_attempts"]] == ["failed", "success"]
+    client.close()

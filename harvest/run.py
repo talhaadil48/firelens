@@ -275,6 +275,11 @@ def markdown(report: dict) -> str:
                 issues.append(f"{row['accession']} / {item['source_file']}: {item['error']}")
         issues += [f"{row['accession']}: {note}" for note in row["notes"]]
     for item in report["context"]:
+        if item.get("used_fallback"):
+            issues.append(
+                f"{item['id']}: requested {item['requested_url']} unavailable; "
+                f"fallback captured at {item['url']}"
+            )
         if item.get("error"):
             issues.append(f"{item['id']}: {item['error']}")
     if report.get("challenge", {}).get("error"):

@@ -65,7 +65,7 @@ The executed catalogue has **24 Combustion Science investigations** among 133 PS
 investigations. This supersedes the checklist's approximate count of 22.
 
 The run saved **24 manifests, 22 experimental CSV files, 53 supporting documents,
-and six context topics** (including the Researcher's Guide PDF). Four investigations
+and eight context topics** (including the Researcher's Guide PDF). Four investigations
 (PSI-60, PSI-62, PSI-115 and PSI-117) list no experimental table; none was fabricated.
 All listed, eligible experimental CSVs were saved. These counts are not counts of
 independent experiments or scientifically reviewed test runs.
@@ -79,7 +79,7 @@ Version-specific requests also returned 404; the old manifest-linked NASA host
 was unreachable. Those source failures have not been disguised as successful
 copies or replaced with a different report. The aggregate harvest therefore stays
 **partial**, even though the complete available CSV collection was downloaded.
-The official challenge page also could not be captured in this environment; six
+The official challenge page also could not be captured in this environment; eight
 explicit primary NASA context references were saved instead. This is reported as
 a separate discovery limitation, not a claim that official resources were verified.
 
@@ -90,7 +90,7 @@ inventories, source versions, durations, skip reasons and exact failures.
 ## Check the downloaded files
 
 ```text
-uv run python -m harvest.verify raw/phase3-final-20261114
+uv run python -m harvest.verify raw/plan-aligned-20261114
 ```
 
 For a different run, substitute its actual folder. The checker verifies retained
@@ -115,7 +115,7 @@ raw-byte retention, CSV encoding, signed-link resolution/expiry, retry/backoff,
 cache corruption, version changes, strict size limits, selection/deduplication,
 path safety, context extraction, offline replay, failure logs and checksum audits.
 
-Local verification passed: **105 Python tests**, **8 web tests**, Python/web lint,
+Local verification passed: **119 Python tests**, **10 web tests**, Python/web lint,
 TypeScript checks, contract-drift checks and the production web build. The real
 run's retained files also pass the SHA-256/size audit; `harvest_complete` remains
 false because of the two recorded upstream PDF failures.
@@ -123,3 +123,12 @@ false because of the two recorded upstream PDF failures.
 The Phase 2 API/UI fixtures remain unchanged. Downloading the corpus does not
 populate the dashboard: reviewed normalization is Phase 4 and snapshot creation
 is Phase 5.
+
+## Complete-plan alignment follow-up
+
+The supplied full plan now drives the canonical row contract, C/F/M/D weights,
+rover/custom scenarios and exact context URLs. See `docs/context/PLAN_ALIGNMENT.md`.
+Eight topics were captured; the two Apollo SMA URLs required explicitly logged
+NASA article fallbacks. Three specified Spinoff URLs succeeded. The new run's
+integrity audit verifies 118 source/text files. No normalization or real rankings
+are claimed by these foundation changes.

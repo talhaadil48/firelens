@@ -40,7 +40,7 @@ uv run python -m harvest.run
 
 This paginates the PSI catalogue, filters Combustion Science, saves every manifest
 and listed experimental CSV, and collects Reports/Science Documents below 20 MB.
-It also saves six NASA context topics as source-linked text. Bulk Raw Data is skipped.
+It also saves eight NASA context topics as source-linked text. Bulk Raw Data is skipped.
 Run folders and cache stay under ignored `raw/`. No API key is required.
 
 A partial run exits nonzero and records failures in its `HARVEST_LOG.md`. The
@@ -113,3 +113,9 @@ NASA-endorsed. Software is MIT licensed; upstream data retains its own license.
 See [references](REFERENCES.md), [AI disclosure](docs/AI_USAGE.md),
 [Phase 1–2 handoff](docs/PHASE_1_2_HANDOFF.md) and the [supplied plan](docs/context/build-steps.md).
 No public production deployment is included in these phases.
+
+The complete-plan alignment adds canonical test/metric contracts, C/F/M/D ranking
+weights, rover/custom scenarios and the exact eight requested context sources.
+See [alignment status](docs/context/PLAN_ALIGNMENT.md) and
+[session handoff](docs/context/SESSION_HANDOFF.md). Actual normalization and science
+outputs remain later-phase work.

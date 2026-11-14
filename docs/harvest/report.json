@@ -1,7 +1,7 @@
 {
-  "run_id": "phase3-final-20261114",
-  "started_at": "2026-11-14T14:46:32.926698+00:00",
-  "raw_folder": "/mnt/d/projects/hackathon/nasa-space-challenge/firelens/raw/phase3-final-20261114",
+  "run_id": "plan-aligned-20261114",
+  "started_at": "2026-11-14T15:46:18.797447+00:00",
+  "raw_folder": "/mnt/d/projects/hackathon/nasa-space-challenge/firelens/raw/plan-aligned-20261114",
   "status": "partial",
   "investigations": [
     {
@@ -23,7 +23,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.064
+            "seconds": 0.05
           },
           "csv": {
             "headers": [
@@ -48,7 +48,7 @@
             "bytes": 26933,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.072
+          "seconds": 0.057
         },
         {
           "source_file": "PSI-10_Experimental table_Flame Design_Inverse Flame.csv",
@@ -64,7 +64,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.063
+            "seconds": 0.06
           },
           "csv": {
             "headers": [
@@ -88,7 +88,7 @@
             "bytes": 17314,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.069
+          "seconds": 0.066
         },
         {
           "source_file": "PSI-10_Reports_FinalRpt_ACMEFlameDesign.pdf",
@@ -104,9 +104,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.396
+            "seconds": 0.457
           },
-          "seconds": 0.396
+          "seconds": 0.457
         },
         {
           "source_file": "PSI-10_Science Documents_SRD_ACMEFlameDesign.pdf",
@@ -122,9 +122,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.174
+            "seconds": 0.196
           },
-          "seconds": 0.175
+          "seconds": 0.196
         },
         {
           "source_file": "PSI-10_Reports_TaskbookRpts.pdf",
@@ -140,9 +140,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.079
+            "seconds": 0.077
           },
-          "seconds": 0.079
+          "seconds": 0.077
         },
         {
           "source_file": "PSI-10_Reports_TaskbookPubsList_Feb2023.pdf",
@@ -158,9 +158,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.067
+            "seconds": 0.066
           },
-          "seconds": 0.068
+          "seconds": 0.067
         },
         {
           "source_file": "PSI-10_Science Documents_ACME_SORD.pdf",
@@ -176,9 +176,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.08
+            "seconds": 0.086
           },
-          "seconds": 0.08
+          "seconds": 0.086
         },
         {
           "source_file": "PSI-10_Science Documents_ACME_ISRD.pdf",
@@ -194,9 +194,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.148
+            "seconds": 0.177
           },
-          "seconds": 0.148
+          "seconds": 0.177
         }
       ],
       "skipped": {
@@ -223,11 +223,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.342
+        "seconds": 0.264
       },
       "listed_files": 3807,
       "experimental_table_entries": 2,
-      "seconds": 1.563
+      "seconds": 1.548
     },
     {
       "accession": "PSI-20",
@@ -248,7 +248,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.058
+            "seconds": 0.039
           },
           "csv": {
             "headers": [
@@ -266,7 +266,7 @@
             "bytes": 1113,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.065
+          "seconds": 0.044
         }
       ],
       "skipped": {
@@ -289,11 +289,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.075
+        "seconds": 0.057
       },
       "listed_files": 1,
       "experimental_table_entries": 1,
-      "seconds": 0.172
+      "seconds": 0.129
     },
     {
       "accession": "PSI-21",
@@ -314,7 +314,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.06
+            "seconds": 0.038
           },
           "csv": {
             "headers": [
@@ -332,7 +332,7 @@
             "bytes": 2454,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.067
+          "seconds": 0.043
         }
       ],
       "skipped": {
@@ -355,11 +355,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.075
+        "seconds": 0.061
       },
       "listed_files": 1,
       "experimental_table_entries": 1,
-      "seconds": 0.174
+      "seconds": 0.13
     },
     {
       "accession": "PSI-22",
@@ -380,7 +380,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.118
+            "seconds": 0.13
           },
           "csv": {
             "headers": [
@@ -400,7 +400,7 @@
             "bytes": 2475,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.125
+          "seconds": 0.135
         }
       ],
       "skipped": {},
@@ -421,11 +421,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.091
+        "seconds": 0.054
       },
       "listed_files": 0,
       "experimental_table_entries": 1,
-      "seconds": 0.306
+      "seconds": 0.215
     },
     {
       "accession": "PSI-23",
@@ -446,7 +446,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.041
+            "seconds": 0.039
           },
           "csv": {
             "headers": [
@@ -465,7 +465,7 @@
             "bytes": 2456,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.05
+          "seconds": 0.046
         },
         {
           "source_file": "PSI-23_Science Documents_ACME non-imaging data file description.pdf",
@@ -481,9 +481,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.083
+            "seconds": 0.084
           },
-          "seconds": 0.083
+          "seconds": 0.084
         },
         {
           "source_file": "PSI-23_Science Documents_ACME_Integrated_Science_Requirements_RevB.pdf",
@@ -499,9 +499,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.151
+            "seconds": 0.166
           },
-          "seconds": 0.152
+          "seconds": 0.166
         },
         {
           "source_file": "PSI-23_Science Documents_ACME Science Operation Requirements revA 20111018.pdf",
@@ -517,9 +517,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.076
+            "seconds": 0.084
           },
-          "seconds": 0.077
+          "seconds": 0.085
         },
         {
           "source_file": "PSI-23_Science Documents_ACME Integrated Science Requirements Definition Review 20100505.pdf",
@@ -535,9 +535,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.218
+            "seconds": 0.251
           },
-          "seconds": 0.218
+          "seconds": 0.252
         },
         {
           "source_file": "PSI-23_Science Documents_s-Flame SCR 200802.pdf",
@@ -553,9 +553,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.232
+            "seconds": 0.289
           },
-          "seconds": 0.232
+          "seconds": 0.289
         },
         {
           "source_file": "PSI-23_Science Documents_s-Flame_SRD_20100125.pdf",
@@ -571,9 +571,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.089
+            "seconds": 0.109
           },
-          "seconds": 0.089
+          "seconds": 0.109
         },
         {
           "source_file": "PSI-23_Reports_s-Flame 30-day report Inc 63 20201216.pdf",
@@ -589,9 +589,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.058
+            "seconds": 0.075
           },
-          "seconds": 0.058
+          "seconds": 0.076
         },
         {
           "source_file": "PSI-23_Reports_s_Flame_final_report_20210729.pdf",
@@ -607,9 +607,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.193
+            "seconds": 0.253
           },
-          "seconds": 0.194
+          "seconds": 0.253
         },
         {
           "source_file": "PSI-23_Science Documents_ACME s-Flame  DoD.pdf",
@@ -625,9 +625,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.084
+            "seconds": 0.108
           },
-          "seconds": 0.084
+          "seconds": 0.108
         }
       ],
       "skipped": {
@@ -653,11 +653,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.772
+        "seconds": 0.748
       },
       "listed_files": 4163,
       "experimental_table_entries": 1,
-      "seconds": 2.19
+      "seconds": 2.42
     },
     {
       "accession": "PSI-25",
@@ -678,7 +678,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.064
+            "seconds": 0.065
           },
           "csv": {
             "headers": [
@@ -705,7 +705,7 @@
             "bytes": 16590,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.07
+          "seconds": 0.071
         },
         {
           "source_file": "PSI-25_Science Documents_BASS-II_Test.Matrices.xlsx",
@@ -721,9 +721,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.059
+            "seconds": 0.066
           },
-          "seconds": 0.059
+          "seconds": 0.066
         },
         {
           "source_file": "PSI-25_Science Documents_BASS-II_ReadMe.docx",
@@ -741,7 +741,7 @@
             "attempts": 0,
             "seconds": 0.06
           },
-          "seconds": 0.06
+          "seconds": 0.061
         },
         {
           "source_file": "PSI-25_Science Documents_BASS-II_SRD.pdf",
@@ -757,9 +757,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.279
+            "seconds": 0.22
           },
-          "seconds": 0.279
+          "seconds": 0.22
         }
       ],
       "skipped": {
@@ -787,11 +787,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.118
+        "seconds": 0.103
       },
       "listed_files": 694,
       "experimental_table_entries": 1,
-      "seconds": 0.632
+      "seconds": 0.56
     },
     {
       "accession": "PSI-26",
@@ -812,7 +812,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.042
+            "seconds": 0.034
           },
           "csv": {
             "headers": [
@@ -828,7 +828,7 @@
             "bytes": 4726,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.047
+          "seconds": 0.04
         },
         {
           "source_file": "PSI-26_Science Documents_FlammabilityAspectsofFabric_USNationalCombustion.2013.docx",
@@ -844,9 +844,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.501
+            "seconds": 0.611
           },
-          "seconds": 0.501
+          "seconds": 0.611
         },
         {
           "source_file": "PSI-26_Reports_SPICE_FinalReport.pdf",
@@ -855,7 +855,7 @@
           "status": "failed",
           "file_version": 2,
           "error": "HTTP 404; request URL omitted",
-          "seconds": 3.35
+          "seconds": 2.943
         },
         {
           "source_file": "PSI-26_Reports_BASS_FinalReport.pdf",
@@ -864,7 +864,7 @@
           "status": "failed",
           "file_version": 2,
           "error": "HTTP 404; request URL omitted",
-          "seconds": 2.219
+          "seconds": 2.373
         },
         {
           "source_file": "PSI-26_Science Documents_Planned_Test Matrix.xlsx",
@@ -880,9 +880,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.039
+            "seconds": 0.056
           },
-          "seconds": 0.039
+          "seconds": 0.057
         },
         {
           "source_file": "PSI-26_Science Documents_SRD_BASS.pdf",
@@ -898,9 +898,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.072
+            "seconds": 0.13
           },
-          "seconds": 0.072
+          "seconds": 0.131
         },
         {
           "source_file": "PSI-26_Science Documents_DLD_BASS.pdf",
@@ -916,9 +916,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.053
+            "seconds": 0.11
           },
-          "seconds": 0.053
+          "seconds": 0.11
         },
         {
           "source_file": "PSI-26_Science Documents_As Run_Test Matrix.xlsx",
@@ -934,9 +934,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.05
+            "seconds": 0.062
           },
-          "seconds": 0.05
+          "seconds": 0.062
         }
       ],
       "skipped": {
@@ -962,11 +962,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.068
+        "seconds": 0.168
       },
       "listed_files": 211,
       "experimental_table_entries": 1,
-      "seconds": 6.432
+      "seconds": 6.522
     },
     {
       "accession": "PSI-39",
@@ -987,7 +987,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.031
+            "seconds": 0.033
           },
           "csv": {
             "headers": [
@@ -1007,7 +1007,7 @@
             "bytes": 7792,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.035
+          "seconds": 0.038
         },
         {
           "source_file": "PSI-39_Reports_CFI Science Final Report.pdf",
@@ -1023,9 +1023,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.078
+            "seconds": 0.105
           },
-          "seconds": 0.078
+          "seconds": 0.105
         },
         {
           "source_file": "PSI-39_Science Documents_CFI_DataSummary_Spreadsheet_Jan2021.xlsx",
@@ -1041,9 +1041,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.058
+            "seconds": 0.065
           },
-          "seconds": 0.058
+          "seconds": 0.066
         },
         {
           "source_file": "PSI-39_Science Documents_SRD_CFI.pdf",
@@ -1059,9 +1059,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.688
+            "seconds": 0.893
           },
-          "seconds": 0.689
+          "seconds": 0.893
         },
         {
           "source_file": "PSI-39_Science Documents_CFI_SCR.pdf",
@@ -1077,9 +1077,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.192
+            "seconds": 0.261
           },
-          "seconds": 0.192
+          "seconds": 0.261
         }
       ],
       "skipped": {
@@ -1106,11 +1106,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.305
+        "seconds": 0.358
       },
       "listed_files": 2831,
       "experimental_table_entries": 1,
-      "seconds": 1.452
+      "seconds": 1.831
     },
     {
       "accession": "PSI-47",
@@ -1131,7 +1131,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.032
+            "seconds": 0.042
           },
           "csv": {
             "headers": [
@@ -1146,7 +1146,7 @@
             "bytes": 518,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.035
+          "seconds": 0.047
         },
         {
           "source_file": "PSI-47_Reports_DAFT_FinalReport.doc",
@@ -1162,9 +1162,9 @@
             "content_type": "application/msword",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.409
+            "seconds": 0.553
           },
-          "seconds": 0.409
+          "seconds": 0.554
         },
         {
           "source_file": "PSI-47_Reports_DAFT_30Day.PostFlightReport.pdf",
@@ -1180,9 +1180,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.053
+            "seconds": 0.07
           },
-          "seconds": 0.054
+          "seconds": 0.07
         },
         {
           "source_file": "PSI-47_Reports_DAFT_1YearReport.doc",
@@ -1198,9 +1198,9 @@
             "content_type": "application/msword",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.254
+            "seconds": 0.31
           },
-          "seconds": 0.254
+          "seconds": 0.31
         }
       ],
       "skipped": {
@@ -1228,11 +1228,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.052
+        "seconds": 0.06
       },
       "listed_files": 32,
       "experimental_table_entries": 1,
-      "seconds": 0.823
+      "seconds": 1.066
     },
     {
       "accession": "PSI-60",
@@ -1261,11 +1261,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.03
+        "seconds": 0.047
       },
       "listed_files": 1,
       "experimental_table_entries": 0,
-      "seconds": 0.046
+      "seconds": 0.067
     },
     {
       "accession": "PSI-62",
@@ -1294,11 +1294,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.044
+        "seconds": 0.048
       },
       "listed_files": 1,
       "experimental_table_entries": 0,
-      "seconds": 0.061
+      "seconds": 0.065
     },
     {
       "accession": "PSI-68",
@@ -1319,7 +1319,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.038
+            "seconds": 0.053
           },
           "csv": {
             "headers": [
@@ -1336,7 +1336,7 @@
             "bytes": 1029,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.042
+          "seconds": 0.058
         }
       ],
       "skipped": {},
@@ -1357,11 +1357,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.048
+        "seconds": 0.046
       },
       "listed_files": 0,
       "experimental_table_entries": 1,
-      "seconds": 0.108
+      "seconds": 0.126
     },
     {
       "accession": "PSI-69",
@@ -1382,7 +1382,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.044
+            "seconds": 0.045
           },
           "csv": {
             "headers": [
@@ -1407,7 +1407,7 @@
             "bytes": 24776,
             "encoding": "cp1252"
           },
-          "seconds": 0.051
+          "seconds": 0.052
         }
       ],
       "skipped": {},
@@ -1428,11 +1428,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.053
+        "seconds": 0.049
       },
       "listed_files": 0,
       "experimental_table_entries": 1,
-      "seconds": 0.13
+      "seconds": 0.121
     },
     {
       "accession": "PSI-98",
@@ -1453,7 +1453,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.036
+            "seconds": 0.04
           },
           "csv": {
             "headers": [
@@ -1476,7 +1476,7 @@
             "bytes": 469,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.04
+          "seconds": 0.044
         },
         {
           "source_file": "PSI-98_Science Documents_SAFFIRE-I Image Directory Nomenclature.pdf",
@@ -1492,9 +1492,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.065
+            "seconds": 0.082
           },
-          "seconds": 0.065
+          "seconds": 0.082
         },
         {
           "source_file": "PSI-98_Science Documents_SAFFIRE-1_MergeResult-jpeg_Update_Final_v2.xlsx",
@@ -1510,9 +1510,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.574
+            "seconds": 0.8
           },
-          "seconds": 0.574
+          "seconds": 0.8
         },
         {
           "source_file": "PSI-98_Science Documents_SAFFIRE Objectives, Development and Status.pdf",
@@ -1528,9 +1528,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.073
+            "seconds": 0.072
           },
-          "seconds": 0.073
+          "seconds": 0.072
         },
         {
           "source_file": "PSI-98_Science Documents_SAFFIRE-I and SAFFIRE-III Readme.docx",
@@ -1546,9 +1546,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.049
+            "seconds": 0.054
           },
-          "seconds": 0.05
+          "seconds": 0.054
         }
       ],
       "skipped": {
@@ -1572,11 +1572,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.066
+        "seconds": 0.058
       },
       "listed_files": 74,
       "experimental_table_entries": 1,
-      "seconds": 0.888
+      "seconds": 1.133
     },
     {
       "accession": "PSI-99",
@@ -1597,7 +1597,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.029
+            "seconds": 0.033
           },
           "csv": {
             "headers": [
@@ -1624,7 +1624,7 @@
             "bytes": 1973,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.034
+          "seconds": 0.037
         }
       ],
       "skipped": {},
@@ -1645,11 +1645,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.047
+        "seconds": 0.048
       },
       "listed_files": 0,
       "experimental_table_entries": 1,
-      "seconds": 0.099
+      "seconds": 0.106
     },
     {
       "accession": "PSI-100",
@@ -1670,7 +1670,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.029
+            "seconds": 0.038
           },
           "csv": {
             "headers": [
@@ -1689,7 +1689,7 @@
             "bytes": 239,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.032
+          "seconds": 0.043
         },
         {
           "source_file": "PSI-100_Science Documents_SAFFIRE-III Image Directory Nomenclature_v3.0.pdf",
@@ -1705,9 +1705,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.069
+            "seconds": 0.098
           },
-          "seconds": 0.069
+          "seconds": 0.099
         },
         {
           "source_file": "PSI-100_Science Documents_SAFFIRE-III_MergeResult-raw_Final.xlsx",
@@ -1723,9 +1723,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.38
+            "seconds": 0.511
           },
-          "seconds": 0.38
+          "seconds": 0.512
         },
         {
           "source_file": "PSI-100_Science Documents_SAFFIRE-III_MergeResult-jpeg_Final.xlsx",
@@ -1741,9 +1741,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.371
+            "seconds": 0.512
           },
-          "seconds": 0.371
+          "seconds": 0.512
         },
         {
           "source_file": "PSI-100_Science Documents_SAFFIRE Objectives, Development and Status.pdf",
@@ -1777,9 +1777,9 @@
             "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.051
+            "seconds": 0.067
           },
-          "seconds": 0.052
+          "seconds": 0.068
         }
       ],
       "skipped": {
@@ -1804,11 +1804,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.059
+        "seconds": 0.065
       },
       "listed_files": 85,
       "experimental_table_entries": 1,
-      "seconds": 1.06
+      "seconds": 1.396
     },
     {
       "accession": "PSI-101",
@@ -1829,7 +1829,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.032
+            "seconds": 0.033
           },
           "csv": {
             "headers": [
@@ -1849,7 +1849,7 @@
             "bytes": 5674,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.036
+          "seconds": 0.038
         },
         {
           "source_file": "PSI-101_Reports_SAME-R_Final Report.pdf",
@@ -1865,9 +1865,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.272
+            "seconds": 0.343
           },
-          "seconds": 0.273
+          "seconds": 0.344
         },
         {
           "source_file": "PSI-101_Science Documents_SAME_Baseline Concept Description Document_001 Rev A.pdf",
@@ -1883,9 +1883,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.059
+            "seconds": 0.085
           },
-          "seconds": 0.06
+          "seconds": 0.085
         },
         {
           "source_file": "PSI-101_Science Documents_SAME_Operations Manual_007.pdf",
@@ -1901,9 +1901,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.075
+            "seconds": 0.119
           },
-          "seconds": 0.075
+          "seconds": 0.119
         }
       ],
       "skipped": {
@@ -1930,11 +1930,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.068
+        "seconds": 0.089
       },
       "listed_files": 342,
       "experimental_table_entries": 1,
-      "seconds": 0.539
+      "seconds": 0.707
     },
     {
       "accession": "PSI-102",
@@ -1955,7 +1955,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.033
+            "seconds": 0.046
           },
           "csv": {
             "headers": [
@@ -1970,7 +1970,7 @@
             "bytes": 331,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.036
+          "seconds": 0.052
         },
         {
           "source_file": "PSI-102_Reports_SAME_Final Science Report.pdf",
@@ -1986,9 +1986,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.202
+            "seconds": 0.263
           },
-          "seconds": 0.202
+          "seconds": 0.263
         },
         {
           "source_file": "PSI-102_Science Documents_SAME_Baseline Concept Description Doc.pdf",
@@ -2004,9 +2004,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.06
+            "seconds": 0.084
           },
-          "seconds": 0.06
+          "seconds": 0.084
         },
         {
           "source_file": "PSI-102_Science Documents_SAME_Operations Manual_007.pdf",
@@ -2022,9 +2022,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.084
+            "seconds": 0.106
           },
-          "seconds": 0.084
+          "seconds": 0.107
         }
       ],
       "skipped": {
@@ -2051,11 +2051,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.063
+        "seconds": 0.08
       },
       "listed_files": 104,
       "experimental_table_entries": 1,
-      "seconds": 0.463
+      "seconds": 0.611
     },
     {
       "accession": "PSI-106",
@@ -2076,7 +2076,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.031
+            "seconds": 0.035
           },
           "csv": {
             "headers": [
@@ -2088,7 +2088,7 @@
             "bytes": 734,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.034
+          "seconds": 0.039
         }
       ],
       "skipped": {
@@ -2111,11 +2111,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.043
+        "seconds": 0.046
       },
       "listed_files": 1,
       "experimental_table_entries": 1,
-      "seconds": 0.093
+      "seconds": 0.102
     },
     {
       "accession": "PSI-107",
@@ -2136,7 +2136,7 @@
             "content_type": "application/vnd.ms-excel",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.048
+            "seconds": 0.05
           },
           "csv": {
             "headers": [
@@ -2155,7 +2155,7 @@
             "bytes": 31205,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.052
+          "seconds": 0.056
         },
         {
           "source_file": "PSI-107_Reports_SMOKE POINTS OF MICROGRAVITY AND  NORMAL GRAVITY COFLOW DIFFUSION  FLAMES_DotsonThesis.pdf",
@@ -2171,9 +2171,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.144
+            "seconds": 0.194
           },
-          "seconds": 0.144
+          "seconds": 0.194
         },
         {
           "source_file": "PSI-107_Science Documents_SPICE_SRD.doc",
@@ -2189,9 +2189,9 @@
             "content_type": "application/msword",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.094
+            "seconds": 0.122
           },
-          "seconds": 0.094
+          "seconds": 0.122
         },
         {
           "source_file": "PSI-107_Reports_SPICE_30-DayPostFlightReport.pdf",
@@ -2207,9 +2207,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.051
+            "seconds": 0.071
           },
-          "seconds": 0.052
+          "seconds": 0.071
         },
         {
           "source_file": "PSI-107_Reports_SPICE_FinalReport.pdf",
@@ -2225,9 +2225,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.084
+            "seconds": 0.09
           },
-          "seconds": 0.084
+          "seconds": 0.09
         }
       ],
       "skipped": {
@@ -2253,11 +2253,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.069
+        "seconds": 0.076
       },
       "listed_files": 186,
       "experimental_table_entries": 1,
-      "seconds": 0.517
+      "seconds": 0.639
     },
     {
       "accession": "PSI-115",
@@ -2278,9 +2278,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.505
+            "seconds": 0.783
           },
-          "seconds": 0.505
+          "seconds": 0.784
         },
         {
           "source_file": "PSI-115_Science Documents_DataOrganizationDocument.pdf",
@@ -2296,9 +2296,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.051
+            "seconds": 0.063
           },
-          "seconds": 0.051
+          "seconds": 0.064
         }
       ],
       "skipped": {
@@ -2324,11 +2324,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.048
+        "seconds": 0.059
       },
       "listed_files": 47,
       "experimental_table_entries": 0,
-      "seconds": 0.623
+      "seconds": 0.929
     },
     {
       "accession": "PSI-117",
@@ -2349,9 +2349,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.392
+            "seconds": 0.624
           },
-          "seconds": 0.392
+          "seconds": 0.625
         }
       ],
       "skipped": {
@@ -2377,11 +2377,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.049
+        "seconds": 0.048
       },
       "listed_files": 15,
       "experimental_table_entries": 0,
-      "seconds": 0.459
+      "seconds": 0.691
     },
     {
       "accession": "PSI-142",
@@ -2402,7 +2402,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.03
+            "seconds": 0.046
           },
           "csv": {
             "headers": [
@@ -2416,7 +2416,7 @@
             "bytes": 727,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.033
+          "seconds": 0.05
         }
       ],
       "skipped": {
@@ -2440,11 +2440,11 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.045
+        "seconds": 0.05
       },
       "listed_files": 2,
       "experimental_table_entries": 1,
-      "seconds": 0.096
+      "seconds": 0.121
     },
     {
       "accession": "PSI-159",
@@ -2465,7 +2465,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.044
+            "seconds": 0.05
           },
           "csv": {
             "headers": [
@@ -2493,7 +2493,7 @@
             "bytes": 22166,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.048
+          "seconds": 0.055
         },
         {
           "source_file": "PSI-159_Experimental table_CFI-G_Inverse Flames.csv",
@@ -2509,7 +2509,7 @@
             "content_type": "text/csv",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.042
+            "seconds": 0.043
           },
           "csv": {
             "headers": [
@@ -2539,7 +2539,7 @@
             "bytes": 39422,
             "encoding": "utf-8-sig"
           },
-          "seconds": 0.047
+          "seconds": 0.054
         },
         {
           "source_file": "PSI-159_Reports_FinalRpt_ACME.CFI-G.pdf",
@@ -2555,9 +2555,9 @@
             "content_type": "application/pdf",
             "cached": true,
             "attempts": 0,
-            "seconds": 0.167
+            "seconds": 0.273
           },
-          "seconds": 0.167
+          "seconds": 0.273
         }
       ],
       "skipped": {
@@ -2584,18 +2584,31 @@
         "content_type": "application/json",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.166
+        "seconds": 0.244
       },
       "listed_files": 3756,
       "experimental_table_entries": 2,
-      "seconds": 0.499
+      "seconds": 0.714
     }
   ],
   "context": [
     {
       "id": "apollo-1",
-      "topic": "Apollo 1",
+      "topic": "Apollo 1 lessons learned",
       "url": "https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/",
+      "requested_url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-1",
+      "source_attempts": [
+        {
+          "url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-1",
+          "status": "failed",
+          "error": "Source has insufficient readable text (possibly a JavaScript shell)"
+        },
+        {
+          "url": "https://www.nasa.gov/history/55-years-ago-the-apollo-1-fire-and-its-aftermath/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": true,
       "title": "55 Years Ago: The Apollo 1 Fire and its Aftermath - NASA",
       "status": "success",
       "receipt": {
@@ -2605,10 +2618,10 @@
         "content_type": "text/html; charset=UTF-8",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.762
+        "seconds": 0.456
       },
       "text_file": "apollo-1.txt",
-      "selection": "configured_primary_NASA_source",
+      "selection": "configured_fallback_NASA_source",
       "review_status": "unreviewed",
       "text_integrity": {
         "sha256": "947f73da34be3c796ed51fe2eecddf9da4187be5da03debde65e2621fb10ad7c",
@@ -2617,8 +2630,21 @@
     },
     {
       "id": "apollo-13",
-      "topic": "Apollo 13",
+      "topic": "Apollo 13 lessons learned",
       "url": "https://www.nasa.gov/missions/apollo/apollo-13-mission-details/",
+      "requested_url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-13",
+      "source_attempts": [
+        {
+          "url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-13",
+          "status": "failed",
+          "error": "Source has insufficient readable text (possibly a JavaScript shell)"
+        },
+        {
+          "url": "https://www.nasa.gov/missions/apollo/apollo-13-mission-details/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": true,
       "title": "Apollo 13: Mission Details - NASA",
       "status": "success",
       "receipt": {
@@ -2628,10 +2654,10 @@
         "content_type": "text/html; charset=UTF-8",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.759
+        "seconds": 0.562
       },
       "text_file": "apollo-13.txt",
-      "selection": "configured_primary_NASA_source",
+      "selection": "configured_fallback_NASA_source",
       "review_status": "unreviewed",
       "text_integrity": {
         "sha256": "095b8ae340b15597cbd0878c1dc8a31353cabeaf6073366663412458c2436fef",
@@ -2640,8 +2666,16 @@
     },
     {
       "id": "mir",
-      "topic": "Mir fire",
+      "topic": "Fire aboard Mir",
       "url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/",
+      "requested_url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/",
+      "source_attempts": [
+        {
+          "url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
       "title": "25 Years Ago: Fire Aboard Space Station Mir - NASA",
       "status": "success",
       "receipt": {
@@ -2651,7 +2685,7 @@
         "content_type": "text/html; charset=UTF-8",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.762
+        "seconds": 0.611
       },
       "text_file": "mir.txt",
       "selection": "configured_primary_NASA_source",
@@ -2662,32 +2696,110 @@
       }
     },
     {
-      "id": "spinoffs",
-      "topic": "NASA Spinoffs",
-      "url": "https://spinoff.nasa.gov/Spinoff2020/ps_4.html",
-      "title": "Wool Mask to Fight Fires in Space Inspires Fire Equipment on Earth | NASA Spinoff",
+      "id": "spinoff-air-tanks",
+      "topic": "Fireman's air tanks",
+      "url": "https://spinoff.nasa.gov/node/9582",
+      "requested_url": "https://spinoff.nasa.gov/node/9582",
+      "source_attempts": [
+        {
+          "url": "https://spinoff.nasa.gov/node/9582",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "Fireman's Air Tanks | NASA Spinoff",
       "status": "success",
       "receipt": {
-        "sha256": "dcbdb0733f38a3450794a6f0d56bbfa2f51a9d4c81a92ac531f2ce38ef0c3f36",
-        "bytes": 58057,
-        "retrieved_at": "2026-11-14T14:37:45.578698+00:00",
+        "sha256": "dd5b1203292e60120004a61ecd89f426c8e50d2bdfa75fcc560cf8e88f6d8764",
+        "bytes": 51727,
+        "retrieved_at": "2026-11-14T15:46:28.491606+00:00",
         "content_type": "text/html; charset=utf-8",
-        "cached": true,
-        "attempts": 0,
-        "seconds": 0.107
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.98
       },
-      "text_file": "spinoffs.txt",
+      "text_file": "spinoff-air-tanks.txt",
       "selection": "configured_primary_NASA_source",
       "review_status": "unreviewed",
       "text_integrity": {
-        "sha256": "ea25664d2f24060eac74fe8ec4fd957d69ac2c61ce20d12bcc39444b844788d3",
-        "bytes": 8189
+        "sha256": "7d171bcc96fa3c51befb6f8fe5f1cc12bf8e6d3f875836bfdd280716f7ad230d",
+        "bytes": 2144
+      }
+    },
+    {
+      "id": "spinoff-fire-detector",
+      "topic": "Fire detector",
+      "url": "https://spinoff.nasa.gov/node/9407",
+      "requested_url": "https://spinoff.nasa.gov/node/9407",
+      "source_attempts": [
+        {
+          "url": "https://spinoff.nasa.gov/node/9407",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "Fire Detector | NASA Spinoff",
+      "status": "success",
+      "receipt": {
+        "sha256": "ae02ae678a75fec41696c3fab962b7c3b6e5ce68e1fb77ef3edf653f23a81367",
+        "bytes": 51684,
+        "retrieved_at": "2026-11-14T15:46:29.012712+00:00",
+        "content_type": "text/html; charset=utf-8",
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.425
+      },
+      "text_file": "spinoff-fire-detector.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "b4d548c15e768654162742f2313a6f37b40856501b0611a7b12851287b843251",
+        "bytes": 2174
+      }
+    },
+    {
+      "id": "spinoff-fire-attire",
+      "topic": "Fire attire",
+      "url": "https://spinoff.nasa.gov/node/9918",
+      "requested_url": "https://spinoff.nasa.gov/node/9918",
+      "source_attempts": [
+        {
+          "url": "https://spinoff.nasa.gov/node/9918",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
+      "title": "New Technology for the Fire Attire | NASA Spinoff",
+      "status": "success",
+      "receipt": {
+        "sha256": "fa5bbda2a2d09c46a14b27098677e5fd71c3f019c5eb6031fc5f71603fc52115",
+        "bytes": 52388,
+        "retrieved_at": "2026-11-14T15:46:29.552897+00:00",
+        "content_type": "text/html; charset=utf-8",
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.329
+      },
+      "text_file": "spinoff-fire-attire.txt",
+      "selection": "configured_primary_NASA_source",
+      "review_status": "unreviewed",
+      "text_integrity": {
+        "sha256": "8f8fdf01d644b3733d113219545c6235cc463c65faf3a582d24e702ed30e3c57",
+        "bytes": 2800
       }
     },
     {
       "id": "combustion",
       "topic": "NASA combustion science",
       "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/",
+      "requested_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/",
+      "source_attempts": [
+        {
+          "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
       "title": "Combustion Science - NASA",
       "status": "success",
       "receipt": {
@@ -2697,7 +2809,7 @@
         "content_type": "text/html; charset=UTF-8",
         "cached": true,
         "attempts": 0,
-        "seconds": 0.51
+        "seconds": 0.543
       },
       "text_file": "combustion.txt",
       "selection": "configured_primary_NASA_source",
@@ -2710,17 +2822,25 @@
     {
       "id": "researchers-guide",
       "topic": "Researcher's Guide to Combustion Science",
-      "url": "https://www.nasa.gov/science-research/for-researchers/a-researchers-guide-to-combustion-science/",
+      "url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/",
+      "requested_url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/",
+      "source_attempts": [
+        {
+          "url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/",
+          "status": "success"
+        }
+      ],
+      "used_fallback": false,
       "title": "A Researcher’s Guide to: Combustion Science - NASA",
       "status": "success",
       "receipt": {
-        "sha256": "235b493bdcbeb18c87e82b814280c0f015cd1a47883090444c546cde55d10f72",
-        "bytes": 286470,
-        "retrieved_at": "2026-11-14T14:37:45.272528+00:00",
+        "sha256": "c82ed80528d4ab0bc4174fe4c10051efa1ed306d5c363b8b611aa5799cfe9b99",
+        "bytes": 286454,
+        "retrieved_at": "2026-11-14T15:46:30.441919+00:00",
         "content_type": "text/html; charset=UTF-8",
-        "cached": true,
-        "attempts": 0,
-        "seconds": 0.568
+        "cached": false,
+        "attempts": 1,
+        "seconds": 0.825
       },
       "text_file": "researchers-guide.txt",
       "selection": "configured_primary_NASA_source",
@@ -2735,12 +2855,12 @@
           "content_type": "application/pdf",
           "cached": true,
           "attempts": 0,
-          "seconds": 0.281
+          "seconds": 0.42
         }
       },
       "text_integrity": {
-        "sha256": "9f6c0a42aa91b9afc16d7af2e1b167dc6c614a5b0b8386f775fd797b58084233",
-        "bytes": 109550
+        "sha256": "4303beda2a62d937fab54fdac1bf2c28712f3a5758c78b9ba854ddbafab7edbc",
+        "bytes": 109534
       }
     }
   ],
@@ -2761,7 +2881,7 @@
           "content_type": "application/json",
           "cached": true,
           "attempts": 0,
-          "seconds": 0.091
+          "seconds": 0.101
         },
         "returned": 100
       },
@@ -2775,7 +2895,7 @@
           "content_type": "application/json",
           "cached": true,
           "attempts": 0,
-          "seconds": 0.077
+          "seconds": 0.079
         },
         "returned": 33
       }
@@ -2791,10 +2911,10 @@
     "manifests": 24,
     "tables": 22,
     "documents": 53,
-    "context_sources": 6,
+    "context_sources": 8,
     "failures": 2,
     "bytes": 128527122,
     "cache_hits": 75
   },
-  "seconds": 13.773
+  "seconds": 16.711
 }

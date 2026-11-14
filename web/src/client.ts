@@ -61,12 +61,47 @@ export async function getTests(signal?: AbortSignal): Promise<TestList> {
   return mode === 'api' ? fetchJson<TestList>(`${base}/tests`, signal) : (await fixtures(signal)).tests
 }
 
-export async function getRank(profile = 'iss', signal?: AbortSignal): Promise<RankResponse> {
-  if (mode === 'api') return fetchJson<RankResponse>(`${base}/rank?profile=${encodeURIComponent(profile)}`, signal)
+export interface RankInputs {
+  o2_fraction?: number
+  pressure_kpa?: number
+  flow_cm_s?: number
+  gravity_level_g?: number
+  goal?: 'prevention' | 'detection' | 'suppression'
+}
+
+export async function getRank(profile = 'iss', conditions: RankInputs = {}, signal?: AbortSignal): Promise<RankResponse> {
+  for (const [name, value] of Object.entries(conditions)) {
+    if (name === 'goal' || value === undefined) continue
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 ||
+        (name === 'o2_fraction' && value > 1) || (name === 'pressure_kpa' && value === 0)) {
+      throw new Error(`Invalid ${name}`)
+    }
+  }
+  if (conditions.goal && !['prevention', 'detection', 'suppression'].includes(conditions.goal)) {
+    throw new Error('Invalid safety goal')
+  }
+  if (profile === 'custom' && (conditions.o2_fraction === undefined || conditions.pressure_kpa === undefined)) {
+    throw new Error('Custom profiles require oxygen and pressure')
+  }
+  const query = new URLSearchParams({ profile })
+  for (const [name, value] of Object.entries(conditions)) {
+    if (value !== undefined) query.set(name, String(value))
+  }
+  if (mode === 'api') return fetchJson<RankResponse>(`${base}/rank?${query}`, signal)
   const fixture = await fixtures(signal)
   const selected = fixture.profiles.profiles.find(item => item.id === profile)
   if (!selected) throw new Error(`Unknown profile: ${profile}`)
-  return { ...fixture.rank, profile: selected }
+  const configured = { ...selected, oxygen: { ...selected.oxygen }, pressure: { ...selected.pressure },
+    flow: { ...selected.flow }, assumptions: [...selected.assumptions] }
+  if (conditions.o2_fraction !== undefined) configured.oxygen.minimum = configured.oxygen.maximum = conditions.o2_fraction
+  if (conditions.pressure_kpa !== undefined) configured.pressure.minimum = configured.pressure.maximum = conditions.pressure_kpa
+  if (conditions.flow_cm_s !== undefined) configured.flow.minimum = configured.flow.maximum = conditions.flow_cm_s
+  if (conditions.gravity_level_g !== undefined) {
+    configured.gravity_level_g = conditions.gravity_level_g
+    configured.gravity = conditions.gravity_level_g === 1 ? 'normal_gravity' :
+      conditions.gravity_level_g === 0 ? 'microgravity' : 'reduced_gravity'
+  }
+  return { ...fixture.rank, profile: configured, safety_goal: conditions.goal ?? 'prevention' }
 }
 
 export async function getCompare(ids: string[], signal?: AbortSignal): Promise<CompareResponse> {

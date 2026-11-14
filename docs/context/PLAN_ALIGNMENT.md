@@ -1,152 +1,58 @@
-# Complete plan versus current implementation
+# Supplied plan alignment — current Phase 1–3 foundation
 
-Reviewed on 14 November 2026 against the owner's newly supplied complete
-`flame-in-freefall-plan.md`. This compares the repository with the document; it
-is not independent verification of the plan's external scientific, pricing,
-account-offer or event-rule claims.
+Updated 14 November 2026 after the owner authorized fixing the differences found
+in the original review. The complete supplied plan remains unchanged in
+`flame-in-freefall-plan.md`. Read `SESSION_HANDOFF.md` for the active delivery state.
 
-## Overall assessment
+## Aligned in this update
 
-**The implemented Phase 1–3 foundation broadly follows the plan. It is not a full
-or exact implementation of the complete product.** The harvester, provenance,
-raw-data limits, stack and mock contracts are suitable foundations. Before
-normalization and real ranking, align the shared schema and score definitions.
+| Requirement | Current implementation |
+| --- | --- |
+| Complete normalized-row contract | `ExperimentalTest` now has investigation/date, fuel/phase, sample geometry/size/dimensions, oxygen/basis, pressure, diluent/composition, flow/direction, controlled outcome, multiple named metrics, DOI and source references. This defines the format; it does not normalize the raw CSVs. |
+| Existing consumers | Legacy `material`, `geometry` and `oxygen_fraction` input aliases remain accepted; JSON uses `fuel`, `sample_geometry`, `o2_fraction`. Legacy single-value outcomes remain optional. Flat source fields must agree with nested provenance. |
+| Table validation | Pandera validates canonical columns and retains all Pydantic-validated metrics/evidence fields instead of discarding them. Missing values remain null. |
+| Investigation metadata | Models and real-metadata fixtures expose objective/approach/hypothesis/impacts, sub-area, DOI, hardware/platform, publications and aggregate file counts/sizes. Sensors and AI summaries remain unknown until supported extraction/review. |
+| Ranking definitions | Weights now mean conditions 0.40, fuel realism 0.25, safety goal 0.20, data richness 0.15. Real scores remain null until reviewed data/ranking implementation exists. |
+| Mission profiles | Earth/ISS use the supplied 14.7 psi scenario, Moon/rover use >=30% oxygen and <=10.2 psi, suit uses 100% oxygen at 4.3 psi. Values convert to kPa. Unspecified airflow/gravity remains unknown; these are scenarios, not certified requirements. |
+| Custom conditions | Sixth `custom` profile, API validation and a web form for oxygen, pressure, optional flow/gravity. Canonical `o2_fraction` and the deprecated query alias are handled consistently. Safety goal is explicit in the rank contract. |
+| Exact source list | Configuration now includes the plan's Apollo SMA URLs, Mir, all three specified Spinoffs (9582, 9407, 9918), combustion page and requested Guide URL. Fallbacks are explicit and logged. |
+| Generated artifacts | OpenAPI, TypeScript declarations and fixtures are regenerated together. API compatibility and custom-input tests cover the changed contracts. |
 
-`flame-in-freefall-plan.md` is now the primary supplied product plan. The earlier
-assistant-derived summary is preserved as `implementation-summary.md` for history.
-The original build checklist still describes implementation phases; handoffs and
-executed reports describe what actually works.
+## What the real collection contains
 
-## Implemented and aligned
+Latest run: `raw/plan-aligned-20261114/`; audit/report files are under `docs/harvest/`.
+There are 24 manifests, 22 experimental CSVs, 53 supporting documents and eight
+captured context topics. The audit verifies 118 original-source/extracted-text
+files. Raw data/cache stays local and ignored by Git.
 
-| Area | Current implementation | Assessment |
-| --- | --- | --- |
-| Stack and folders | Python 3.12, httpx, Pandera, FastAPI, React/Vite/TypeScript/Tailwind/Plotly, Docker scaffolds, CI | Aligned foundation; cloud deployment is later work |
-| PSI catalogue | Paginates all PSI investigations, then filters exact Combustion Science | Meets the collection intent and avoids relying on a keyword result count |
-| Manifests | Stores original JSON, DOI, version, license, hardware and file lists | Aligned |
-| Experimental CSVs | Resolves signed links immediately; retains exact bytes, encoding, source versions and hashes | Aligned |
-| Download policy | Reports/Science Documents below 20 MB; bulk Raw Data excluded | Aligned with the detailed pipeline and build checklist |
-| Caching and concurrency | Three/four workers, retries/backoff, verified on-disk cache, dated archives and failure logs | Aligned |
-| Provenance and uncertainty | Nested provenance, source rows/pages, review status, evidence type and uncertainty labels | Consistent with the evidence-first requirement |
-| API contracts | All planned route families plus `/meta` and `/profiles`; SSE payload definitions and generated TypeScript | Contract foundation only; scientific responses remain mocks |
-| Final UI direction | Explorer, coverage, investigation detail, compare, chat and export are represented in the plan/reference | Only the basic preview is implemented so far |
+The source-gap status remains honest:
 
-## Differences requiring implementation work
+- Two legacy PSI-26 final-report entries return 404, so collection stays partial.
+- Both exact Apollo SMA URLs were attempted but required the explicitly recorded
+  NASA article fallbacks. `requested_url`, actual URL and attempt history are saved.
+- All three exact Spinoff pages and the requested Researcher's Guide URL succeeded.
+- Official challenge-page capture remains unavailable in this environment.
+- Four investigations have no experimental table. No rows or reports were fabricated.
 
-### 1. The unified row schema is only partially aligned
+## Later phases remain later phases
 
-Current contracts are in `api/models.py`. The supplied plan now gives details
-that were unavailable when the provisional contract was written.
+This update aligns the existing foundation with the supplied plan. It does not
+claim Phase 4 normalization/maps, reviewed summaries, general report/DOCX chunking,
+embeddings, DuckDB/Parquet storage, actual relevance scores, grounded model calls,
+the final four-screen UI, real normalized-data exports, related-study similarity,
+cloud hosting, live freshness or nightly synchronization are implemented.
 
-| Complete-plan field | Current equivalent/status | Required follow-up |
-| --- | --- | --- |
-| `accession`, `test_id` | Present | Keep stable IDs and source rows |
-| `investigation` | Title is in the investigation record, joined by accession | Define whether normalized rows also carry a label |
-| `test_date` | Missing | Add a nullable date with reviewed date/day-of-year conversion |
-| `fuel` | Currently `material` | Define a canonical name or explicit adapter; do not silently drop it |
-| `fuel_phase` | Present, including unknown/mixed states | Preserve uncertainty |
-| `sample_geometry` | Currently `geometry` | Define the field mapping |
-| `sample_size_mm` | Only `thickness_mm` exists | Add representation for diameter/width/length and their original units/provenance |
-| `o2_fraction` | Currently `oxygen_fraction` | Define one canonical name or adapter; preserve mole/volume/mass basis |
-| `pressure_kpa`, flow fields | Present | Implement reviewed conversions in Phase 4 |
-| `diluent` | Missing | Add composition representation; missing fractions must stay missing |
-| `outcome` | Present as unrestricted text | Implement reviewed controlled labels without conflating ignition/extinction events |
-| `metrics` | Only one `outcome_value`/`outcome_unit` pair exists | Support multiple named metrics with units and source locations |
-| `source_file`, `source_row` | Present inside `provenance` | Document flattening for exports |
-| `doi` per row/export | Available at investigation/source level; not a row/export field | Join reliably by accession and include it in exports |
+The API still serves clearly labelled mock responses. The custom form applies
+conditions but does not pretend a safety score or scientific result exists.
+Numbers must eventually come from reviewed code/data and claims from evidence.
 
-Investigation records already include titles, DOI, hardware, platform, fuel phase,
-related investigations, condition ranges, findings and source documents. Dedicated
-sub-area, objective/approach/hypothesis/impacts, sensors, full publication metadata
-and aggregate file-size/count fields are not yet exposed in the API record. The
-raw manifests retain the upstream fields for later mapping; metadata was not lost.
+## Continuing safely
 
-When implementing this work, change Pydantic/Pandera models, generated OpenAPI,
-TypeScript declarations, fixtures and consumers together. Do not force raw ranges
-or multi-value cells into fictional independent scalar tests.
-
-### 2. Ranking dimensions must follow the complete plan
-
-The intended formula is now explicit:
-
-- Conditions match: 0.40
-- Fuel realism: 0.25
-- Safety-goal match: 0.20
-- Data richness: 0.15
-
-The current `RankWeights` and `config/profiles.yaml` instead assign these numbers
-to oxygen, pressure, airflow and gravity. That was a provisional choice before
-the complete plan was supplied. It is not the same formula. Replace the draft
-configuration/contracts when real ranking is implemented; define tolerances,
-missing-data treatment and each component's scientific rationale. The current
-API returns null scores, so no incorrect numeric ranking is being served.
-
-### 3. Mission profiles need a coordinated update
-
-The complete plan specifies Moon-base AND rover atmospheric scenarios and a
-custom profile. The current rover values are unset and there is no complete
-editable custom-profile workflow. Current pressure presets also use rounded kPa
-values rather than exact conversions of the plan's psi values. Shared weights,
-profile inputs, gravity representation and UI controls must be made consistent.
-Keep these as sourced scenarios/assumptions rather than certified NASA requirements.
-
-### 4. The exact requested context resources are not all captured
-
-The collector saved six topic sources, including a wool-mask Spinoff article.
-The complete plan instead names these three particular Spinoff pages:
-
-- Fireman's air tanks: https://spinoff.nasa.gov/node/9582
-- Fire detector: https://spinoff.nasa.gov/node/9407
-- Fire attire: https://spinoff.nasa.gov/node/9918
-
-Those three URLs are not currently in `config/context_sources.yaml`. The Apollo
-sources also use different primary NASA pages from the plan's SMA lessons-learned
-URLs. Add the explicitly requested sources to the context corpus when extending
-collection. Do not claim the existing six topics are the exact complete source list.
-The official challenge resource page was unreachable during the recorded harvest.
-
-## Observed source differences, rather than implementation defects
-
-- Actual collection: 133 PSI catalogue investigations, 24 labelled Combustion
-  Science, 24 manifests, 22 experimental CSVs and 53 supporting documents. The
-  plan's approximate counts are not authoritative current inventory numbers.
-- Four investigations list no experimental table; none was fabricated.
-- Two legacy PSI-26 report entries returned 404. File integrity checks pass, but
-  the aggregate collection is explicitly partial. See `../harvest/report.json`.
-- Raw CSV record counts include possible headers/descriptions/blank rows. The
-  plan's 2,400+ test-row claim must be validated after normalization before display.
-
-## Planned later phases, not features that already exist
-
-Normalization/maps, reviewed summaries, report/DOCX extraction with page-aware
-chunks, embeddings, DuckDB/Parquet queries, real relevance scores, grounded AI,
-full four-screen dashboard, exports of normalized data, related-study similarity,
-cloud hosting, freshness checks and nightly sync remain future implementation.
-Only the Researcher's Guide/context text is currently extracted; the 53 collected
-supporting documents are not yet a validated searchable text corpus.
-
-The storage description is consistent when read as: originals are local ingestion
-inputs, while the deployed snapshot contains reviewed data/text/vectors and users
-open upstream source links. Do not package raw video or automatically serve original
-report PDFs as part of the public app.
-
-## Claims to verify before presenting
-
-Preserving the supplied plan does not establish the current accuracy of its event
-dates, judging interpretation, model prices, offers, available gravity datasets,
-future mission status or habitat assumptions. The plan itself alternates between
-seven slides OR a 30-second demo and a required slide deck; resolve submission
-requirements against the actual event guidance. Scientific claims need direct,
-condition-specific evidence rather than being copied from planning prose.
-
-## Recommended implementation order
-
-1. Agree and implement the complete normalized schema, with explicit compatibility
-   mappings for the existing API names.
-2. Normalize and review priority tables; preserve per-test versus study-wide values.
-3. Add the plan's exact missing context references and extract reviewed evidence.
-4. Build the snapshot and intended C/F/M/D ranking model.
-5. Complete real API behavior, final UI, validation, deployment and submission work.
-
-This review authorizes no additional implementation phase by itself. Follow the
-owner's active task instructions; this update changes documentation, not runtime behavior.
+- Implement actual normalization against this canonical schema; preserve dates,
+  units, ranges, sample geometry, multiple metrics and per-test versus study-wide facts.
+- Use C/F/M/D when implementing ranking; define component tolerances and missing-data
+  behavior and validate relevance separately from physical safety.
+- Keep originals as ingestion inputs and cite upstream PSI/DOI links to users.
+- Do not treat the plan's historical inventory counts, prices, offers, mission-status
+  statements or event dates/rules as independently verified current facts.
+- Do not add operational predictions or invented partial-gravity measurements.

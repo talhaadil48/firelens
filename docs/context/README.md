@@ -1,5 +1,7 @@
 # FireLens project context
 
+For the active work-in-progress checkpoint, start with [SESSION_HANDOFF.md](SESSION_HANDOFF.md).
+
 Read these in order before changing the project:
 
 1. [Complete supplied product plan](flame-in-freefall-plan.md): the owner's full

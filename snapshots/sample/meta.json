@@ -1,7 +1,7 @@
 {
   "mode": "mock",
-  "snapshot_id": "phase2-metadata-fixture-v1",
-  "snapshot_date": "2026-11-14T13:14:47.565647Z",
+  "snapshot_id": "plan-aligned-metadata-fixture-v2",
+  "snapshot_date": "2026-11-14T15:48:40.415719Z",
   "investigation_count": 5,
   "test_count": 0,
   "new_releases_since_snapshot": null,

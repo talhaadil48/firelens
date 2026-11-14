@@ -4,7 +4,7 @@ import csv
 import io
 import json
 from collections.abc import Iterator
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,6 +18,7 @@ from api.models import (
     DoneEvent,
     ErrorResponse,
     ExportResponse,
+    Gravity,
     Investigation,
     InvestigationList,
     MetaResponse,
@@ -91,26 +92,43 @@ def investigation(accession: str) -> Investigation:
 @app.get("/rank", response_model=RankResponse)
 def rank(
     profile: str = "iss",
-    oxygen_fraction: Annotated[float | None, Query(ge=0, le=1)] = None,
-    pressure_kpa: Annotated[float | None, Query(gt=0)] = None,
-    flow_cm_s: Annotated[float | None, Query(ge=0)] = None,
+    oxygen_fraction: Annotated[
+        float | None, Query(ge=0, le=1, allow_inf_nan=False, deprecated=True)
+    ] = None,
+    o2_fraction: Annotated[float | None, Query(ge=0, le=1, allow_inf_nan=False)] = None,
+    pressure_kpa: Annotated[float | None, Query(gt=0, allow_inf_nan=False)] = None,
+    flow_cm_s: Annotated[float | None, Query(ge=0, allow_inf_nan=False)] = None,
+    gravity_level_g: Annotated[float | None, Query(ge=0, allow_inf_nan=False)] = None,
+    goal: Literal["prevention", "detection", "suppression"] = "prevention",
 ) -> RankResponse:
+    if oxygen_fraction is not None and o2_fraction is not None and oxygen_fraction != o2_fraction:
+        raise HTTPException(422, "Conflicting oxygen_fraction and o2_fraction inputs")
+    oxygen = o2_fraction if o2_fraction is not None else oxygen_fraction
+    if profile == "custom" and (oxygen is None or pressure_kpa is None):
+        raise HTTPException(422, "Custom profiles require o2_fraction and pressure_kpa")
     config = load_profiles()
     selected = next((p for p in config.profiles if p.id == profile), None)
     if selected is None:
         raise HTTPException(404, f"Unknown profile: {profile}")
     selected = selected.model_copy(deep=True)
-    for name, value in [
-        ("oxygen", oxygen_fraction),
-        ("pressure", pressure_kpa),
-        ("flow", flow_cm_s),
-    ]:
+    for name, value in [("oxygen", oxygen), ("pressure", pressure_kpa), ("flow", flow_cm_s)]:
         if value is not None:
             condition = getattr(selected, name)
             condition.minimum = condition.maximum = value
+    if gravity_level_g is not None:
+        selected.gravity_level_g = gravity_level_g
+        selected.gravity = (
+            Gravity.NORMAL
+            if gravity_level_g == 1
+            else Gravity.MICROGRAVITY
+            if gravity_level_g == 0
+            else Gravity.REDUCED
+        )
+        selected.assumptions.append("Gravity level was explicitly supplied by the user.")
     return RankResponse(
         profile=selected,
         weights=config.weights,
+        safety_goal=goal,
         items=[
             RankItem(
                 accession=i.accession,
@@ -124,7 +142,7 @@ def rank(
         ],
         warnings=[
             "No ranking calculated. Fixture order is not a ranking.",
-            "Profiles and weights are illustrative and require scientific review.",
+            "Profiles are supplied-plan scenarios; C/F/M/D weights require science validation.",
         ],
     )
 
@@ -174,16 +192,30 @@ def compare(ids: str) -> CompareResponse:
 CSV_FIELDS = [
     "test_id",
     "accession",
-    "material",
-    "oxygen_fraction",
+    "investigation",
+    "test_date",
+    "fuel",
+    "fuel_phase",
+    "sample_geometry",
+    "sample_size_mm",
+    "sample_dimensions_mm",
+    "o2_fraction",
+    "oxygen_basis",
     "pressure_kpa",
+    "diluent",
+    "diluent_fractions",
     "flow_cm_s",
+    "flow_direction",
+    "gravity",
+    "gravity_level_g",
     "outcome",
+    "metrics",
     "outcome_value",
     "outcome_unit",
     "source_url",
     "source_file",
     "source_row",
+    "doi",
 ]
 
 

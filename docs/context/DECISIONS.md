@@ -61,3 +61,13 @@ dimensions. It also provides a fuller normalized row schema, rover/custom profil
 requirements and three exact Spinoff sources. Runtime models/configuration remain
 unchanged in this documentation task; those differences must be addressed during
 the corresponding authorized implementation work.
+
+## Implemented complete-plan alignment
+
+The owner authorized alignment on the current branch. The canonical row schema,
+C/F/M/D weights, profile/custom contracts and exact context source configuration
+now follow the full plan. Legacy row/query aliases preserve compatibility. The
+new collection uses `raw/plan-aligned-20261114/` (eight context topics, documented
+Apollo fallbacks, two missing PDFs). See `PLAN_ALIGNMENT.md` and the active
+`SESSION_HANDOFF.md`; prior provisional decisions are historical. No live scientific
+ranking, normalization or deployment was added by this foundation update.
