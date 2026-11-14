@@ -30,6 +30,7 @@ from api.models import (
     SourceDocument,
     TextChunk,
 )
+from api.snapshot import write_tests_parquet
 from harvest.maps_schema import ColumnMap
 
 BASE_URL = "https://psi.nasa.gov"
@@ -575,15 +576,45 @@ def build_vectors(
     return meta
 
 
+_NUMERIC_FLOAT_COLUMNS = (
+    "sample_size_mm",
+    "thickness_mm",
+    "o2_fraction",
+    "pressure_kpa",
+    "flow_cm_s",
+    "gravity_level_g",
+    "outcome_value",
+)
+_JSON_SERIALIZED_COLUMNS = (
+    "sample_dimensions_mm",
+    "diluent_fractions",
+    "metrics",
+    "provenance",
+    "notes",
+)
+
+
 def _parquet_safe_frame(frame: pd.DataFrame) -> pd.DataFrame:
-    """Serialize nested object/dict/list columns as JSON strings for reliable Parquet output."""
+    """Serialize nested object/dict/list columns as JSON strings and enforce numeric dtypes."""
     out = frame.copy()
+    for col in _NUMERIC_FLOAT_COLUMNS:
+        if col in out.columns:
+            out[col] = pd.to_numeric(out[col], errors="coerce").astype("float64")
+    for col in _JSON_SERIALIZED_COLUMNS:
+        if col in out.columns:
+            out[col] = (
+                out[col]
+                .map(lambda v: json.dumps(v) if isinstance(v, dict | list) else v)
+                .astype("string")
+            )
     for col in out.columns:
         if out[col].dtype == object:
             sample = out[col].dropna()
             if not sample.empty and isinstance(sample.iloc[0], dict | list):
-                out[col] = out[col].map(
-                    lambda v: json.dumps(v) if isinstance(v, dict | list) else v
+                out[col] = (
+                    out[col]
+                    .map(lambda v: json.dumps(v) if isinstance(v, dict | list) else v)
+                    .astype("string")
                 )
             elif sample.empty:
                 out[col] = out[col].astype("string")
@@ -604,7 +635,8 @@ def write_snapshot(
     target = snapshots_dir / snapshot_id
     target.mkdir(parents=True, exist_ok=True)
 
-    _parquet_safe_frame(frame).to_parquet(target / "tests.parquet", index=False)
+    _ = frame
+    write_tests_parquet(rows, target / "tests.parquet")
 
     inv_list = InvestigationList(
         items=investigations,

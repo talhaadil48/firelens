@@ -206,15 +206,18 @@ class AppRuntime:
     def is_mock_mode(self) -> bool:
         if self.settings.mode == "snapshot":
             return False
-        explicit_mock = "mode" in self.settings.model_fields_set and self.settings.mode == "mock"
-        if explicit_mock:
+        if "mode" in self.settings.model_fields_set and self.settings.mode == "mock":
             return True
-        has_snapshot = (
-            (self.settings.snapshots_dir / "latest.json").exists()
-            or bool(self.settings.azure_storage_account_url.strip())
-            or self.blob_fetcher is not None
-        )
-        return not has_snapshot
+        if self.settings.mode == "auto" or "snapshots_dir" in self.settings.model_fields_set:
+            has_snapshot = (
+                (self.settings.snapshots_dir / "latest.json").exists()
+                or bool(self.settings.azure_storage_account_url.strip())
+                or self.blob_fetcher is not None
+            )
+            return not has_snapshot
+        if bool(self.settings.azure_storage_account_url.strip()) or self.blob_fetcher is not None:
+            return False
+        return True
 
 
 runtime = AppRuntime()

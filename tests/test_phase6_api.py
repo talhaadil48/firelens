@@ -39,7 +39,7 @@ from api.models import (
     TextChunk,
 )
 from api.models import (
-    TestList as TestListContract,
+    TestList as ExperimentListContract,
 )
 from api.snapshot import SnapshotLoader, write_tests_parquet
 
@@ -744,13 +744,13 @@ def test_tests_duckdb_filtering_and_pagination(tmp_path: Path):
     configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
     client = TestClient(app)
 
-    filtered = TestListContract.model_validate(
+    filtered = ExperimentListContract.model_validate(
         client.get("/tests?accession=PSI-25&oxygen_min=0.30&pressure_max=80").json()
     )
     assert filtered.total == 3  # BASS2-01, BASS2-02, BASS2-UNREV match O2>=0.30 and P<=80
     assert {row.test_id for row in filtered.items} == {"BASS2-01", "BASS2-02", "BASS2-UNREV"}
 
-    paged = TestListContract.model_validate(client.get("/tests?limit=2&offset=2").json())
+    paged = ExperimentListContract.model_validate(client.get("/tests?limit=2&offset=2").json())
     assert paged.total == 8
     assert len(paged.items) == 2
 
@@ -913,7 +913,7 @@ def test_interoperability_with_harvest_validate_tests_parquet(tmp_path: Path):
     configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
     client = TestClient(app)
 
-    tests_resp = TestListContract.model_validate(client.get("/tests?accession=PSI-25").json())
+    tests_resp = ExperimentListContract.model_validate(client.get("/tests?accession=PSI-25").json())
     assert tests_resp.total == 1
     assert tests_resp.items[0].test_id == "ARROW-01"
     assert tests_resp.items[0].metrics["burn_time"].value == pytest.approx(15.0)
@@ -921,3 +921,208 @@ def test_interoperability_with_harvest_validate_tests_parquet(tmp_path: Path):
     rank_resp = RankResponse.model_validate(client.get("/rank?profile=moon_base").json())
     psi25 = next(item for item in rank_resp.items if item.accession == "PSI-25")
     assert psi25.breakdown["conditions"] == pytest.approx(1.0)
+
+
+def test_phase4_5_pipeline_snapshot_serves_phase6_api_end_to_end(tmp_path: Path):
+    """Run Phases 4-5 run_pipeline(stage='all') and verify all Phase 6 endpoints serve it."""
+    import pymupdf
+    import yaml
+
+    from harvest.pipeline import run_pipeline
+
+    raw_dir = tmp_path / "raw"
+    acc1 = raw_dir / "PSI-501"
+    acc2 = raw_dir / "PSI-502"
+    (acc1 / "documents").mkdir(parents=True)
+    acc2.mkdir(parents=True)
+    maps_dir = tmp_path / "maps"
+    maps_dir.mkdir()
+    snaps_dir = tmp_path / "snapshots"
+
+    (acc1 / "manifest.json").write_text(
+        json.dumps(
+            {
+                "accession": "PSI-501",
+                "title": "Microgravity Solid Cotton Flammability",
+                "version": "1",
+                "doi": "10.60555/psi-501",
+                "experimentHardware": "MSG Flow Duct",
+                "flightProgram": "International Space Station (ISS)",
+                "objective": "Measure solid fabric ignition in elevated oxygen and airflow.",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (acc1 / "tests.csv").write_text(
+        "TestId,Fuel,XO2,P_kPa,Flow,Outcome,SpreadRate\n"
+        "S1,Cotton fabric,0.34,70.0,10.0,Ignited,1.9\n"
+        "S2,Cotton fabric,0.21,101.3,10.0,No Ignition,\n",
+        encoding="utf-8",
+    )
+    pdf_doc = pymupdf.open()
+    page = pdf_doc.new_page()
+    page.insert_text(
+        (72, 72),
+        "PSI-501 Cotton fabric ignited at 34% O2 and 70 kPa with 10 cm/s airflow in MSG Flow Duct.",
+    )
+    pdf_doc.save(str(acc1 / "documents" / "psi501_report.pdf"))
+    pdf_doc.close()
+
+    (acc2 / "manifest.json").write_text(
+        json.dumps(
+            {
+                "accession": "PSI-502",
+                "title": "Droplet Extinction Reference Study",
+                "version": "1",
+                "doi": "10.60555/psi-502",
+                "experimentHardware": "Combustion Chamber",
+                "flightProgram": "International Space Station (ISS)",
+                "objective": "Measure liquid heptane droplet extinction at atmospheric air.",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (acc2 / "tests.csv").write_text(
+        "TestId,Fuel,XO2,P_kPa,Outcome\nL1,n-heptane,0.21,101.3,Extinguished\n",
+        encoding="utf-8",
+    )
+
+    (maps_dir / "PSI-501.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "accession": "PSI-501",
+                "source_file": "tests.csv",
+                "id_column": "TestId",
+                "default_fuel_phase": "solid",
+                "columns": {
+                    "fuel": {"source_column": "Fuel"},
+                    "o2_fraction": {"source_column": "XO2", "multiplier": 1.0},
+                    "pressure_kpa": {"source_column": "P_kPa", "unit": "kPa"},
+                    "flow_cm_s": {"source_column": "Flow", "unit": "cm/s"},
+                    "outcome": {"source_column": "Outcome"},
+                },
+                "metrics": {"spread_rate": {"source_column": "SpreadRate", "unit": "cm/s"}},
+                "outcome_map": {"Ignited": "ignited", "No Ignition": "extinguished"},
+                "review_status": "reviewed",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (maps_dir / "PSI-502.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "accession": "PSI-502",
+                "source_file": "tests.csv",
+                "id_column": "TestId",
+                "default_fuel_phase": "liquid",
+                "columns": {
+                    "fuel": {"source_column": "Fuel"},
+                    "o2_fraction": {"source_column": "XO2", "multiplier": 1.0},
+                    "pressure_kpa": {"source_column": "P_kPa", "unit": "kPa"},
+                    "outcome": {"source_column": "Outcome"},
+                },
+                "outcome_map": {"Extinguished": "extinguished"},
+                "review_status": "reviewed",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    run_pipeline(
+        stage="all",
+        raw_dir=raw_dir,
+        maps_dir=maps_dir,
+        snapshots_dir=snaps_dir,
+        snapshot_id="p45-e2e",
+    )
+
+    configure_runtime(Settings(mode="snapshot", snapshots_dir=snaps_dir))
+    client = TestClient(app)
+
+    meta_resp = MetaResponse.model_validate(client.get("/meta").json())
+    assert meta_resp.snapshot_id == "p45-e2e"
+    assert meta_resp.investigation_count == 2
+    assert meta_resp.test_count == 3
+    assert not any("sample fallback" in w.lower() for w in meta_resp.warnings)
+
+    inv_list = InvestigationList.model_validate(client.get("/investigations").json())
+    assert {inv.accession for inv in inv_list.items} == {"PSI-501", "PSI-502"}
+
+    rank_resp = RankResponse.model_validate(
+        client.get("/rank?profile=moon_base&goal=prevention").json()
+    )
+    assert rank_resp.items[0].accession == "PSI-501"
+    assert rank_resp.items[0].score is not None
+
+    tests_resp = ExperimentListContract.model_validate(
+        client.get("/tests?accession=PSI-501&oxygen_min=0.30").json()
+    )
+    assert tests_resp.total == 1
+    assert tests_resp.items[0].test_id == "S1"
+
+    cmp_resp = CompareResponse.model_validate(client.get("/compare?ids=PSI-501,PSI-502").json())
+    assert len(cmp_resp.investigations) == 2
+
+    csv_resp = client.get("/export?format=csv&accession=PSI-501")
+    assert csv_resp.status_code == 200
+    assert "10.60555/psi-501" in csv_resp.text
+    assert "S1" in csv_resp.text
+
+    chat_resp = client.post(
+        "/chat",
+        json={"question": "Which fabric tests in PSI-501 burned at 34% O2 and 70 kPa?"},
+        headers={"X-Forwarded-For": "198.51.100.77"},
+    )
+    assert chat_resp.status_code == 200
+    frames = _parse_sse(chat_resp.text)
+    ans = AnswerEvent.model_validate(frames[-2][1])
+    assert ans.status == "supported"
+    assert any(c.accession == "PSI-501" for c in ans.citations)
+
+
+def test_real_local_snapshot_serves_phase6_api_when_present():
+    """Verify git-ignored local NASA PSI snapshot serves all Phase 6 routes when present."""
+    from api.config import ROOT
+
+    if not (ROOT / "snapshots/latest.json").exists():
+        pytest.skip("Local snapshots/latest.json not generated in this environment.")
+
+    configure_runtime(Settings(mode="snapshot"))
+    client = TestClient(app)
+
+    meta_resp = MetaResponse.model_validate(client.get("/meta").json())
+    assert meta_resp.investigation_count == 24
+    assert meta_resp.test_count == 1858
+
+    moon_rank = RankResponse.model_validate(client.get("/rank?profile=moon_base").json())
+    assert len(moon_rank.items) == 24
+    assert any(item.score is not None for item in moon_rank.items)
+
+    iss_rank = RankResponse.model_validate(client.get("/rank?profile=iss").json())
+    assert len(iss_rank.items) == 24
+
+    tests_resp = ExperimentListContract.model_validate(
+        client.get("/tests?accession=PSI-69&limit=5").json()
+    )
+    assert tests_resp.total == 274
+    assert len(tests_resp.items) == 5
+
+    cmp_resp = CompareResponse.model_validate(client.get("/compare?ids=PSI-25,PSI-69").json())
+    assert len(cmp_resp.investigations) == 2
+
+    csv_resp = client.get("/export?format=csv&accession=PSI-102")
+    assert csv_resp.status_code == 200
+    assert "PSI-102" in csv_resp.text
+
+    chat_resp = client.post(
+        "/chat",
+        json={"question": "Which FLEX tests in PSI-69 observed cool flame behavior?"},
+        headers={"X-Forwarded-For": "198.51.100.88"},
+    )
+    assert chat_resp.status_code == 200
+    frames = _parse_sse(chat_resp.text)
+    ans = AnswerEvent.model_validate(frames[-2][1])
+    assert ans.status == "supported"
+    assert any(c.accession == "PSI-69" for c in ans.citations)
