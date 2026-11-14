@@ -1,3 +1,5 @@
 * text=auto eol=lf
 *.png binary
 *.pdf binary
+# A blank line terminates every SSE frame, including the final frame.
+*.sse whitespace=-blank-at-eof

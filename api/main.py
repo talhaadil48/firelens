@@ -263,3 +263,25 @@ def chat(request: ChatRequest) -> StreamingResponse:
             "X-Accel-Buffering": "no",
         },
     )
+
+
+# Serve the same SSE payload definitions in /openapi.json that web types use.
+_default_openapi = app.openapi
+
+
+def openapi_with_events() -> dict:
+    schema = _default_openapi()
+    for model in [ProgressEvent, AnswerEvent, DoneEvent]:
+        fragment = model.model_json_schema(ref_template="#/components/schemas/{model}")
+        definitions = fragment.pop("$defs", {})
+        schema["components"]["schemas"].update(definitions)
+        schema["components"]["schemas"][model.__name__] = fragment
+    schema["paths"]["/chat"]["post"]["x-sse-events"] = {
+        "progress": {"$ref": "#/components/schemas/ProgressEvent"},
+        "answer": {"$ref": "#/components/schemas/AnswerEvent"},
+        "done": {"$ref": "#/components/schemas/DoneEvent"},
+    }
+    return schema
+
+
+app.openapi = openapi_with_events

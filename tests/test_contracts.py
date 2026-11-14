@@ -174,4 +174,5 @@ def test_openapi_defines_all_routes_and_sse_payloads():
         "/chat",
     } <= set(schema["paths"])
     exported = json.loads((ROOT / "docs/contracts/openapi.json").read_text())
+    assert exported == schema
     assert set(exported["paths"]["/chat"]["post"]["x-sse-events"]) == {"progress", "answer", "done"}

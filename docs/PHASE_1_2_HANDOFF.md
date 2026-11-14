@@ -13,7 +13,7 @@ Scope: repository setup and feasibility/contracts only. No Phase 3–15 work is 
 | 1.2 | Added README, AGENTS/CLAUDE instructions, original checklist, decisions, references, MIT software license, AI disclosure, ignore rules and secret-free environment examples. |
 | 1.3 | Python 3.12 project, uv lockfile, api/harvest/dev dependency groups, Ruff and pytest. Vite/React/TypeScript/Tailwind/Plotly web project with lockfile, lint, component tests and generated API types. |
 | 1.4 | Make targets for setup, spike/harvest, normalize, precompute, snapshot, API, web, lint/test/contracts, and both Docker builds. Later-phase commands explicitly exit as unimplemented rather than producing fake data. |
-| 1.5 | GitHub Actions checks Python/web on pull requests and main pushes. Remote run result is recorded below once checked. |
+| 1.5 | GitHub Actions checks Python/web on pull requests and main pushes. Remote checks are attached to setup PR #1. |
 
 ### Phase 2 — spike and contracts
 
@@ -84,7 +84,29 @@ cd web && npm run generate:types
 
 ## Verification and GitHub delivery
 
-Local and remote check results will be finalized before the delivery commit.
+| Check | Observed result |
+| --- | --- |
+| PSI catalogue + experimental downloads | PASS: FLEX and both CFI-G CSVs saved; headers/hashes/timings recorded |
+| Python lint and formatting | PASS |
+| Python tests | PASS: 59 tests |
+| OpenAPI/fixture drift | PASS; served OpenAPI includes the same SSE event definitions |
+| TypeScript generation/type checking and web lint | PASS |
+| Web tests | PASS: 8 tests |
+| Production web build | PASS; Plotly is a separate lazy-loaded chunk |
+| HTTP API smoke | PASS: metadata/list/rank/tests/compare/export and SSE chat |
+| Credential/signature scan | PASS: no token or signed URL found in staged deliverables |
+| npm dependency audit | 0 high/critical; 7 moderate findings in the development lint dependency chain (minimatch); not runtime dashboard code |
+| Docker image builds | NOT RUN: Docker Desktop WSL integration unavailable |
+| GitHub delivery | [Setup PR #1](https://github.com/talhaadil48/firelens/pull/1); GitHub Actions results attached to the PR |
+
+The first dependency audit found outdated test tooling; it was replaced with
+current Vite/Vitest/ESLint versions and checked again. The remaining moderate
+transitive lint advisory requires a separately reviewed upstream update/override;
+no forced incompatible downgrade was applied.
+
+A server already occupied port 8000 in this environment, so the HTTP smoke check
+used 18080 without stopping that existing service. Normal defaults remain 8000.
+The test run reports an upstream Starlette/httpx deprecation warning, not a failure.
 
 ## Next work
 

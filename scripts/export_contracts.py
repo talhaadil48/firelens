@@ -10,16 +10,6 @@ from api.models import AnswerEvent, DoneEvent, ProgressEvent, TestList
 
 def outputs() -> dict:
     schema = app.openapi()
-    for model in [ProgressEvent, AnswerEvent, DoneEvent]:
-        fragment = model.model_json_schema(ref_template="#/components/schemas/{model}")
-        definitions = fragment.pop("$defs", {})
-        schema["components"]["schemas"].update(definitions)
-        schema["components"]["schemas"][model.__name__] = fragment
-    schema["paths"]["/chat"]["post"]["x-sse-events"] = {
-        "progress": {"$ref": "#/components/schemas/ProgressEvent"},
-        "answer": {"$ref": "#/components/schemas/AnswerEvent"},
-        "done": {"$ref": "#/components/schemas/DoneEvent"},
-    }
     fixture = {
         "meta": meta().model_dump(mode="json"),
         "profiles": load_profiles().model_dump(mode="json"),
