@@ -5,6 +5,8 @@ Evidence-linked exploration of NASA microgravity combustion research.
 **Status: Phase 7 dashboard on `feature/phase-7-web`.** Explorer, reviewed
 coverage charts, investigation detail, comparison, source-linked chat (including
 charts of cited measurements) and CSV/JSON exports connect to the Phase 6 API.
+Light/dark appearance is available from the header. The coverage view groups
+identical tested conditions and offers outcome filters and explicit pressure ranges.
 Mock mode stays an explicitly empty metadata preview. A local ignored snapshot
 contains 24 investigations and 1,858 normalized tests; it must be generated on a
 fresh checkout. See [Phase 7 setup and verification](docs/PHASE_7_HANDOFF.md).

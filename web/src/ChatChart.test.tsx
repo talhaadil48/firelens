@@ -13,9 +13,13 @@ vi.mock("./components/EvidenceBars", () => ({
   ),
 }));
 vi.mock("./Plot", () => ({
-  default: ({ tests }: { tests: TestRow[] }) => (
+  default: ({ points }: { points: { rows: TestRow[] }[] }) => (
     <div data-testid="cited-plot">
-      {tests.length} reviewed points: {tests.map((t) => t.test_id).join(",")}
+      {points.flatMap((point) => point.rows).length} reviewed points:{" "}
+      {points
+        .flatMap((point) => point.rows)
+        .map((t) => t.test_id)
+        .join(",")}
     </div>
   ),
 }));

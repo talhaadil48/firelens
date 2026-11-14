@@ -205,3 +205,107 @@ test("custom scenario, filtered export and modal keyboard behavior", async ({
     page.getByRole("button", { name: "Export data ↗" }),
   ).toBeFocused();
 });
+
+test("light and dark themes persist and the new condition explorer preserves source data", async ({
+  page,
+}) => {
+  await page.goto("/#/explorer");
+  await expect(page.locator(".coverage-panel .js-plotly-plot")).toBeVisible({
+    timeout: 60_000,
+  });
+  await expect(
+    page.getByRole("button", { name: "Cabin pressures 0–120 kPa" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText(/tests above 120 kPa are outside/)).toBeVisible();
+  await page.getByRole("button", { name: "Full range", exact: true }).click();
+  const bubble = page
+    .locator(".coverage-panel .scatterlayer .trace .points path.point")
+    .first();
+  await bubble.scrollIntoViewIfNeeded();
+  const bubbleBox = await bubble.boundingBox();
+  if (!bubbleBox)
+    throw new Error("No plotted bubble was available for selection");
+  // Plotly receives pointer events on its interaction layer above the SVG marks.
+  await page.mouse.click(
+    bubbleBox.x + bubbleBox.width / 2,
+    bubbleBox.y + bubbleBox.height / 2,
+  );
+  await expect(page.getByLabel("Selected tested condition")).toBeVisible();
+  expect(
+    await page.locator(".condition-selection .selected-study-links a").count(),
+  ).toBeGreaterThan(0);
+  await page.getByRole("button", { name: "Close selected condition" }).click();
+  await expect(page.getByText(/tests above 120 kPa are outside/)).toBeHidden();
+  await page.getByRole("button", { name: "Switch to light theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(
+    await page
+      .locator(".panel")
+      .first()
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+  ).toBe("rgb(255, 255, 255)");
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Switch to dark theme" }),
+  ).toBeVisible();
+  await expect(page.locator(".coverage-panel .js-plotly-plot")).toBeVisible();
+  await page.screenshot({
+    path: path.join(artifacts, "coverage-light.png"),
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Export data ↗" }).click();
+  const exportDialog = page.getByRole("dialog");
+  await expect(
+    exportDialog.getByRole("button", { name: "Download CSV ↓" }),
+  ).toBeEnabled();
+  expect(
+    await exportDialog.evaluate(
+      (node) => getComputedStyle(node).backgroundColor,
+    ),
+  ).toBe("rgb(255, 255, 255)");
+  await page.keyboard.press("Escape");
+  const filter = page.getByRole("group", {
+    name: "Filter chart by reported outcome",
+  });
+  await filter.getByRole("button", { name: /^Extinguished/ }).click();
+  await expect(
+    filter.getByRole("button", { name: /^Extinguished/ }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByText("View accessible chart data", { exact: true }).click();
+  const outcomes = await page
+    .locator(".chart-table tbody tr td:last-child")
+    .allTextContents();
+  expect(outcomes.length).toBeGreaterThan(0);
+  expect(outcomes.every((outcome) => outcome === "extinguished")).toBe(true);
+  await page.getByText("View accessible chart data", { exact: true }).click();
+  await page.getByRole("button", { name: "Switch to dark theme" }).click();
+  await filter.getByRole("button", { name: /^All outcomes/ }).click();
+  await page.screenshot({
+    path: path.join(artifacts, "coverage-dark.png"),
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Switch to light theme" }).click();
+  await page.getByRole("link", { name: "Ask FireLens", exact: true }).click();
+  await page.getByLabel("Search scope").selectOption("PSI-69");
+  await page
+    .getByLabel("What would you like to understand?")
+    .fill("Show PSI-69 tests and compare pressure");
+  await page.getByRole("button", { name: "Search evidence ↗" }).click();
+  await expect(page.locator(".chat-chart .barlayer")).toBeVisible();
+  await page.screenshot({
+    path: path.join(artifacts, "ask-light.png"),
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 393, height: 852 });
+  await page.getByRole("link", { name: "Explorer", exact: true }).click();
+  await expect(page.locator(".coverage-panel .js-plotly-plot")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: path.join(artifacts, "coverage-light-mobile.png"),
+    fullPage: true,
+  });
+});

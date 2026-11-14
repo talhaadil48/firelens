@@ -94,7 +94,9 @@ export default function Explorer({
     ...new Set(
       rank?.items
         .filter((item) => visibleIds.has(item.accession))
-        .flatMap((item) => item.gaps.map(gap => `${item.accession}: ${gap}`)) ?? [],
+        .flatMap((item) =>
+          item.gaps.map((gap) => `${item.accession}: ${gap}`),
+        ) ?? [],
     ),
   ];
   function apply(event: FormEvent) {
@@ -261,13 +263,13 @@ export default function Explorer({
         <div className="section-heading">
           <div>
             <p className="eyebrow">02 / UNDERSTAND THE COVERAGE</p>
-            <h2 id="coverage-heading">Tested conditions. Visible gaps.</h2>
+            <h2 id="coverage-heading">Where has NASA tested?</h2>
           </div>
           <span className="subtle-label">OXYGEN × PRESSURE</span>
         </div>
         <p className="muted">
-          Reviewed measurements, coloured by reported outcome. The amber marker
-          or envelope represents your scenario.
+          Explore the conditions NASA has measured. Compare them with your
+          mission environment.
         </p>
         {rowsError ? (
           <ErrorNotice message={rowsError} />

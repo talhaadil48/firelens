@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTheme, setTheme } from "./theme";
 import {
   dataMode,
   getAllTests,
@@ -24,6 +25,7 @@ import { Empty, ErrorNotice, PageTitle } from "./components/Shared";
 
 const routeNow = () => window.location.hash.slice(1) || "/explorer";
 export default function App() {
+  const theme = useTheme();
   const [route, setRoute] = useState(routeNow);
   const [meta, setMeta] = useState<Meta | null>(null),
     [records, setRecords] = useState<Study[]>([]),
@@ -215,6 +217,23 @@ export default function App() {
               </a>
             ))}
           </nav>
+          <button
+            className="theme-toggle"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 15.2A8.4 8.4 0 0 1 8.8 4 8.4 8.4 0 1 0 20 15.2Z" />
+              </svg>
+            )}
+            <span>{theme === "dark" ? "Light" : "Dark"}</span>
+          </button>
           <a
             href="#/data"
             className="snapshot-badge"

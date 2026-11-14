@@ -1,5 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const apiPort = Number(process.env.FIRELENS_E2E_API_PORT ?? 8017);
+const webPort = Number(process.env.FIRELENS_E2E_WEB_PORT ?? 4177);
+const apiOrigin = `http://127.0.0.1:${apiPort}`;
+const webOrigin = `http://127.0.0.1:${webPort}`;
+
 export default defineConfig({
   testDir: "./e2e",
   timeout: 120_000,
@@ -8,7 +13,7 @@ export default defineConfig({
   workers: 1,
   outputDir: "../artifacts/phase7/browser-results",
   reporter: "list",
-  use: { baseURL: "http://127.0.0.1:4177", trace: "retain-on-failure" },
+  use: { baseURL: webOrigin, trace: "retain-on-failure" },
   projects: [
     {
       name: "chromium",
@@ -20,9 +25,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command:
-        "uv run --project .. uvicorn api.main:app --app-dir .. --host 127.0.0.1 --port 8017",
-      url: "http://127.0.0.1:8017/meta",
+      command: `uv run --project .. uvicorn api.main:app --app-dir .. --host 127.0.0.1 --port ${apiPort}`,
+      url: `${apiOrigin}/meta`,
       timeout: 120_000,
       reuseExistingServer: false,
       env: {
@@ -31,20 +35,20 @@ export default defineConfig({
         AZURE_STORAGE_ACCOUNT_URL: "",
         FIRELENS_AZURE_STORAGE_ACCOUNT_URL: "",
         FIRELENS_LIVE_CATALOGUE_CHECK: "false",
-        FIRELENS_CORS_ORIGINS: '["http://127.0.0.1:4177"]',
+        FIRELENS_CORS_ORIGINS: JSON.stringify([webOrigin]),
       },
     },
     {
       command:
         process.env.FIRELENS_E2E_PREVIEW === "1"
-          ? "npm run preview -- --host 127.0.0.1 --port 4177 --strictPort"
-          : "npm run dev -- --host 127.0.0.1 --port 4177 --strictPort",
-      url: "http://127.0.0.1:4177",
+          ? `npm run preview -- --host 127.0.0.1 --port ${webPort} --strictPort`
+          : `npm run dev -- --host 127.0.0.1 --port ${webPort} --strictPort`,
+      url: webOrigin,
       timeout: 120_000,
       reuseExistingServer: false,
       env: {
         VITE_DATA_MODE: "api",
-        VITE_API_BASE_URL: "http://127.0.0.1:8017",
+        VITE_API_BASE_URL: apiOrigin,
       },
     },
   ],

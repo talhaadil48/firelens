@@ -13,14 +13,18 @@ import { ask, getCompare, getRank } from "./client";
 import type { FixtureBundle, TestRow } from "./client";
 
 vi.mock("./Plot", () => ({
-  default: ({ tests }: { tests: TestRow[] }) => (
-    <div data-testid="plot">{tests.length} plotted reviewed points</div>
+  default: ({ points }: { points: { rows: TestRow[] }[] }) => (
+    <div data-testid="plot">
+      {points.flatMap((point) => point.rows).length} plotted reviewed points
+    </div>
   ),
 }));
 const fixture = JSON.parse(
   readFileSync("public/fixtures.json", "utf8"),
 ) as FixtureBundle;
 beforeEach(() => {
+  document.documentElement.dataset.theme = "dark";
+  localStorage.clear();
   window.history.replaceState(null, "", "/");
   vi.stubGlobal(
     "fetch",
@@ -250,4 +254,17 @@ describe("evidence boundaries", () => {
       citations: [],
     });
   });
+});
+
+it("switches both appearance modes and persists the chosen theme", async () => {
+  render(<App />);
+  await ready();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Switch to light theme" }),
+  );
+  expect(document.documentElement.dataset.theme).toBe("light");
+  expect(localStorage.getItem("firelens-theme")).toBe("light");
+  fireEvent.click(screen.getByRole("button", { name: "Switch to dark theme" }));
+  expect(document.documentElement.dataset.theme).toBe("dark");
+  expect(localStorage.getItem("firelens-theme")).toBe("dark");
 });

@@ -9,7 +9,7 @@ part of this change.
 
 | Checklist | Implementation |
 | --- | --- |
-| 7.1 Theme | Dark navy, blue accents, amber uncertainty notices. Locally bundled Inter, Space Grotesk and JetBrains Mono from the supplied reference, with original licences. |
+| 7.1 Theme | Light and dark palettes, blue accents, amber uncertainty notices. Locally bundled Inter, Space Grotesk and JetBrains Mono from the supplied reference, with original licences. |
 | 7.2 Shell | Hash routes, active navigation, snapshot/date badge from `/meta`, source credit, data provenance screen. |
 | 7.3 Explorer | Mission pills, custom O2/pressure/flow/gravity inputs, safety goal, C/F/M/D bars, ranked cards, filters, gaps and assumptions. Plotly oxygen-versus-pressure coverage, outcomes, scenario envelope/target, click-through study links. All API pages loaded; missing/unreviewed points excluded. Six cards initially, with Show more. |
 | 7.4 Detail | Source metadata, reviewed summaries/findings, source snippets, condition ranges, hardware/sensors, first ten normalized rows, documents, publications, DOI/copy citation, related studies. |
@@ -102,9 +102,9 @@ uv run python -m scripts.export_contracts --check
 Verified locally against snapshot `20261114T164500Z`:
 
 - Python: **152 tests passed**, Ruff lint/format passed.
-- Frontend: **20 tests passed**, ESLint/TypeScript passed, production build passed.
+- Frontend: **25 tests passed**, ESLint/TypeScript passed, production build passed.
 - Generated OpenAPI/fixtures drift check passed; generated TypeScript unchanged.
-- Chromium: **4 production-build browser tests passed** against the real API:
+- Chromium: **5 production-build browser tests passed** against the real API:
   full explore/detail/compare/ask/export flow; mobile layout/accessible data;
   three-study comparison and pressure bar chart; custom scenario, filtered
   274-row FLEX export, Escape and focus restoration.
@@ -140,3 +140,47 @@ building for deployment.
   dataset should add server-side chart aggregation and export streaming.
 - Data status is read-only. Deployment, nightly sync and the judging package are
   later milestones.
+
+## Appearance and coverage refinement — 15 November 2026
+
+The owner requested both light and dark themes and a replacement for the original
+"Tested conditions. Visible gaps." scatter plot.
+
+- The header now has a labelled Light/Dark toggle. The choice is saved under
+  `firelens-theme` in browser local storage, applied before initial paint, and
+  synchronized between tabs. Dark remains the default. Storage failures do not
+  prevent switching themes.
+- Both themes cover navigation, cards, inputs, tables, comparison highlights,
+  dialogs, citations, warnings and Plotly scatter/bar labels and grids.
+- The coverage panel is now "Where has NASA tested?" with exact-condition
+  bubbles. Only identical oxygen/pressure coordinates are combined; all source
+  rows and source-study links remain available. Bubble size represents test
+  count, never fire severity. There is no binning, interpolation, jitter or
+  inferred measurement.
+- Outcome filters show original reported categories and counts. The default
+  0–120 kPa cabin display preset makes lower-pressure conditions readable, with
+  an explicit count/link for higher-pressure tests. Full range restores the
+  overview. The 120 kPa display choice is not a NASA operating limit.
+- Counts describe the selected pressure preset rather than claiming to track
+  manual Plotly zoom/pan. The accessible table includes all outcome-filtered
+  source rows, including points outside the initial pressure preset.
+- A clicked bubble exposes the exact condition, represented test count and links
+  to every contributing investigation, avoiding an arbitrary navigation choice
+  when studies share conditions.
+- New tests cover exact grouping, preservation of high-pressure rows, exclusion
+  of unreviewed/simulated/mock/missing-coordinate data, and persisted theme choice.
+- Verified: 25 frontend tests passed; lint/TypeScript and production build passed.
+  Five browser flows passed against the real snapshot, including both themes,
+  reload persistence, full-range switching, outcome filtering and mobile layout.
+  Light/dark screenshots are in ignored `artifacts/phase7/coverage-*.png`.
+
+Browser QA can now run without stopping the owner's servers. Override
+`FIRELENS_E2E_API_PORT` and `FIRELENS_E2E_WEB_PORT` (defaults 8017 / 4177).
+For this run QA used 8018 / 4178; the owner's API on 8017 and frontend on 5173
+were kept running. When testing a production build, its `VITE_API_BASE_URL`
+must match the selected QA API port.
+
+The additional targeted light-mode browser run also passed: bubble selection
+opened contributing study links, the export dialog used the light palette,
+source-backed chat pressure bars rendered correctly, and the 393-pixel mobile
+layout had no horizontal overflow. No application backend or source data changed.

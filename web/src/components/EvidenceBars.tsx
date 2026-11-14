@@ -1,5 +1,6 @@
 import type { TestRow } from "../client";
 import Plot from "../plotlyComponent";
+import { useTheme, chartColors } from "../theme";
 const labels = {
   flow_cm_s: "Airflow (cm/s)",
   pressure_kpa: "Pressure (kPa)",
@@ -12,6 +13,7 @@ export default function EvidenceBars({
   rows: TestRow[];
   field: keyof typeof labels;
 }) {
+  const colors = chartColors(useTheme());
   const valid = rows.filter((row) => row[field] != null);
   return (
     <>
@@ -24,7 +26,7 @@ export default function EvidenceBars({
             x: valid.map(
               (r) => r[field]! * (field === "o2_fraction" ? 100 : 1),
             ),
-            marker: { color: "#86c9ed" },
+            marker: { color: colors.point },
             hovertemplate: "%{y}<br>%{x}<extra></extra>",
           },
         ]}
@@ -33,10 +35,10 @@ export default function EvidenceBars({
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           margin: { l: 130, r: 20, t: 20, b: 50 },
-          font: { color: "#a9becd", size: 11 },
+          font: { color: colors.text, size: 11 },
           xaxis: {
             title: { text: labels[field] },
-            gridcolor: "#263644",
+            gridcolor: colors.grid,
             rangemode: "tozero",
           },
           yaxis: { autorange: "reversed" },
