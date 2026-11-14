@@ -27,7 +27,7 @@ def build() -> None:
             url = BASE_URL + "/geode-py/ws/repo/investigations/" + accession
             content = fetch(client, url).content
             data = json.loads(content)
-            raw_file = ROOT / "raw/spike" / accession / "manifest.json"
+            raw_file = ROOT / "raw/fixtures" / accession / "manifest.json"
             raw_file.parent.mkdir(parents=True, exist_ok=True)
             raw_file.write_bytes(content)
             checksum = hashlib.sha256(content).hexdigest()

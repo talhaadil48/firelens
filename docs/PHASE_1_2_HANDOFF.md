@@ -32,7 +32,9 @@ Scope: repository setup and feasibility/contracts only. No Phase 3–15 work is 
 - CFI-G normal flames: 22,166 bytes; 179 CSV rows after header; UTF-8.
 - CFI-G inverse flames: 39,422 bytes; 1,015 CSV rows after header; UTF-8.
 - These counts include any descriptions, units or blank rows. They are NOT verified test counts.
-- Original CSVs/manifests are local under `raw/spike/`, deliberately not committed.
+- Spike CSVs/manifests are local under `raw/spike/`; fixture manifests use
+  separate `raw/fixtures/` paths so independent refreshes cannot overwrite provenance.
+  Both are deliberately not committed.
 - Signed URLs are temporary credentials: never logged, stored or committed.
 - Reproduce with `make spike`; this needs network access. Tests and fixtures run offline.
 
@@ -88,12 +90,13 @@ cd web && npm run generate:types
 | --- | --- |
 | PSI catalogue + experimental downloads | PASS: FLEX and both CFI-G CSVs saved; headers/hashes/timings recorded |
 | Python lint and formatting | PASS |
-| Python tests | PASS: 59 tests |
+| Python tests | PASS: 60 tests |
 | OpenAPI/fixture drift | PASS; served OpenAPI includes the same SSE event definitions |
 | TypeScript generation/type checking and web lint | PASS |
 | Web tests | PASS: 8 tests |
 | Production web build | PASS; Plotly is a separate lazy-loaded chunk |
 | HTTP API smoke | PASS: metadata/list/rank/tests/compare/export and SSE chat |
+| Retained source-manifest hashes | PASS: all five fixture manifests verified; cache isolation regression test included |
 | Credential/signature scan | PASS: no token or signed URL found in staged deliverables |
 | npm dependency audit | 0 high/critical; 7 moderate findings in the development lint dependency chain (minimatch); not runtime dashboard code |
 | Docker image builds | NOT RUN: Docker Desktop WSL integration unavailable |

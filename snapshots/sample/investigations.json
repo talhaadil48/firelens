@@ -10,7 +10,12 @@
       "version": "4",
       "license": "CC0-1.0",
       "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
-      "retrieved_at": "2026-11-14T12:55:40.820081Z",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
       "documents": [],
       "related_investigations": [],
       "findings": [
@@ -20,7 +25,9 @@
           "citation_ids": [
             "PSI-26:catalogue-title"
           ],
-          "review_status": "unreviewed"
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
         }
       ],
       "citations": [
@@ -33,7 +40,7 @@
             "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-26",
             "source_file": "manifest.json",
             "source_version": "4",
-            "retrieved_at": "2026-11-14T12:55:40.820081Z",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
             "source_row": null,
             "page": null,
             "source_sha256": "9dee45d44bb736178db270a07c9ee8f98ac02ee810189ab518271fd4720c0533",
@@ -56,7 +63,12 @@
       "version": "5",
       "license": "CC0-1.0",
       "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
-      "retrieved_at": "2026-11-14T12:55:40.820081Z",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
       "documents": [],
       "related_investigations": [],
       "findings": [
@@ -66,7 +78,9 @@
           "citation_ids": [
             "PSI-69:catalogue-title"
           ],
-          "review_status": "unreviewed"
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
         }
       ],
       "citations": [
@@ -79,7 +93,7 @@
             "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-69",
             "source_file": "manifest.json",
             "source_version": "5",
-            "retrieved_at": "2026-11-14T12:55:40.820081Z",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
             "source_row": null,
             "page": null,
             "source_sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
@@ -102,7 +116,12 @@
       "version": "1",
       "license": "CC0-1.0",
       "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
-      "retrieved_at": "2026-11-14T12:55:40.820081Z",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
       "documents": [],
       "related_investigations": [],
       "findings": [
@@ -112,7 +131,9 @@
           "citation_ids": [
             "PSI-159:catalogue-title"
           ],
-          "review_status": "unreviewed"
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
         }
       ],
       "citations": [
@@ -125,7 +146,7 @@
             "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-159",
             "source_file": "manifest.json",
             "source_version": "1",
-            "retrieved_at": "2026-11-14T12:55:40.820081Z",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
             "source_row": null,
             "page": null,
             "source_sha256": "e01abe2caa309753a9bee1b0c3c79dec194a2a7300d0d13541e0dcf25e3b0ea5",
@@ -148,7 +169,12 @@
       "version": "4",
       "license": "CC0-1.0",
       "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
-      "retrieved_at": "2026-11-14T12:55:40.820081Z",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
       "documents": [],
       "related_investigations": [],
       "findings": [
@@ -158,7 +184,9 @@
           "citation_ids": [
             "PSI-100:catalogue-title"
           ],
-          "review_status": "unreviewed"
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
         }
       ],
       "citations": [
@@ -171,7 +199,7 @@
             "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-100",
             "source_file": "manifest.json",
             "source_version": "4",
-            "retrieved_at": "2026-11-14T12:55:40.820081Z",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
             "source_row": null,
             "page": null,
             "source_sha256": "9c836955a28ff129b2f239f9499e06f4ca52ba58f7a03d384a7bd0528c8bbe10",
@@ -194,7 +222,12 @@
       "version": "4",
       "license": "CC0-1.0",
       "source_url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
-      "retrieved_at": "2026-11-14T12:55:40.820081Z",
+      "retrieved_at": "2026-11-14T13:14:47.565647Z",
+      "hardware": [],
+      "platform": null,
+      "fuel_phase": "unknown",
+      "fire_safety_tags": [],
+      "condition_ranges": {},
       "documents": [],
       "related_investigations": [],
       "findings": [
@@ -204,7 +237,9 @@
           "citation_ids": [
             "PSI-25:catalogue-title"
           ],
-          "review_status": "unreviewed"
+          "review_status": "unreviewed",
+          "uncertainty_label": "not_assessed",
+          "uncertainty_note": null
         }
       ],
       "citations": [
@@ -217,7 +252,7 @@
             "source_url": "https://psi.nasa.gov/geode-py/ws/repo/investigations/PSI-25",
             "source_file": "manifest.json",
             "source_version": "4",
-            "retrieved_at": "2026-11-14T12:55:40.820081Z",
+            "retrieved_at": "2026-11-14T13:14:47.565647Z",
             "source_row": null,
             "page": null,
             "source_sha256": "b9234754db5da651ad27d888af082b889d07210b018e543369662f065b4ec2da",
