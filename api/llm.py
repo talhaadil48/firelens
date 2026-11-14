@@ -438,8 +438,17 @@ def deterministic_grounded_answer(
     return "\n\n".join(sections)
 
 
+def _strip_json_fences(raw: str) -> str:
+    """Strip optional Markdown code fences around a JSON object response."""
+    stripped = raw.strip()
+    if stripped.startswith("```"):
+        stripped = re.sub(r"^```(?:json)?\s*", "", stripped, flags=re.IGNORECASE)
+        stripped = re.sub(r"\s*```$", "", stripped)
+    return stripped.strip()
+
+
 class LLMClient:
-    """Wrapper over Azure OpenAI / OpenAI-compatible SDK with offline deterministic fallback."""
+    """Wrapper over OpenRouter, Azure OpenAI, and OpenAI-compatible SDKs with offline fallback."""
 
     def __init__(self, settings: Settings | None = None, openai_client: Any = None) -> None:
         self.settings = settings or Settings()
@@ -447,19 +456,52 @@ class LLMClient:
         self._client: Any = openai_client
 
     @property
-    def is_live(self) -> bool:
-        if self.settings.mode == "mock":
-            return False
+    def provider(self) -> Literal["offline", "openrouter", "azure", "injected"]:
+        if self.settings.mode == "mock" or self.settings.llm_provider == "offline":
+            return "offline"
         if self._injected_client is not None:
-            return True
-        return bool(
+            return "injected"
+
+        pref = self.settings.llm_provider
+        has_openrouter = bool(self.settings.openrouter_api_key.strip())
+        has_azure = bool(
             self.settings.azure_openai_endpoint.strip()
             and self.settings.azure_openai_api_key.strip()
         )
+        if pref == "openrouter":
+            return "openrouter" if has_openrouter else "offline"
+        if pref == "azure":
+            return "azure" if has_azure else "offline"
+        if has_openrouter:
+            return "openrouter"
+        if has_azure:
+            return "azure"
+        return "offline"
+
+    @property
+    def is_live(self) -> bool:
+        return self.provider != "offline"
+
+    @property
+    def chat_model(self) -> str:
+        if self.provider == "openrouter":
+            return self.settings.openrouter_model
+        return self.settings.azure_openai_chat_deployment
 
     def _get_client(self) -> Any:
         if self._client is not None:
             return self._client
+        if self.provider == "openrouter":
+            self._client = OpenAI(
+                base_url=self.settings.openrouter_base_url.strip(),
+                api_key=self.settings.openrouter_api_key.strip(),
+                default_headers={
+                    "HTTP-Referer": "https://github.com/talhaadil48/firelens",
+                    "X-Title": "FireLens",
+                },
+            )
+            return self._client
+
         endpoint = self.settings.azure_openai_endpoint.strip()
         api_key = self.settings.azure_openai_api_key.strip()
         if "openai.azure.com" in endpoint or "cognitiveservices.azure.com" in endpoint:
@@ -478,7 +520,8 @@ class LLMClient:
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
-        if not self.is_live:
+        provider = self.provider
+        if provider in {"offline", "openrouter"} or (provider != "injected" and len(texts) > 128):
             return [deterministic_embed(text) for text in texts]
         try:
             client = self._get_client()
@@ -521,7 +564,7 @@ class LLMClient:
         try:
             client = self._get_client()
             response = client.chat.completions.create(
-                model=self.settings.azure_openai_chat_deployment,
+                model=self.chat_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": question},
@@ -529,7 +572,7 @@ class LLMClient:
                 temperature=0,
                 response_format={"type": "json_object"},
             )
-            content = response.choices[0].message.content or "{}"
+            content = _strip_json_fences(response.choices[0].message.content or "{}")
             parsed = SqlRowFilter.model_validate(json.loads(content))
             merged_accessions = list(
                 dict.fromkeys(
@@ -618,7 +661,7 @@ class LLMClient:
         try:
             client = self._get_client()
             response = client.chat.completions.create(
-                model=self.settings.azure_openai_chat_deployment,
+                model=self.chat_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},

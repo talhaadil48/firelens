@@ -415,7 +415,24 @@ def _build_synthetic_snapshot(
 
 
 @pytest.fixture(autouse=True)
-def _restore_default_runtime():
+def _restore_default_runtime(monkeypatch):
+    for var in (
+        "LLM_PROVIDER",
+        "FIRELENS_LLM_PROVIDER",
+        "OPENROUTER_API_KEY",
+        "FIRELENS_OPENROUTER_API_KEY",
+        "OPENROUTER_BASE_URL",
+        "FIRELENS_OPENROUTER_BASE_URL",
+        "OPENROUTER_MODEL",
+        "OPENROUTER_CHAT_MODEL",
+        "FIRELENS_OPENROUTER_MODEL",
+        "AZURE_OPENAI_ENDPOINT",
+        "FIRELENS_AZURE_OPENAI_ENDPOINT",
+        "AZURE_OPENAI_API_KEY",
+        "FIRELENS_AZURE_OPENAI_API_KEY",
+        "OPENAI_API_KEY",
+    ):
+        monkeypatch.delenv(var, raising=False)
     yield
     configure_runtime(Settings(mode="mock"))
 
@@ -542,6 +559,83 @@ def test_llm_live_openai_client_calls():
         doi_by_accession={"PSI-25": "10.60555/bass2-doi"},
     )
     assert "PSI-25" in answer
+
+
+def test_openrouter_provider_configuration_and_chat_synthesis(monkeypatch):
+    monkeypatch.setenv("FIRELENS_MODE", "snapshot")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-secret-test-key")
+
+    settings = Settings()
+    llm = LLMClient(settings)
+    assert llm.provider == "openrouter"
+    assert llm.is_live
+    assert llm.chat_model == "openai/gpt-4o-mini"
+    assert settings.openrouter_base_url == "https://openrouter.ai/api/v1"
+    assert "sk-or-v1-secret-test-key" not in repr(settings)
+
+    monkeypatch.setenv("OPENROUTER_MODEL", "openai/gpt-4.1-mini")
+    custom_settings = Settings()
+    custom_llm = LLMClient(custom_settings)
+    assert custom_llm.chat_model == "openai/gpt-4.1-mini"
+
+    # OpenRouter embed_texts uses instant deterministic vectors so large snapshots load fast.
+    vec = llm.embed_texts(["cotton fabric oxygen 34%"])
+    assert len(vec) == 1
+    assert len(vec[0]) == 128
+
+    calls: list[dict] = []
+
+    class FakeOpenRouterCompletions:
+        def create(self, **kwargs):
+            calls.append(kwargs)
+            is_json = kwargs.get("response_format", {}).get("type") == "json_object"
+            content = (
+                '```json\n{"fuel_phase": "solid", "o2_min": 0.30}\n```'
+                if is_json
+                else "Cotton ignited at 34% O2 [PSI-25, 10.60555/bass2-doi, BASS-II.pdf p.4]."
+            )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+            )
+
+    llm._client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeOpenRouterCompletions()),
+    )
+
+    sql_filter = llm.propose_sql_filter("Show cotton tests >= 30% O2", investigation_ids=["PSI-25"])
+    assert sql_filter.accessions == ["PSI-25"]
+    assert sql_filter.fuel_phase == "solid"
+    assert sql_filter.o2_min == pytest.approx(0.30)
+    assert calls[0]["model"] == "openai/gpt-4o-mini"
+
+    from api.models import Citation
+
+    chunk = TextChunk(
+        chunk_id="or-c1",
+        accession="PSI-25",
+        source_kind="document",
+        source_file="BASS-II.pdf",
+        source_url="https://psi.nasa.gov/files/BASS-II.pdf",
+        doi="10.60555/bass2-doi",
+        page=4,
+        text="Cotton fabric burned at 34% O2.",
+    )
+    cit = Citation(
+        id="chunk:or-c1",
+        accession="PSI-25",
+        locator="BASS-II.pdf p.4",
+        supporting_text=chunk.text,
+        provenance=_provenance("BASS-II.pdf", None, page=4),
+    )
+    answer = llm.generate_grounded_answer(
+        "How did cotton burn?",
+        [chunk],
+        [],
+        [cit],
+        doi_by_accession={"PSI-25": "10.60555/bass2-doi"},
+    )
+    assert "PSI-25" in answer
+    assert calls[1]["model"] == "openai/gpt-4o-mini"
 
 
 def test_snapshot_loader_local_and_15min_hotswap(tmp_path: Path):

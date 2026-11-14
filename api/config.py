@@ -15,12 +15,18 @@ ROOT = Path(__file__).resolve().parents[1]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="FIRELENS_",
+        env_file=ROOT / ".env",
+        env_file_encoding="utf-8",
         extra="ignore",
         populate_by_name=True,
     )
     mode: Literal["mock", "snapshot", "auto"] = Field(
         default="mock",
         validation_alias=AliasChoices("FIRELENS_MODE", "mode"),
+    )
+    llm_provider: Literal["auto", "azure", "openrouter", "offline"] = Field(
+        default="auto",
+        validation_alias=AliasChoices("LLM_PROVIDER", "FIRELENS_LLM_PROVIDER", "llm_provider"),
     )
     cors_origins: list[str] = Field(
         default=["http://localhost:5173"],
@@ -88,6 +94,21 @@ class Settings(BaseSettings):
             "AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "FIRELENS_AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
         ),
     )
+    openrouter_api_key: str = Field(
+        default="",
+        repr=False,
+        validation_alias=AliasChoices("OPENROUTER_API_KEY", "FIRELENS_OPENROUTER_API_KEY"),
+    )
+    openrouter_base_url: str = Field(
+        default="https://openrouter.ai/api/v1",
+        validation_alias=AliasChoices("OPENROUTER_BASE_URL", "FIRELENS_OPENROUTER_BASE_URL"),
+    )
+    openrouter_model: str = Field(
+        default="openai/gpt-4o-mini",
+        validation_alias=AliasChoices(
+            "OPENROUTER_MODEL", "OPENROUTER_CHAT_MODEL", "FIRELENS_OPENROUTER_MODEL"
+        ),
+    )
     azure_storage_account_url: str = Field(
         default="",
         validation_alias=AliasChoices(
@@ -106,6 +127,8 @@ class Settings(BaseSettings):
         "azure_openai_api_version",
         "azure_openai_chat_deployment",
         "azure_openai_embedding_deployment",
+        "openrouter_base_url",
+        "openrouter_model",
         "azure_storage_container",
         mode="before",
     )
