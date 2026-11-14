@@ -59,6 +59,12 @@ The web team can use [`web/public/fixtures.json`](web/public/fixtures.json) imme
 To deliberately refresh metadata fixtures: `uv run python -m scripts.build_fixtures --fetch`,
 then regenerate contracts and TypeScript types. This refresh changes source timestamps.
 
+## Project context
+
+Start with [the context guide](docs/context/README.md) for the product plan,
+original build checklist and the owner’s four-screen HTML reference. The guide
+also records differences that need resolution before implementing real rankings.
+
 ## Layout
 
 | Folder | Responsibility |

@@ -25,3 +25,16 @@
    `talhaadil48 <talhaadil48@icloud.com>`. Software copyright uses Talha Adil.
 10. Do not require cloud accounts for Phase 2. The development server is local only;
     production LLM access, rate limits, sync, provisioning and deployment are later phases.
+
+## Added context after the UI reference was supplied
+
+The supplied HTML concept is preserved at `reference/dashboard-ui-concept.html`.
+A derived product plan is now available as `flame-in-freefall-plan.md`; it is not
+the previously missing original detailed plan mentioned in decision 1.
+
+The HTML clarifies an intended alternative scoring formula: conditions match
+(0.40), fuel realism (0.25), safety goal (0.20), data richness (0.15). This differs
+from the provisional dimensions in decision 5 and `config/profiles.yaml`. A coordinated contract/config update and scientific validation are needed before
+real ranking; use the active task instructions to resolve the design. The reference also supplies additional rover/airflow assumptions and
+uses `moon`/`suit` IDs; see the product plan for the differences. No runtime
+configuration or scientific result was changed by this documentation update.
