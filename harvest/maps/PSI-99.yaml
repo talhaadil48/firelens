@@ -1,0 +1,9 @@
+schema_version: 1
+accession: PSI-99
+source_file: PSI-99_Experimental table_SAFFIRE-2.csv
+encoding: utf-8-sig
+study_level_only: true
+default_fuel_phase: solid
+review_status: reviewed
+notes:
+  - "SAFFIRE-2 summary table with approximate O2 strings ('~ 21.5') and mixed unit/qualitative cells; kept at study level."

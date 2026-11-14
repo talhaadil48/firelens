@@ -1,0 +1,42 @@
+schema_version: 1
+accession: PSI-10
+table_id: inverse
+source_file: PSI-10_Experimental table_Flame Design_Inverse Flame.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: "Test"
+id_prefix: "inverse-"
+study_level_only: false
+default_fuel: C2H4
+default_fuel_phase: gas
+default_oxygen_basis: mole
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  o2_fraction:
+    source_column: "XO2"
+    unit: mole_fraction
+    multiplier: 1.0
+  pressure_kpa:
+    source_column: "pinit (atm)"
+    unit: atm
+    multiplier: 101.325
+
+metrics:
+  mO2:
+    source_column: "mO2 (mg/s)"
+    unit: mg/s
+  mN2:
+    source_column: "mN2 (mg/s)"
+    unit: mg/s
+  mtot:
+    source_column: "mtot (mg/s)"
+    unit: mg/s
+  adiabatic_flame_temp_k:
+    source_column: "Tad (K)"
+    unit: K
+
+notes:
+  - "ACME Flame Design Inverse Flame table; RAMP cells remain null; pressure converted atm -> kPa."

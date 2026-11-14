@@ -1,0 +1,9 @@
+schema_version: 1
+accession: PSI-106
+source_file: PSI-106_Experimental table_Slice.csv
+encoding: utf-8-sig
+study_level_only: true
+default_fuel_phase: gas
+review_status: reviewed
+notes:
+  - "SLICE table containing 12 daily campaign narrative descriptions; kept at study level."

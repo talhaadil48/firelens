@@ -1,0 +1,9 @@
+schema_version: 1
+accession: PSI-22
+source_file: PSI-22_Experimental table_ACME E-FIELD Flames.csv
+encoding: utf-8-sig
+study_level_only: true
+default_fuel_phase: gas
+review_status: reviewed
+notes:
+  - "Daily summary table grouping multiple flames per test day; kept at study level rather than fabricating independent rows."

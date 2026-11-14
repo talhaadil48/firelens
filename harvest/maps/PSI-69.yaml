@@ -1,0 +1,57 @@
+schema_version: 1
+accession: PSI-69
+source_file: PSI-69_Experimental table_FLEX.csv
+encoding: cp1252
+header_row: 1
+skip_rows: []
+id_column: "FLEX Test #"
+study_level_only: false
+default_fuel_phase: liquid
+default_sample_geometry: droplet
+default_oxygen_basis: mole
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  test_date:
+    source_column: "Test Date"
+    date_format: "%m/%d/%Y"
+  fuel:
+    source_column: "Fuel"
+  sample_size_mm:
+    source_column: "Droplet initial diameter; mm"
+    unit: mm
+  o2_fraction:
+    source_column: "O initial ambient composition; mole fraction"
+    unit: mole_fraction
+    multiplier: 1.0
+  pressure_kpa:
+    source_column: "Ambient pressure; mmHg"
+    unit: mmHg
+    multiplier: 0.1333223684
+  outcome:
+    source_column: "Test end"
+
+diluent_columns:
+  N2: "N initial ambient composition; mole fraction"
+  CO2: "CO initial ambient composition; mole fraction"
+  He: "He initial ambient composition; mole fraction"
+
+outcome_map:
+  "Extinction": extinguished
+  "Disruption": ignited
+  "Completion": ignited
+
+metrics:
+  extinction_diameter:
+    source_column: "Visible flame extinction diameter; mm"
+    unit: mm
+  burning_rate:
+    source_column: "Burning rate; mm"
+    unit: mm2/s
+  burn_time:
+    source_column: "Burn time; s"
+    unit: s
+
+notes:
+  - "FLEX table (cp1252); pressure converted mmHg -> kPa."

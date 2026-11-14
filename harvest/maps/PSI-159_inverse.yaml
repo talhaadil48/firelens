@@ -1,0 +1,58 @@
+schema_version: 1
+accession: PSI-159
+table_id: inverse
+source_file: PSI-159_Experimental table_CFI-G_Inverse Flames.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: "Test"
+id_prefix: "inverse-"
+study_level_only: false
+default_fuel_phase: gas
+default_oxygen_basis: mole
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  fuel:
+    source_column: "Fuel"
+  o2_fraction:
+    source_column: "XO2"
+    unit: mole_fraction
+    multiplier: 1.0
+  pressure_kpa:
+    source_column: "approx p (bar)"
+    unit: bar
+    multiplier: 100.0
+  outcome:
+    source_column: "Hot ignition"
+
+outcome_map:
+  "Yes": ignited
+  "yes": ignited
+  "flash": ignited
+  "No": failed
+  "no": failed
+
+metrics:
+  burn_time:
+    source_column: "burn time (sec)"
+    unit: s
+  peak_burner_temp_c:
+    source_column: "Peak burner Temp (C)"
+    unit: degC
+  adiabatic_flame_temp_k:
+    source_column: "Tad (K)"
+    unit: K
+  hc_burn_rate:
+    source_column: "HC burnrate (mg/s)"
+    unit: mg/s
+  o2_flow_rate:
+    source_column: "O2 flow rate (mg/s)"
+    unit: mg/s
+  stoichiometric_mixture_fraction:
+    source_column: "Zst"
+    unit: "1"
+
+notes:
+  - "CFI-G Inverse Flames table mapped from raw/plan-aligned-20261114; trailing blank rows skipped."

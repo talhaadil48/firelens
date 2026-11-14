@@ -1,0 +1,32 @@
+schema_version: 1
+accession: PSI-101
+source_file: PSI-101_Experimental table_SAME-R.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: "SAME Test #"
+study_level_only: false
+default_fuel_phase: solid
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  fuel:
+    source_column: "Sample Type"
+  flow_cm_s:
+    source_column: "Inlet velocity (cm/s)"
+    unit: cm/s
+
+metrics:
+  rt_r0:
+    source_column: "Rt/R0"
+    unit: "1"
+  duration_s:
+    source_column: "Duration (sec)"
+    unit: s
+  net_aging_time_s:
+    source_column: "Net aging time (sec)"
+    unit: s
+
+notes:
+  - "SAME-R table; Date column lacks year ('21-Jul'), left null rather than guessing year."

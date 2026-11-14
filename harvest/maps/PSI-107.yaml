@@ -1,0 +1,37 @@
+schema_version: 1
+accession: PSI-107
+source_file: PSI-107_Experimental table_Spice.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: null
+id_prefix: "spice-"
+study_level_only: false
+default_fuel_phase: gas
+default_sample_geometry: nozzle
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  fuel:
+    source_column: "Fuel"
+  sample_size_mm:
+    source_column: "Nozzle (mm)"
+    unit: mm
+  flow_cm_s:
+    source_column: "Air Rate (cm/s)"
+    unit: cm/s
+
+metrics:
+  fuel_rate_sccm:
+    source_column: "Fuel Rate (sccm)"
+    unit: sccm
+  fuel_rate_mg_s:
+    source_column: "Fuel Rate (mg/s)"
+    unit: mg/s
+  hc_fuel_rate_mg_s:
+    source_column: "HC Fuel Rate (mg/s)"
+    unit: mg/s
+
+notes:
+  - "SPICE table; row-indexed test IDs because CSV uses GMT timestamps rather than unique test IDs."

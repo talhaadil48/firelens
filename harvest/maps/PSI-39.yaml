@@ -1,0 +1,35 @@
+schema_version: 1
+accession: PSI-39
+source_file: PSI-39_Experimental table_CFI.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: "Flex Number"
+study_level_only: false
+default_fuel_phase: liquid
+default_sample_geometry: droplet
+default_oxygen_basis: mole
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  test_date:
+    source_column: "Test Date"
+    date_format: "%d-%b-%y"
+  fuel:
+    source_column: "Fuel "
+  o2_fraction:
+    source_column: "Oxygen"
+    unit: mole_fraction
+    multiplier: 1.0
+  pressure_kpa:
+    source_column: "Pressure"
+    unit: atm
+    multiplier: 101.325
+
+diluent_columns:
+  N2: "Nitrogen"
+  He: "Helium"
+
+notes:
+  - "CFI table; pressure converted atm -> kPa (stripping trailing 'atm')."

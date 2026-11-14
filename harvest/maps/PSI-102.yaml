@@ -1,0 +1,29 @@
+schema_version: 1
+accession: PSI-102
+source_file: PSI-102_Experimental table_SAME.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: "Sample #"
+study_level_only: false
+default_fuel_phase: solid
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  fuel:
+    source_column: "Sample Material  "
+  flow_cm_s:
+    source_column: "Air Flow (cm/s)"
+    unit: cm/s
+
+metrics:
+  weight_loss_rate:
+    source_column: "Weight loss rate (mg/min)"
+    unit: mg/min
+  aging_duration_min:
+    source_column: "Aging Duration (minutes)"
+    unit: min
+
+notes:
+  - "SAME table mapped from raw/plan-aligned-20261114."

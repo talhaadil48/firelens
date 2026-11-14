@@ -1,0 +1,9 @@
+schema_version: 1
+accession: PSI-142
+source_file: PSI-142_Experimental table_Data Summary Table.csv
+encoding: utf-8-sig
+study_level_only: true
+default_fuel_phase: liquid
+review_status: reviewed
+notes:
+  - "Publication figure index table (no per-test physical conditions); kept at study level."
