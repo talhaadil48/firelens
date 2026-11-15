@@ -66,7 +66,8 @@ check() {
   if exists az storage account show -g "$RG" -n "$STORAGE"; then
     echo "  $STORAGE already exists in $RG (fine)"
   else
-    az storage account check-name -n "$STORAGE" --query "{name:'$STORAGE', available:nameAvailable, reason:reason}" -o table
+    az storage account check-name -n "$STORAGE" --query "{name:'$STORAGE', available:nameAvailable, reason:reason}" -o table 2>/dev/null \
+      || echo "  cannot check yet: Microsoft.Storage is not registered ('core' registers it)"
   fi
   say "OpenRouter key"
   [ -n "$(openrouter_key)" ] && echo "  found (not shown)" || echo "  MISSING: set OPENROUTER_API_KEY or put it in ./.env"
@@ -144,7 +145,7 @@ image() {
   [ "$API_IMAGE" = "$(printf '%s' "$API_IMAGE" | tr '[:upper:]' '[:lower:]')" ] \
     || die "API_IMAGE must be lowercase (GHCR rule): $API_IMAGE"
   local repo="${API_IMAGE%:*}" sha
-  sha=$(git -C "$root" rev-parse --short HEAD)
+  sha=$(git -C "$(winpath "$root")" rev-parse --short HEAD)
 
   say "Building $API_IMAGE (also tagged :$sha) from api/Dockerfile"
   docker build -f "$(winpath "$root/api/Dockerfile")" -t "$API_IMAGE" -t "$repo:$sha" "$(winpath "$root")"
@@ -183,7 +184,7 @@ web() {
   say "Uploading web/dist to $WEB_APP (deployment token fetched, not shown)"
   SWA_CLI_DEPLOYMENT_TOKEN=$(az staticwebapp secrets list -g "$RG" -n "$WEB_APP" --query properties.apiKey -o tsv)
   export SWA_CLI_DEPLOYMENT_TOKEN
-  npx --yes @azure/static-web-apps-cli@2 deploy "$(winpath "$root/web/dist")" --env production
+  ( cd "$root/web" && npx --yes @azure/static-web-apps-cli@2 deploy dist --env production )
   unset SWA_CLI_DEPLOYMENT_TOKEN
   echo; echo "Live at https://$(web_host)   (API: $api)"
 }
