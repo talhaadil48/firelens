@@ -1,0 +1,9 @@
+schema_version: 1
+accession: PSI-100
+source_file: PSI-100_Experimental table_SAFFIRE-3.csv
+encoding: utf-8-sig
+study_level_only: true
+default_fuel_phase: solid
+review_status: reviewed
+notes:
+  - "SAFFIRE-3 two-row summary table without O2 or pressure columns; kept at study level."

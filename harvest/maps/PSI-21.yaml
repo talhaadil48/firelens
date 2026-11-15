@@ -1,0 +1,9 @@
+schema_version: 1
+accession: PSI-21
+source_file: PSI-21_Experimental table_CLD Flame.csv
+encoding: utf-8-sig
+study_level_only: true
+default_fuel_phase: gas
+review_status: reviewed
+notes:
+  - "Daily summary table with concentration ranges ('30%-40%'); kept at study level rather than fabricating independent rows."

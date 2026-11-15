@@ -1,0 +1,21 @@
+schema_version: 1
+accession: PSI-26
+source_file: PSI-26_Experimental table_BASS.csv
+encoding: utf-8-sig
+header_row: 1
+skip_rows: []
+id_column: "As Run Test #"
+study_level_only: false
+default_fuel_phase: solid
+default_gravity: microgravity
+review_status: reviewed
+
+columns:
+  test_date:
+    source_column: "Date"
+    date_format: "%m/%d/%Y"
+  fuel:
+    source_column: "Fuel Sample Material"
+
+notes:
+  - "BASS table; duplicate As Run Test # values disambiguated with source row."

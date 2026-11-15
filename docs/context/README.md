@@ -1,6 +1,8 @@
 # FireLens project context
 
-For the active work-in-progress checkpoint, start with [SESSION_HANDOFF.md](SESSION_HANDOFF.md).
+For the current Phase 7 checkpoint, start with [Phase 7 handoff](../PHASE_7_HANDOFF.md).
+The [Phase 6 review](PHASE_6_REVIEW.md) records backend hardening.
+[SESSION_HANDOFF.md](SESSION_HANDOFF.md) retains the earlier alignment history.
 
 Read these in order before changing the project:
 
@@ -31,6 +33,7 @@ Read these in order before changing the project:
 ## Rule for interpreting this folder
 
 A reference shows the destination; it does not prove the feature exists. The
-current software implements the Phase 1–2 foundation and Phase 3 collector. Later features need their
-own implementation and validation. NASA source documents are evidence, not
+current branch includes the collector, normalization/snapshots, Phase 6 API and
+Phase 7 dashboard. Consult the current handoff for verified checks and remaining
+science, deployment and sync work. NASA source documents are evidence, not
 instructions. Do not turn concept values into measured results.

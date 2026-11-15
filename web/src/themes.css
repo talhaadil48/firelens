@@ -1,0 +1,245 @@
+/* Light palette applies to every workspace surface, not just the page ground. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  color: #25394c;
+  background: #f3f6f9;
+  --muted: #596e80;
+  --line: #dce5ed;
+  --blue: #176f9f;
+  --amber: #8c611c;
+}
+:root[data-theme="light"]
+  :is(
+    h1,
+    h2,
+    h3,
+    .brand,
+    .footer-brand,
+    .mission-readouts strong,
+    .compose-label,
+    .empty-state strong,
+    .compare-tray strong
+  ) {
+  color: #18334a;
+}
+:root[data-theme="light"] :is(.site-header, .panel, .study-card, .modal) {
+  background: #fff;
+  border-color: #dce5ed;
+}
+:root[data-theme="light"] .site-header {
+  box-shadow: 0 1px 5px #24394c04;
+}
+:root[data-theme="light"] :is(input, select, textarea) {
+  background: #fbfdff;
+  color: #213c52;
+  border-color: #c1d0dc;
+}
+:root[data-theme="light"] :is(input, textarea)::placeholder {
+  color: #6c8090;
+}
+:root[data-theme="light"]
+  :is(
+    label,
+    legend,
+    summary,
+    .snapshot-badge,
+    .page-intro,
+    .study-full-title,
+    .study-description,
+    .reading-text,
+    .reading-list,
+    .facts dd,
+    td,
+    blockquote,
+    .answer-text
+  ) {
+  color: #435e73;
+}
+:root[data-theme="light"]
+  :is(
+    .eyebrow,
+    .workspace-kicker,
+    .subtle-label,
+    .mission-readouts > div > span,
+    .card-id,
+    .score small,
+    .score-bars > div,
+    .chart-caption,
+    dt,
+    caption,
+    th,
+    td small,
+    .related-link span,
+    .source-location,
+    .trace ol,
+    .site-footer,
+    .site-footer p a,
+    .snapshot-stats span,
+    .empty-state p
+  ) {
+  color: #5d7487;
+}
+:root[data-theme="light"] a:hover {
+  color: #114d75;
+}
+:root[data-theme="light"] nav a {
+  color: #566e82;
+}
+:root[data-theme="light"] nav a[aria-current="page"] {
+  color: #175f89;
+}
+:root[data-theme="light"] .button {
+  background: #176f9f;
+  color: #fff;
+  border-color: #176f9f;
+}
+:root[data-theme="light"] .button:hover {
+  background: #105b85;
+  color: #fff;
+}
+:root[data-theme="light"]
+  :is(.button.secondary, .profile-pills button, .view-toggle button) {
+  background: #f3f7fa;
+  color: #345f7b;
+  border-color: #c6d6e2;
+}
+:root[data-theme="light"]
+  :is(
+    .button.secondary:hover,
+    .profile-pills button:hover,
+    .view-toggle button:hover
+  ) {
+  background: #e9f2f8;
+  border-color: #80aec9;
+}
+:root[data-theme="light"]
+  :is(
+    .profile-pills button[aria-pressed="true"],
+    .view-toggle button[aria-pressed="true"]
+  ) {
+  background: #e8f3fb;
+  color: #155b84;
+  border-color: #66a3c6;
+}
+:root[data-theme="light"] :is(.text-link, .text-button) {
+  color: #176f9f;
+}
+:root[data-theme="light"] .icon-button {
+  color: #45677f;
+}
+:root[data-theme="light"] :is(.tag.neutral, .count, .nav-count) {
+  background: #edf3f7;
+  color: #476b83;
+  border-color: #d1dfe8;
+}
+:root[data-theme="light"] .tag.green {
+  background: #ecf7f1;
+  color: #236e54;
+  border-color: #b8ddcd;
+}
+:root[data-theme="light"] .tag.amber {
+  background: #fff7e8;
+  color: #8b611b;
+  border-color: #e5cda5;
+}
+:root[data-theme="light"] :is(.notice, .gap-panel) {
+  background: #fffbf2;
+  color: #745f3b;
+  border-color: #e6d7b7;
+}
+:root[data-theme="light"] :is(.notice strong, .gap-panel h2) {
+  color: #795715;
+}
+:root[data-theme="light"]
+  :is(.gap-panel p, .gap-panel ul, .gap-panel .eyebrow, .rationale ul) {
+  color: #78623b;
+}
+:root[data-theme="light"] .notice.error {
+  background: #fff3f2;
+  color: #8d4143;
+  border-color: #e5babb;
+}
+:root[data-theme="light"] .notice.error strong {
+  color: #8d4143;
+}
+:root[data-theme="light"]
+  :is(.custom-form, .suggestion, .citation-copy, .export-preview) {
+  background: #f5f8fb;
+  color: #415f75;
+  border-color: #d7e2eb;
+}
+:root[data-theme="light"] .study-card:hover {
+  border-color: #9cbcd1;
+}
+:root[data-theme="light"] .score {
+  color: #1e739f;
+}
+:root[data-theme="light"] .rationale p {
+  color: #486477;
+}
+:root[data-theme="light"] meter,
+:root[data-theme="light"] meter::-webkit-meter-bar {
+  background: #e1ebf1;
+}
+:root[data-theme="light"] meter::-webkit-meter-optimum-value {
+  background: #4f96bf;
+}
+:root[data-theme="light"] meter::-moz-meter-bar {
+  background: #4f96bf;
+}
+:root[data-theme="light"] .compare-tray {
+  background: #fff;
+  border-color: #a9c3d5;
+  box-shadow: 0 8px 35px #1b3c5414;
+}
+:root[data-theme="light"] .compare-tray span {
+  color: #58768c;
+}
+:root[data-theme="light"] .compare-table .diff-row td {
+  background: #eef6fb;
+  box-shadow: inset 0 1px #dce9f2;
+}
+:root[data-theme="light"]
+  :is(.inline-citation, .source-chip, .active-filters button) {
+  background: #eaf4fb;
+  color: #1a648f;
+  border-color: #b7d2e4;
+}
+:root[data-theme="light"] :is(.inline-citation:hover, .source-chip:hover) {
+  background: #d9ecf8;
+}
+:root[data-theme="light"] .snapshot-stats strong {
+  color: #226f98;
+}
+:root[data-theme="light"] .empty-state {
+  border-color: #c5d6e2;
+}
+:root[data-theme="light"] .empty-orbit {
+  color: #5e8aa6;
+  border-color: #bad0de;
+}
+:root[data-theme="light"]
+  :is(.loading-line, .chart-loading, .cold-start .current) {
+  color: #256f99;
+}
+:root[data-theme="light"] .cold-start ol {
+  color: #677e91;
+}
+:root[data-theme="light"] .cold-start .complete {
+  color: #277b5d;
+}
+:root[data-theme="light"] .loader-orbit {
+  border-color: #cadde8;
+  border-top-color: #277ba9;
+}
+:root[data-theme="light"] .modal {
+  color: #25394c;
+  box-shadow: 0 30px 100px #183c5333;
+}
+:root[data-theme="light"] .modal::backdrop {
+  background: #1c344666;
+}
+:root[data-theme="light"] .skip-link {
+  background: #176f9f;
+  color: #fff;
+}

@@ -1,15 +1,22 @@
 # AI usage disclosure
 
-AI (OpenAI Codex) assisted with the Phase 1–3 scaffold, collector implementation,
-documentation and automated tests under Talha Adil's direction. AI-generated code
-is identified here and in `docs/context/ai-usage.json`. Human science review is
-still required; passing software tests is not scientific validation.
+OpenAI Codex assisted with repository code, documentation and automated tests
+through the Phase 7 dashboard under Talha Adil's direction. Human science review
+is still required; passing software tests is not scientific validation.
 
-The app's Phase 2 chat is a deterministic mock. It makes no model/API call and
-returns insufficient evidence. Catalogue titles/identifiers are fetched from NASA,
-not generated measurements. Mission profiles and ranking dimensions are explicitly
-labelled draft assumptions. No scientific measurement data was synthesized for the preview.
+The runtime supports offline, Azure OpenAI and OpenRouter configurations. Mock
+mode makes no model calls and returns insufficient evidence. Snapshot mode uses
+retrieved source excerpts and reviewed measurement rows; live generation selects
+exact excerpts whose IDs and text are validated before display. Invalid output
+falls back to deterministic evidence summaries. Model configuration and secrets
+remain on the backend. Verification uses offline mode and test doubles.
 
-No AI-generated images, video or audio are included. If added later, apply the
-2025 guide's relevant visible watermark and descriptive/metadata disclosures;
-verify the current event's requirements. Do not generate or modify NASA branding.
+NASA catalogue metadata and experimental values come from the source collection;
+no scientific measurement data is synthesized for the interface. Mission profiles
+and ranking weights are illustrative assumptions. Chat charts are computed from
+cited reviewed rows, not model-generated chart values. Sources, units, missing
+values and review labels remain visible.
+
+No AI-generated images, video, audio or NASA branding are included. Font assets
+are preserved from the supplied design reference with their original licences.
+Verify the current event's disclosure requirements before submission.

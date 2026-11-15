@@ -1,3 +1,16 @@
+# Current checkpoint — Phase 7 web
+
+Latest owner request (15 November): add persisted light/dark appearance and
+redesign the coverage plot. Implemented on the current `feature/phase-7-web`
+branch; see the appearance-refinement section of [Phase 7 handoff](../PHASE_7_HANDOFF.md).
+Live development servers remain API 8017 / frontend 5173; browser QA uses
+separate ports 8018 / 4178. See the handoff for verification and caveats.
+
+The active branch is `feature/phase-7-web`, created from hardened Phase 6 commit
+`15e94c9`. See [Phase 7 handoff](../PHASE_7_HANDOFF.md) for implementation, setup,
+tests and the additional graphical-chat requirement. The material below is the
+historical Phase 1–3 alignment checkpoint; its branch and scope are superseded.
+
 # Resume here — complete-plan alignment checkpoint
 
 Updated 14 November 2026. This is the durable handoff requested by the owner when

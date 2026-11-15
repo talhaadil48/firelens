@@ -1,3 +1,6 @@
+> Historical Phase 1–3 assessment. For the current Phase 7 implementation and
+> verification, read [Phase 7 handoff](../PHASE_7_HANDOFF.md).
+
 # Supplied plan alignment — current Phase 1–3 foundation
 
 Updated 14 November 2026 after the owner authorized fixing the differences found
