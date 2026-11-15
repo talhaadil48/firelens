@@ -337,8 +337,12 @@ sync() {
 }
 
 sync_run() { # sync_run [--force|--dry-run]
-  local args=(--container-name "$SYNC_JOB")
-  [ -n "${1:-}" ] && args+=(--args "$1")
+  # Overriding args replaces the container template, which Azure only accepts with an image.
+  local args=()
+  if [ -n "${1:-}" ]; then
+    args=(--container-name "$SYNC_JOB" --args "$1" --image
+      "$(az containerapp job show -g "$RG" -n "$SYNC_JOB" --query "properties.template.containers[0].image" -o tsv)")
+  fi
   say "Starting $SYNC_JOB ${1:-}"
   local exec status
   exec=$(az containerapp job start -g "$RG" -n "$SYNC_JOB" "${args[@]}" --query name -o tsv)
