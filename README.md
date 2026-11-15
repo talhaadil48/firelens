@@ -1,130 +1,126 @@
 # FireLens
 
-Evidence-linked exploration of NASA microgravity combustion research.
+**Evidence-linked exploration of NASA microgravity combustion research, for fire safety in
+crewed habitats.** NASA Space Apps Challenge 2026, challenge
+[Flame in Freefall](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/).
 
-**Status: Phase 7 dashboard on `feature/phase-7-web`.** Explorer, source-backed
-coverage charts, investigation detail, comparison, source-linked chat (including
-charts of cited measurements) and CSV/JSON exports connect to the Phase 6 API.
-Light/dark appearance is available from the header. The coverage view groups
-identical tested conditions and offers outcome filters and explicit pressure ranges.
-Mock mode stays an explicitly empty metadata preview. A local ignored snapshot
-contains 24 investigations and 2,009 source records from 22 experimental tables; it must be generated on a
-fresh checkout. See [source-record preservation and migration](docs/SOURCE_RECORDS_HANDOFF.md) and
-[Phase 7 setup and verification](docs/PHASE_7_HANDOFF.md).
+| | |
+| --- | --- |
+| **Live site** | https://www.firelens.wiki |
+| Backup link (same site, Azure default address) | https://kind-smoke-0b5fbe80f.6.azurestaticapps.net |
+| API and its interactive docs | https://api.firelens.wiki/meta · https://api.firelens.wiki/docs |
+| References and AI disclosure | [REFERENCES.md](REFERENCES.md) · [docs/AI_USAGE.md](docs/AI_USAGE.md) |
 
-## Start locally
+## What it does
 
-Prerequisites: Git, [uv](https://docs.astral.sh/uv/), Python 3.12 (uv can install it),
-Node.js 22.13+ (use `.nvmrc`; Node 24 also works), npm, and optionally GNU Make.
+NASA's Physical Sciences Informatics (PSI) system holds two decades of combustion
+experiments flown on the ISS and on uncrewed spacecraft, spread across hundreds of tables,
+reports and data files. FireLens turns that collection into one workspace for a fire-safety
+question: *which experiments tell us most about how fire behaves in the cabin we are
+designing?*
+
+- **Explorer.** Pick a mission profile (Earth sea level, ISS cabin, Moon base,
+  pressurized rover, spacesuit) or set oxygen, pressure and airflow yourself. Investigations are ranked by how closely their measured
+  test conditions match, and a coverage map shows which conditions have been tested and
+  where the gaps are.
+- **Investigation.** Each investigation's purpose, hardware, test records, findings and
+  publications, with its PSI accession, version and DOI.
+- **Compare.** Two or more investigations side by side: what is the same, what differs.
+- **Ask FireLens.** Questions in plain language, answered only from retrieved report
+  excerpts and measurement rows. Every claim is cited (accession, DOI, file, page or row);
+  charts in answers are drawn from the cited rows. If nothing relevant is found, it says so.
+- **Export.** The records behind any view as CSV or JSON, with their sources.
+
+**Data in the live snapshot:** 24 PSI Combustion Science investigations (all with DOIs),
+2,009 source records from 22 experimental tables (1,879 individual measurements usable
+for ranking) and 2,632 text passages from reports and NASA context pages. Four
+investigations have no machine-readable tables and are shown with their metadata and
+links only.
+
+<!-- Screenshots: add 2–3 images of Explorer, an Investigation and an Ask answer here. -->
+
+## How it stays trustworthy
+
+1. **Numbers come from code, words from the model.** Rankings, ranges, counts and chart
+   data are computed with SQL over the snapshot. The language model (`openai/gpt-4o-mini`
+   through OpenRouter) only writes summaries and explanations from facts it is handed.
+2. **Every claim cites a source**, and a missing value stays empty. Nothing is invented
+   to fill a gap; an empty oxygen or pressure cell stays empty.
+3. **No calls to NASA while you browse.** A sync job harvests PSI into a validated
+   snapshot; the API serves that snapshot. Raw Data folders (up to ~2 TB) are linked, never
+   downloaded.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  PSI["NASA PSI<br/>(public, CC0)"] -->|nightly 03:00 PKT, only if PSI changed| SYNC["Sync job<br/>Azure Container Apps Job"]
+  SYNC -->|validated snapshot| BLOB[("Azure Blob Storage<br/>snapshots")]
+  BLOB -->|re-checked every 15 min| API["FastAPI + DuckDB<br/>api.firelens.wiki"]
+  API -->|summaries and answers from given facts| LLM["OpenRouter<br/>gpt-4o-mini"]
+  WEB["React + Vite + Plotly<br/>www.firelens.wiki<br/>Azure Static Web Apps"] --> API
+  GH["GitHub Actions"] -->|tests, images, snapshot gate,<br/>smoke test, auto-rollback| API
+  GH --> WEB
+```
+
+- **Harvest** (`harvest/`): paginates the PSI catalogue, keeps Combustion Science, saves
+  each manifest, experimental CSV and report under 20 MB, plus eight NASA context pages.
+  Column maps (`harvest/maps/PSI-<n>.yaml`) convert units: `o2_fraction` 0–1,
+  `pressure_kpa`, `flow_cm_s`, sizes in mm.
+- **Snapshot** (`snapshots/<id>/`): `tests.parquet`, `investigations.json`,
+  `chunks.jsonl`, `vectors/` and `SNAPSHOT.md`. Each snapshot format has an id, and the
+  API only reads snapshots in its own format, so a code change can never make it read
+  data it would reject.
+- **Deploys** (`.github/workflows/deploy.yml`) run only after tests pass and a valid
+  snapshot exists. The new API is smoke-tested and rolled back automatically if it fails.
+  See [infra/README.md](infra/README.md).
+
+## Run it locally
+
+Needs Git, [uv](https://docs.astral.sh/uv/) (installs Python 3.12), Node.js 22.13+ and npm.
+No cloud account or API key is required.
 
 ```bash
 uv sync --frozen
-cd web
-npm ci
-cd ..
-```
-
-In two terminals:
-
-```bash
-make api     # http://127.0.0.1:8000/docs — mode configured in root .env
-make web     # http://127.0.0.1:5173 — offline fixtures by default
+cd web && npm ci && cd ..
+make api     # http://127.0.0.1:8000/docs
+make web     # http://127.0.0.1:5173 (offline fixtures by default)
 ```
 
 Without Make: `uv run uvicorn api.main:app --reload` and `cd web && npm run dev`.
-To test the UI against the API, copy `web/.env.example` to `web/.env.local`, set
-`VITE_DATA_MODE=api`, and restart Vite. For real data, set root `.env` to
-`FIRELENS_MODE=snapshot` and generate `snapshots/latest.json` using
-`uv run python -m harvest.pipeline all` after harvesting. Set `LLM_PROVIDER=offline`
-to verify without paid model calls. No cloud account is required.
+To use real data: `uv run python -m harvest.run` (about 4 minutes, ~130 MB), then
+`uv run python -m harvest.pipeline all`, set `FIRELENS_MODE=snapshot` in `.env`, and in
+`web/.env.local` set `VITE_DATA_MODE=api`. Set `LLM_PROVIDER=offline` to run without
+model calls.
 
-## Harvest the full combustion collection (Phase 3)
+Checks: `make lint`, `make test`, `make contracts`. CI also runs the web lint, tests and
+production build.
 
-```bash
-uv run python -m harvest.run
-# or: make harvest
-```
+## Repository layout
 
-This paginates the PSI catalogue, filters Combustion Science, saves every manifest
-and listed experimental CSV, and collects Reports/Science Documents below 20 MB.
-It also saves eight NASA context topics as source-linked text. Bulk Raw Data is skipped.
-Run folders and cache stay under ignored `raw/`. No API key is required.
-
-A partial run exits nonzero and records failures in its `HARVEST_LOG.md`. The
-observed run has 24 manifests, 22 CSVs and 53 supporting documents; two legacy
-NASA report URLs returned 404, so it is honestly labelled partial. Normalization
-and snapshot generation are separate from collection; see the Phase 7 handoff.
-See [Phase 3 handoff](docs/PHASE_3_HANDOFF.md) and [harvest log](docs/harvest/HARVEST_LOG.md).
-
-## Check NASA access (small Phase 2 spike)
-
-```bash
-make spike
-# or: uv run python -m harvest.spike
-```
-
-The spike reads the public PSI catalogue and FLEX (PSI-69) / CFI-G (PSI-159)
-manifest records, resolves temporary download URLs and immediately fetches their
-experimental CSV files. Original files go to ignored `raw/spike/`; the shareable
-report is `docs/SPIKE_RESULTS.json`. Signed URLs are never logged or committed.
-Network access is needed only for this explicit check, not normal tests or the preview.
-
-## Checks and generated files
-
-```bash
-make lint
-make test
-make contracts
-cd web && npm run generate:types
-```
-
-CI runs Python lint/tests, contract-drift checks, web lint/tests and a production
-build. OpenAPI and SSE payloads: [`docs/contracts/`](docs/contracts/).
-The web team can use [`web/public/fixtures.json`](web/public/fixtures.json) immediately.
-To deliberately refresh metadata fixtures: `uv run python -m scripts.build_fixtures --fetch`,
-then regenerate contracts and TypeScript types. This refresh changes source timestamps.
-
-## Project context
-
-Start with [the context guide](docs/context/README.md) for the product plan,
-original build checklist and the owner’s four-screen HTML reference. The guide
-also records differences that need resolution before implementing real rankings.
-
-## Layout
-
-| Folder | Responsibility |
+| Folder | Contents |
 | --- | --- |
-| `harvest/` | Collection, column maps, normalization and snapshot precomputation |
-| `api/` | Typed API, DuckDB ranking/filtering, source-grounded RAG and exports |
-| `web/` | Vite, React, TypeScript, Tailwind and lazy-loaded Plotly scaffold |
-| `config/` | Illustrative mission profiles and draft relevance weights |
-| `snapshots/sample/` | Checked metadata fixtures; real snapshots remain ignored |
-| `sync/` | Reserved for Phase 12; exits clearly rather than pretending to sync |
-| `infra/` | Environment readiness notes; deployment is a later phase |
-| `docs/context/` | Supplied build plan, source inventory and scope decisions |
-| `scripts/` | Contract exports and explicit fixture refresh |
+| `harvest/` | PSI collection, column maps, normalization, snapshot building |
+| `api/` | FastAPI, DuckDB ranking and filtering, cited chat (RAG), exports |
+| `web/` | React, TypeScript, Tailwind and Plotly dashboard |
+| `sync/` | Nightly sync job: detect PSI changes, rebuild, validate, publish |
+| `scripts/` | Snapshot checker, contract export, fixture refresh |
+| `config/` | Mission profiles and ranking weights (illustrative assumptions) |
+| `infra/` | Azure provisioning script and runbook |
+| `docs/` | Plan, decisions, contracts, phase notes |
 
 ## Scientific boundaries
 
-Mission scenarios and weights are design assumptions, not NASA-approved mission
-specifications, material certifications or fire-risk predictions. The rank route
-only scores investigations with eligible individual measurements and sufficient
-conditions; other scores stay null. A gap means no
-matching evidence in this collection, not proof that no research exists. CSV row
-counts include possible descriptions/units/blank rows and are not validated test counts.
-All displayed scientific claims must trace to evidence; missing values stay null.
+Mission profiles and ranking weights are design assumptions, not NASA mission
+specifications, material certifications or fire-risk predictions. Only investigations
+with individual measurements under comparable conditions are scored; others are shown
+unscored. A gap on the coverage map means no matching evidence *in this collection*, not
+that no research exists. PSI contains no partial-gravity combustion data, and FireLens
+does not invent any. Rockets and propellants are out of scope.
 
-## Credits and handoff
+## Credits
 
-NASA PSI is the source of the catalogue metadata. This independent project is not
-NASA-endorsed. Software is MIT licensed; upstream data retains its own license.
-See [references](REFERENCES.md), [AI disclosure](docs/AI_USAGE.md),
-[Phase 1–2 handoff](docs/PHASE_1_2_HANDOFF.md) and the [supplied plan](docs/context/build-steps.md).
-No public production deployment is included in these phases.
-
-The complete-plan alignment adds canonical test/metric contracts, C/F/M/D ranking
-weights, rover/custom scenarios and the exact eight requested context sources.
-See [alignment status](docs/context/PLAN_ALIGNMENT.md) and
-[session handoff](docs/context/SESSION_HANDOFF.md) for history. Current normalization,
-API and dashboard behavior are documented in the [Phase 7 handoff](docs/PHASE_7_HANDOFF.md).
-Scientific evaluation, deployment and scheduled sync remain later-phase work.
+Data: NASA Physical Sciences Informatics (CC0); every investigation is listed with its DOI
+in [REFERENCES.md](REFERENCES.md). FireLens is an independent project, not endorsed by
+NASA. Code is MIT licensed ([LICENSE](LICENSE)). Built by Talha Adil, Muhammad Qambar
+Hussain and AsadUllah Nizami.

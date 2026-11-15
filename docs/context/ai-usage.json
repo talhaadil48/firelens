@@ -1,22 +1,26 @@
 {
   "ai_assisted": true,
-  "tool": "OpenAI Codex",
-  "scope": [
-    "code",
-    "documentation",
-    "tests",
-    "phase_3_harvest_and_audit",
-    "phase_7_web_and_cited_data_charts",
-    "phase_6_chat_hardening"
+  "tools": [
+    {
+      "tool": "OpenAI Codex",
+      "directed_by": "Talha Adil",
+      "scope": ["harvest", "normalization", "snapshot_pipeline", "api", "cited_chat", "web", "tests", "documentation"]
+    },
+    {
+      "tool": "Claude Code (Claude Opus)",
+      "directed_by": "Muhammad Qambar Hussain",
+      "scope": ["azure_provisioning", "ci_cd", "guarded_deploys", "sync_job", "snapshot_checker", "documentation"]
+    }
   ],
-  "runtime_llm_enabled": "configuration_dependent",
+  "runtime_llm": {
+    "provider": "openrouter",
+    "model": "openai/gpt-4o-mini",
+    "used_for": ["investigation_summaries", "chat_answers"],
+    "produces_numbers": false,
+    "embeddings": "deterministic_local"
+  },
   "generated_scientific_measurements": false,
-  "human_science_review": "pending",
+  "human_science_review": "not_performed",
   "generated_images_audio_video": false,
-  "runtime_llm_providers": [
-    "offline",
-    "azure",
-    "openrouter"
-  ],
   "verification_uses_live_llm": false
 }
