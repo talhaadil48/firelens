@@ -252,3 +252,26 @@ Verified: 156 Python tests, 30 frontend tests, lint/format, TypeScript, build an
 contract drift checks. Real-data browser checks cover the exact comparative
 question, Stop returning to an idle state and immediate retry. Screenshot retained
 under ignored `artifacts/readiness/flame-spread-fixed.png`. No cloud deployment.
+
+### Source-based summary and comparative answer follow-up
+
+Selected-study `summarize`, `summarise`, summary and overview requests now retrieve
+the selected investigation's structured source fields directly, including the
+first chunk of each field to avoid mid-paragraph fragments. Explicit PSI IDs and
+unambiguous acronym requests are supported. The response labels objectives,
+approach and research impacts, cites the underlying source fields and does not
+present objectives as experimental findings.
+
+When retrieved documents contain a literal reported decrease in spread, the
+comparison can be returned with its source citation directly. Generic plans and
+objectives are excluded from this direct-comparison path. These paths bypass
+model generation/SQL proposals so a model's abstention cannot hide facts present
+in these supported source fields. Other questions retain normal RAG/abstention.
+
+Verified against the actual local API at port 8001 and the owner's frontend at
+localhost:5173: the exact reduced-flame-spread question returns the BASS comparison;
+selecting FLEX and asking `summarize it` returns a cited source-based summary.
+The local backend was restarted with reload enabled. Regression tests explicitly
+fail if these paths attempt model generation or SQL-filter calls. Python: 160
+passing tests. Frontend: 30 passing tests, lint/TypeScript/build passed. No cloud
+configuration or deployment was changed.

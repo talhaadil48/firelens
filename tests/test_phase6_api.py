@@ -1446,3 +1446,41 @@ def test_cancelled_chat_does_not_start_model_or_loader_work():
         )
         == []
     )
+
+
+@pytest.mark.parametrize(
+    "question,ids,expected",
+    [
+        ("Which experiments report reduced flame spread?", [], "decreases at higher speeds"),
+        ("summarize it", ["PSI-69"], "FLEX"),
+        ("summarise", ["PSI-100"], "SAFFIRE"),
+        ("give an overview", ["PSI-25"], "BASS"),
+    ],
+)
+def test_source_backed_answers_survive_live_model_abstention(question, ids, expected, monkeypatch):
+    from api.config import ROOT
+    from api.llm import deterministic_embed
+
+    if not (ROOT / "snapshots/latest.json").exists():
+        pytest.skip("Local source snapshot required")
+    runtime = configure_runtime(
+        Settings(
+            mode="snapshot", llm_provider="offline", azure_storage_account_url="", _env_file=None
+        )
+    )
+    monkeypatch.setattr(runtime.llm, "embed_text", deterministic_embed)
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("Source answers must not need generation or SQL-filter model calls")
+
+    monkeypatch.setattr(runtime.llm, "generate_grounded_answer", unexpected)
+    monkeypatch.setattr(runtime.llm, "propose_sql_filter", unexpected)
+    frames = _parse_sse(
+        TestClient(app).post("/chat", json={"question": question, "investigation_ids": ids}).text
+    )
+    answer = next(data for event, data in frames if event == "answer")
+    assert answer["status"] == "supported"
+    assert expected in answer["text"]
+    assert answer["citations"]
+    if ids:
+        assert all(c["accession"] in ids for c in answer["citations"])

@@ -176,6 +176,30 @@ def retrieve_top_chunks(
     if not snap.chunks:
         return []
 
+    if re.search(r"\bsummari[sz](?:e|ation)|\bsummary\b|\boverview\b", question, re.I):
+        ids = set(investigation_ids or re.findall(r"\bPSI-\d+\b", question.upper()))
+        if not ids:
+            ids = {
+                inv.accession
+                for inv in snap.investigations
+                if inv.acronym
+                and re.search(r"(?<!\w)" + re.escape(inv.acronym) + r"(?!\w)", question, re.I)
+            }
+        priorities = {"objectives": 0, "approach": 1, "description": 2, "research_impacts": 3}
+        fields = [
+            c
+            for c in snap.chunks
+            if c.accession in ids
+            and c.source_kind == "investigation_field"
+            and c.field_name in priorities
+        ]
+        first_fields = {}
+        for chunk in sorted(fields, key=lambda c: c.chunk_id):
+            first_fields.setdefault((chunk.accession, chunk.field_name), chunk)
+        return sorted(first_fields.values(), key=lambda c: (priorities[c.field_name], c.chunk_id))[
+            :top_k
+        ]
+
     q_vec = llm.embed_text(question)
     generic = {"experiment", "experiments", "report", "reports", "reported", "study", "studies"}
 
@@ -365,6 +389,83 @@ def build_citations(
     return citations
 
 
+def _source_answer(
+    question: str, chunks: list[TextChunk], snap: LoadedSnapshot
+) -> AnswerEvent | None:
+    summary = bool(re.search(r"\bsummari[sz](?:e|ation)|\bsummary\b|\boverview\b", question, re.I))
+    comparison = bool(
+        re.search(r"spread", question, re.I)
+        and re.search(r"reduc|decreas|slower|lower", question, re.I)
+    )
+    if not summary and not comparison:
+        return None
+    selected = []
+    excerpts = []
+    seen = set()
+    for chunk in chunks:
+        inv = snap.investigations_by_id.get(chunk.accession)
+        if inv is None:
+            continue
+        if summary:
+            if chunk.source_kind != "investigation_field":
+                continue
+            label = (chunk.field_name or "source").replace("_", " ").capitalize()
+            # Show the original metadata's first complete sentence, without
+            # changing its meaning or presenting objectives as observed results.
+            text = chunk.text.strip()
+            end = re.search(r"(?<![0-9])[.!?](?:\s|$)", text)
+            if end:
+                text = text[: end.start() + 1]
+            excerpt = f"{label}: {text}"
+        else:
+            if chunk.source_kind != "document":
+                continue
+            sentences = re.split(r"(?<=[.!?])\s+", " ".join(chunk.text.split()))
+            matching = [
+                sentence
+                for sentence in sentences
+                if re.search(
+                    r"\bspread(?:ing)?(?:\s+rate)?\b.{0,200}\b(?:decreases?|decreased|reduced|slower|lower)\b",
+                    sentence,
+                    re.I,
+                )
+                and not re.search(r"\b(?:aim|objective|plan|will|hypothes)\w*\b", sentence, re.I)
+            ]
+            if not matching:
+                continue
+            excerpt = matching[0]
+        key = (chunk.accession, excerpt)
+        if key in seen:
+            continue
+        seen.add(key)
+        selected.append(chunk)
+        excerpts.append((inv, excerpt))
+    if not selected:
+        return None
+    citations = build_citations(snap, selected, [])
+    lines = [
+        "Source-based investigation summary:"
+        if summary
+        else "Reported flame-spread comparisons (conditions apply):"
+    ]
+    for (inv, excerpt), citation in zip(excerpts, citations, strict=True):
+        lines.append(
+            f"- {inv.acronym or inv.accession} ({inv.accession}): {excerpt} "
+            f"{format_citation_tag(citation, inv.doi)}"
+        )
+    if summary:
+        lines.append(
+            "Objectives describe the research purpose; "
+            "they are not proof of an experimental outcome."
+        )
+    else:
+        lines.append(
+            "These are retrieved comparisons under the reported conditions, "
+            "not a universal reduction or a safety certification."
+        )
+    return AnswerEvent(text="\n".join(lines), status="supported", citations=citations)
+
+
 def stream_chat_events(
     request: ChatRequest,
     *,
@@ -428,6 +529,19 @@ def stream_chat_events(
             top_k=8,
         )
         if cancelled():
+            return
+        # Structured metadata summaries and literal comparative findings do not
+        # require a model to approve facts already present in the source records.
+        direct = _source_answer(request.question, top_chunks, snap)
+        if direct is not None:
+            yield sse_frame(
+                "progress",
+                ProgressEvent(
+                    stage="retrieval", message="Found source-backed evidence."
+                ).model_dump(),
+            )
+            yield sse_frame("answer", direct.model_dump(mode="json"))
+            yield sse_frame("done", DoneEvent(finish_reason="stop").model_dump())
             return
         matched_rows = retrieve_matching_rows(
             request.question,
