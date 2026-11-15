@@ -252,9 +252,20 @@ github() {
   [ -n "$app_id" ] || app_id=$(az ad app create --display-name "$DEPLOY_APP" --query appId -o tsv)
   exists az ad sp show --id "$app_id" || az ad sp create --id "$app_id" --only-show-errors -o none
   sp_id=$(az ad sp show --id "$app_id" --query id -o tsv)
-  if [ -z "$(az ad app federated-credential list --id "$app_id" --query "[?name=='github-main'].name" -o tsv)" ]; then
+  federate() { # federate <credential-name> <subject>
+    [ -n "$(az ad app federated-credential list --id "$app_id" --query "[?name=='$1'].name" -o tsv)" ] && return
     az ad app federated-credential create --id "$app_id" --only-show-errors -o none --parameters \
-      "{\"name\":\"github-main\",\"issuer\":\"https://token.actions.githubusercontent.com\",\"subject\":\"repo:$GITHUB_REPO:ref:refs/heads/main\",\"audiences\":[\"api://AzureADTokenExchange\"]}"
+      "{\"name\":\"$1\",\"issuer\":\"https://token.actions.githubusercontent.com\",\"subject\":\"$2\",\"audiences\":[\"api://AzureADTokenExchange\"]}"
+    echo "  OIDC subject $2"
+  }
+  federate github-main "repo:$GITHUB_REPO:ref:refs/heads/main"
+  # GitHub may send the subject with immutable IDs: repo:<owner>@<id>/<repo>@<id>:ref:...
+  local ids
+  ids=$(gh api "repos/$GITHUB_REPO" --jq '"\(.owner.login)@\(.owner.id)/\(.name)@\(.id)"' 2>/dev/null || true)
+  if [ -n "$ids" ]; then
+    federate github-main-ids "repo:$ids:ref:refs/heads/main"
+  else
+    echo "  (gh unavailable: add the ID-form subject by hand if azure/login reports AADSTS700213)"
   fi
   rg_id=$(az group show -n "$RG" --query id -o tsv)
   grant "$sp_id" ServicePrincipal Contributor "$rg_id"
