@@ -138,9 +138,9 @@ Every step needed to develop, deploy and submit FireLens, in dependency order. R
 
 ## Phase 12: Sync job (Data + Cloud tracks)
 
-- [ ] **12.1** *(Claude Code)* `sync/` entry point: catalogue diff by version and release date → harvest only what changed → normalize → precompute → new snapshot → update the pointer. Investigations with unreviewed column maps are added but flagged.
-- [ ] **12.2** *(Person)* Create the Container Apps Job `firelens-sync`: cron for 03:00 PKT, manual trigger allowed, Storage Blob Data Contributor role.
-- [ ] **12.3** *(Both)* Run it once by hand. *Done when:* the API swaps to the new snapshot within 15 minutes and the badge date changes.
+- [x] **12.1** *(Claude Code)* `sync/` entry point: catalogue diff by version and release date → harvest only what changed → normalize → precompute → new snapshot → update the pointer. Investigations with unreviewed column maps are added but flagged.
+- [x] **12.2** *(Person)* Create the Container Apps Job `firelens-sync`: cron for 03:00 PKT, manual trigger allowed, Storage Blob Data Contributor role.
+- [x] **12.3** *(Both)* Run it once by hand. *Done when:* the API swaps to the new snapshot within 15 minutes and the badge date changes.
 
 ## Phase 13: Hardening (Both)
 

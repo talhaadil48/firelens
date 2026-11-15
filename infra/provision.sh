@@ -9,6 +9,9 @@
 #   infra/provision.sh apps           Container Apps env, API app, Static Web App
 #   infra/provision.sh web            build web/ against the live API and upload it
 #   infra/provision.sh github         OIDC deploy identity + GitHub secrets/variables
+#   infra/provision.sh sync           Container Apps Job $SYNC_JOB (nightly 03:00 PKT) from $SYNC_IMAGE
+#   infra/provision.sh sync-run [--force|--dry-run]  start one sync execution and wait for it
+#   infra/provision.sh staging <img>  private staging API $STAGING_API_APP on <img> (scale to zero)
 #   infra/provision.sh status         what exists and the public URLs
 #
 # Runs in Git Bash, WSL, macOS/Linux or Azure Cloud Shell after `az login`.
@@ -33,6 +36,9 @@ az config set extension.use_dynamic_install=yes_without_prompt --only-show-error
 
 PROVIDERS=(Microsoft.App Microsoft.OperationalInsights Microsoft.Insights Microsoft.Storage Microsoft.Web)
 BLOB_URL="https://$STORAGE.blob.core.windows.net"
+SYNC_JOB="${SYNC_JOB:-firelens-sync}"
+STAGING_API_APP="${STAGING_API_APP:-firelens-api-staging}"
+SYNC_CRON="0 22 * * *"   # 22:00 UTC = 03:00 PKT (Container Apps cron is UTC)
 
 exists() { "$@" --only-show-errors -o none >/dev/null 2>&1; }
 winpath() { if command -v cygpath >/dev/null; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
@@ -189,6 +195,22 @@ web() {
   echo; echo "Live at https://$(web_host)   (API: $api)"
 }
 
+api_vars() { # api_vars <cors-json> <insights-connection-string>: fills API_VARS
+  API_VARS=(
+    FIRELENS_MODE=snapshot
+    FIRELENS_LLM_PROVIDER=openrouter
+    OPENROUTER_API_KEY=secretref:openrouter-key
+    "OPENROUTER_MODEL=$OPENROUTER_MODEL"
+    "AZURE_STORAGE_ACCOUNT_URL=$BLOB_URL"
+    "AZURE_STORAGE_CONTAINER=$CONTAINER"
+    "FIRELENS_CORS_ORIGINS=$1"
+    # Uvicorn takes the client IP from X-Forwarded-For set by the Container Apps
+    # ingress, so the per-IP /chat limit is per visitor rather than global.
+    "FORWARDED_ALLOW_IPS=*"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING=$2"
+  )
+}
+
 apps() {
   local key; key="$(openrouter_key)"
   [ -n "$key" ] || die "OpenRouter key missing: export OPENROUTER_API_KEY or add it to ./.env"
@@ -211,19 +233,8 @@ apps() {
   say "Container App $API_APP from $API_IMAGE"
   local insights
   insights=$(az monitor app-insights component show -g "$RG" -a "$APPINSIGHTS" --query connectionString -o tsv)
-  local vars=(
-    FIRELENS_MODE=snapshot
-    FIRELENS_LLM_PROVIDER=openrouter
-    OPENROUTER_API_KEY=secretref:openrouter-key
-    "OPENROUTER_MODEL=$OPENROUTER_MODEL"
-    "AZURE_STORAGE_ACCOUNT_URL=$BLOB_URL"
-    "AZURE_STORAGE_CONTAINER=$CONTAINER"
-    "FIRELENS_CORS_ORIGINS=$cors"
-    # Uvicorn takes the client IP from X-Forwarded-For set by the Container Apps
-    # ingress, so the per-IP /chat limit is per visitor rather than global.
-    "FORWARDED_ALLOW_IPS=*"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING=$insights"
-  )
+  api_vars "$cors" "$insights"
+  local vars=("${API_VARS[@]}")
   if exists az containerapp show -g "$RG" -n "$API_APP"; then
     az containerapp secret set -g "$RG" -n "$API_APP" --secrets "openrouter-key=$key" \
       --only-show-errors -o none
@@ -300,6 +311,81 @@ github() {
   fi
 }
 
+sync() {
+  local image="${SYNC_IMAGE:-}"
+  [ -n "$image" ] || die "Set SYNC_IMAGE in infra/.env.azure (e.g. ghcr.io/talhaadil48/firelens-sync:<sha>); the package must be public."
+  local vars=("AZURE_STORAGE_ACCOUNT_URL=$BLOB_URL" "AZURE_STORAGE_CONTAINER=$CONTAINER")
+
+  say "Container Apps Job $SYNC_JOB from $image (cron '$SYNC_CRON' UTC = 03:00 PKT)"
+  if exists az containerapp job show -g "$RG" -n "$SYNC_JOB"; then
+    az containerapp job update -g "$RG" -n "$SYNC_JOB" --image "$image" \
+      --cron-expression "$SYNC_CRON" --replica-timeout 1800 --replica-retry-limit 0 \
+      --set-env-vars "${vars[@]}" --only-show-errors -o none
+  else
+    az containerapp job create -g "$RG" -n "$SYNC_JOB" --environment "$ENV_NAME" \
+      --trigger-type Schedule --cron-expression "$SYNC_CRON" \
+      --replica-timeout 1800 --replica-retry-limit 0 --parallelism 1 --replica-completion-count 1 \
+      --image "$image" --container-name "$SYNC_JOB" --cpu 1.0 --memory 2.0Gi \
+      --env-vars "${vars[@]}" --mi-system-assigned --only-show-errors -o none
+  fi
+  # Writes go through the job's own identity; nothing else gets write access.
+  local principal storage_id
+  principal=$(az containerapp job show -g "$RG" -n "$SYNC_JOB" --query identity.principalId -o tsv)
+  storage_id=$(az storage account show -g "$RG" -n "$STORAGE" --query id -o tsv)
+  grant "$principal" ServicePrincipal "Storage Blob Data Contributor" "$storage_id"
+  echo "  Role assignments can take a few minutes to apply. Next: infra/provision.sh sync-run"
+}
+
+sync_run() { # sync_run [--force|--dry-run]
+  # Overriding args replaces the container template, which Azure only accepts with an image.
+  local args=()
+  if [ -n "${1:-}" ]; then
+    args=(--container-name "$SYNC_JOB" --args "$1" --image
+      "$(az containerapp job show -g "$RG" -n "$SYNC_JOB" --query "properties.template.containers[0].image" -o tsv)")
+  fi
+  say "Starting $SYNC_JOB ${1:-}"
+  local exec status
+  exec=$(az containerapp job start -g "$RG" -n "$SYNC_JOB" "${args[@]}" --query name -o tsv)
+  echo "  execution $exec"
+  for _ in $(seq 1 80); do
+    status=$(az containerapp job execution show -g "$RG" -n "$SYNC_JOB" \
+      --job-execution-name "$exec" --query properties.status -o tsv)
+    printf '  %s %s\n' "$(date +%H:%M:%S)" "$status"
+    case "$status" in Succeeded|Failed|Stopped|Degraded) break ;; esac
+    sleep 15
+  done
+  echo "  Logs (the last line is the JSON result):"
+  echo "    az containerapp job logs show -g $RG -n $SYNC_JOB --execution $exec --container $SYNC_JOB"
+  echo "  Published pointers: $BLOB_URL/$CONTAINER/formats/<format id>/latest.json"
+  [ "$status" = "Succeeded" ] || die "Execution $exec ended '$status'. Nothing the live API reads was changed."
+}
+
+staging() { # staging <api image>
+  local image="${1:-}"
+  [ -n "$image" ] || die "Usage: infra/provision.sh staging ghcr.io/<owner>/firelens-api:<tag>"
+  local key; key="$(openrouter_key)"
+  [ -n "$key" ] || die "OpenRouter key missing: export OPENROUTER_API_KEY or add it to ./.env"
+  local insights
+  insights=$(az monitor app-insights component show -g "$RG" -a "$APPINSIGHTS" --query connectionString -o tsv)
+  api_vars "[\"http://localhost:5173\"]" "$insights"
+
+  say "Staging API $STAGING_API_APP on $image (not linked from the website)"
+  if exists az containerapp show -g "$RG" -n "$STAGING_API_APP"; then
+    az containerapp secret set -g "$RG" -n "$STAGING_API_APP" --secrets "openrouter-key=$key" \
+      --only-show-errors -o none
+    az containerapp update -g "$RG" -n "$STAGING_API_APP" --image "$image" \
+      --set-env-vars "${API_VARS[@]}" --only-show-errors -o none
+  else
+    az containerapp create -g "$RG" -n "$STAGING_API_APP" --environment "$ENV_NAME" \
+      --image "$image" --target-port 8000 --ingress external \
+      --min-replicas 0 --max-replicas 1 --cpu 0.5 --memory 1.0Gi \
+      --secrets "openrouter-key=$key" --env-vars "${API_VARS[@]}" --only-show-errors -o none
+  fi
+  local fqdn
+  fqdn=$(az containerapp show -g "$RG" -n "$STAGING_API_APP" --query properties.configuration.ingress.fqdn -o tsv)
+  echo "  https://$fqdn/meta"
+}
+
 status() {
   say "Resources in $RG"
   az resource list -g "$RG" --query "[].{name:name, type:type}" -o table
@@ -319,5 +405,8 @@ case "${1:-}" in
   web) web ;;
   github) github ;;
   status) status ;;
-  *) sed -n '2,16p' "$0"; exit 1 ;;
+  sync) sync ;;
+  sync-run) sync_run "${2:-}" ;;
+  staging) staging "${2:-}" ;;
+  *) sed -n '2,19p' "$0"; exit 1 ;;
 esac

@@ -683,6 +683,70 @@ def test_snapshot_loader_azure_blob_and_sample_fallback(tmp_path: Path):
     assert len(fallback.investigations) == 5
 
 
+def _blob_files(source_root: Path, snapshot_id: str) -> dict[str, bytes]:
+    snap_dir = _build_synthetic_snapshot(source_root, snapshot_id=snapshot_id)
+    return {
+        f"{snapshot_id}/{name}": (snap_dir / name).read_bytes()
+        for name in ("tests.parquet", "investigations.json", "chunks.jsonl")
+    } | {"pointer": (source_root / "latest.json").read_bytes()}
+
+
+def _blob_settings(cache_root: Path) -> Settings:
+    return Settings(
+        mode="snapshot",
+        snapshots_dir=cache_root,
+        azure_storage_account_url="https://firelensdata.blob.core.windows.net",
+    )
+
+
+def test_snapshot_loader_prefers_the_pointer_for_its_own_format(tmp_path: Path):
+    from api.snapshot_format import pointer_blob_path
+
+    legacy = _blob_files(tmp_path / "legacy", "legacy-v1")
+    current = _blob_files(tmp_path / "current", "format-v1")
+    blobs = {k: v for k, v in (legacy | current).items() if k != "pointer"}
+    blobs["latest.json"] = legacy["pointer"]
+    blobs[pointer_blob_path()] = current["pointer"]
+
+    loader = SnapshotLoader(_blob_settings(tmp_path / "cache"), blob_fetcher=blobs.get)
+    assert loader.get_snapshot().snapshot_id == "format-v1"
+
+
+def test_snapshot_loader_falls_back_to_legacy_pointer_without_format_pointer(tmp_path: Path):
+    legacy = _blob_files(tmp_path / "legacy", "legacy-v1")
+    blobs = {k: v for k, v in legacy.items() if k != "pointer"}
+    blobs["latest.json"] = legacy["pointer"]
+
+    loader = SnapshotLoader(_blob_settings(tmp_path / "cache"), blob_fetcher=blobs.get)
+    snap = loader.get_snapshot()
+    assert snap.snapshot_id == "legacy-v1"
+    assert not snap.is_sample_fallback
+
+
+def test_snapshot_loader_keeps_real_data_when_a_refresh_is_unusable(tmp_path: Path):
+    from api.snapshot_format import pointer_blob_path
+
+    files = _blob_files(tmp_path / "remote", "good-v1")
+    blobs = {k: v for k, v in files.items() if k != "pointer"}
+    blobs[pointer_blob_path()] = files["pointer"]
+    now = [0.0]
+    cache_root = tmp_path / "cache"
+    loader = SnapshotLoader(
+        _blob_settings(cache_root), blob_fetcher=blobs.get, clock=lambda: now[0]
+    )
+    assert loader.get_snapshot().snapshot_id == "good-v1"
+
+    # The published pointer turns into one this code rejects (the 15 Nov review_status break)
+    # and the local cache is gone (a fresh replica would have neither).
+    broken = json.loads(files["pointer"]) | {"review_status": "reviewed"}
+    blobs[pointer_blob_path()] = json.dumps(broken).encode("utf-8")
+    (cache_root / "latest.json").unlink()
+    now[0] = 10_000.0
+    snap = loader.get_snapshot()
+    assert snap.snapshot_id == "good-v1"
+    assert not snap.is_sample_fallback
+
+
 def test_meta_counts_and_hourly_cached_catalogue_check(tmp_path: Path):
     _build_synthetic_snapshot(tmp_path, snapshot_id="snap-meta-1")
     current_time = [100.0]

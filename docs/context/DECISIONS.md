@@ -83,3 +83,22 @@ provisioned. Region is East US 2 (`eastus2`), resource group `firelens-rg`.
 The API's Blob fetch is an anonymous HTTPS GET, so the `snapshots` container is
 public-read (CC0 PSI-derived files only) instead of private with a managed-identity
 reader role. `infra/provision.sh` and `infra/README.md` hold the runbook.
+
+## Snapshot format pointers and guarded deploys (15 Nov 2026)
+
+On 15 Nov a merge removed `review_status` from the snapshot models while Blob still held a
+`latest.json` with that field. The new API rejected it (`extra="forbid"`) and the live site
+silently fell back to sample data until the snapshot was rebuilt by hand. Decision:
+
+- Every snapshot format has an id (`api/snapshot_format.py`, a hash of the snapshot-facing
+  schemas and parquet columns). The API reads `formats/<id>/latest.json`, then the legacy
+  `latest.json`. The sync job only writes its own format's pointer and new snapshot folders,
+  never the legacy pointer, never deletes. Old and new API images can share the container.
+- The API never swaps a loaded real snapshot for the sample because a refresh failed.
+- `.github/workflows/deploy.yml` deploys only after CI, only once a valid snapshot exists for
+  the new format (it runs the sync job first if needed), smoke-tests `/meta` and the main
+  endpoints, and rolls back to the previous image on failure. `DEPLOY_FREEZE=true` stops
+  production deploys during judging.
+- The sync job fingerprints the Combustion catalogue (PSI search results carry no version)
+  and also rebuilds weekly to catch version bumps the catalogue does not show. It does a
+  full harvest when anything changed (~4 min, ~130 MB) instead of a per-investigation diff.

@@ -1,0 +1,309 @@
+name: Deploy
+# One ordered pipeline: CI -> images -> snapshot gate -> API (smoke test, auto-rollback) -> web.
+# Pushes to main deploy production. Pushes to the Phase 12 branch deploy to the staging API only,
+# which nobody visits. Set the repo variable DEPLOY_FREEZE=true to stop production deploys
+# (judging-day kill switch). Rollback drill (staging only): put [simulate-smoke-failure] in the
+# commit message; the smoke test then fails on purpose and the API is rolled back.
+on:
+  push:
+    branches: [main, feature/phase-12-guarded-sync]
+  workflow_dispatch:
+    inputs:
+      force_snapshot_rebuild:
+        description: Run the sync job with --force before switching the API
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+env:
+  SNAPSHOT_CONTAINER_URL: ${{ vars.SNAPSHOT_CONTAINER_URL || 'https://firelensdata.blob.core.windows.net/snapshots' }}
+  SYNC_JOB: ${{ vars.AZURE_SYNC_JOB || 'firelens-sync' }}
+jobs:
+  plan:
+    name: Decide target and what changed
+    runs-on: ubuntu-latest
+    outputs:
+      target: ${{ steps.target.outputs.target }}
+      app: ${{ steps.target.outputs.app }}
+      frozen: ${{ steps.target.outputs.frozen }}
+      backend: ${{ steps.changes.outputs.backend }}
+      web: ${{ steps.changes.outputs.web }}
+      simulate_failure: ${{ steps.target.outputs.simulate_failure }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: target
+        env:
+          FREEZE: ${{ vars.DEPLOY_FREEZE }}
+          PROD_APP: ${{ vars.AZURE_API_APP }}
+          STAGING_APP: ${{ vars.AZURE_STAGING_API_APP || 'firelens-api-staging' }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            echo "target=production" >> "$GITHUB_OUTPUT"
+            echo "app=$PROD_APP" >> "$GITHUB_OUTPUT"
+            frozen=$([ "$FREEZE" = "true" ] && echo true || echo false)
+            echo "simulate_failure=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "target=staging" >> "$GITHUB_OUTPUT"
+            echo "app=$STAGING_APP" >> "$GITHUB_OUTPUT"
+            frozen=false
+            # Rollback drill: a branch commit whose message contains [simulate-smoke-failure].
+            case "$COMMIT_MESSAGE" in
+              *"[simulate-smoke-failure]"*) echo "simulate_failure=true" >> "$GITHUB_OUTPUT" ;;
+              *) echo "simulate_failure=false" >> "$GITHUB_OUTPUT" ;;
+            esac
+          fi
+          echo "frozen=$frozen" >> "$GITHUB_OUTPUT"
+          if [ "$frozen" = "true" ]; then
+            echo "::notice::DEPLOY_FREEZE=true: production deploy skipped. Unset it to deploy."
+            echo "### Deploy frozen (DEPLOY_FREEZE=true); nothing deployed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - id: changes
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "push" ] || [ -z "$BEFORE" ] \
+             || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"; echo "web=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          files=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
+          echo "$files"
+          backend=false; web=false
+          echo "$files" | grep -qE '^(api|config|harvest|scripts|sync|snapshots/sample)/|^(pyproject\.toml|uv\.lock)$|^\.github/workflows/' && backend=true
+          echo "$files" | grep -qE '^web/|^\.github/workflows/' && web=true
+          echo "backend=$backend" >> "$GITHUB_OUTPUT"
+          echo "web=$web" >> "$GITHUB_OUTPUT"
+
+  ci:
+    name: CI
+    needs: plan
+    if: needs.plan.outputs.frozen != 'true'
+    uses: ./.github/workflows/ci.yml
+
+  images:
+    name: Build API and sync images
+    needs: [plan, ci]
+    if: needs.plan.outputs.frozen != 'true' && needs.plan.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.names.outputs.api }}
+      sync: ${{ steps.names.outputs.sync }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: names
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "api=ghcr.io/$owner/firelens-api" >> "$GITHUB_OUTPUT"
+          echo "sync=ghcr.io/$owner/firelens-sync" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Only immutable :<sha> tags here; :latest moves after the production smoke test passes.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: api/Dockerfile
+          push: true
+          tags: ${{ steps.names.outputs.api }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: sync/Dockerfile
+          push: true
+          tags: ${{ steps.names.outputs.sync }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+
+  snapshot:
+    name: Snapshot gate (valid snapshot for this format, else build one)
+    needs: [plan, images]
+    runs-on: ubuntu-latest
+    outputs:
+      snapshot_id: ${{ steps.final.outputs.snapshot_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - id: first
+        name: Check the published snapshot for this format
+        run: |
+          echo "format=$(uv run python -m api.snapshot_format)" >> "$GITHUB_OUTPUT"
+          set +e
+          uv run python -m scripts.check_snapshot --blob "$SNAPSHOT_CONTAINER_URL" > check.json
+          code=$?
+          set -e
+          cat check.json
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "3" ]; then echo "::error::Blob unreachable; refusing to deploy blind."; exit 1; fi
+      - if: steps.first.outputs.code != '0' || inputs.force_snapshot_rebuild
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - if: steps.first.outputs.code != '0' || inputs.force_snapshot_rebuild
+        name: Run the sync job with this commit's image and wait
+        env:
+          RG: ${{ vars.AZURE_RG }}
+          IMAGE: ${{ needs.images.outputs.sync }}:${{ github.sha }}
+          FORCE: ${{ inputs.force_snapshot_rebuild && '--force' || '' }}
+        run: |
+          # One-off execution with this commit's image. The job's scheduled image is only
+          # changed after a successful production deploy (see the api job).
+          args=(--image "$IMAGE" --container-name "$SYNC_JOB")
+          [ -n "$FORCE" ] && args+=(--args "$FORCE")
+          exec=$(az containerapp job start -g "$RG" -n "$SYNC_JOB" "${args[@]}" --query name -o tsv)
+          echo "Execution $exec"
+          for i in $(seq 1 80); do
+            status=$(az containerapp job execution show -g "$RG" -n "$SYNC_JOB" \
+              --job-execution-name "$exec" --query properties.status -o tsv)
+            echo "$(date -u +%H:%M:%S) $status"
+            case "$status" in
+              Succeeded) exit 0 ;;
+              Failed|Stopped|Degraded) echo "::error::Sync execution $exec ended $status. Live site untouched."; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Sync execution $exec did not finish in 20 minutes. Live site untouched."
+          exit 1
+      - id: final
+        name: Hard gate - the published snapshot must validate
+        run: |
+          uv run python -m scripts.check_snapshot --blob "$SNAPSHOT_CONTAINER_URL" > check.json \
+            || { cat check.json; echo "::error::No valid snapshot for format ${{ steps.first.outputs.format }}. API not switched."; exit 1; }
+          cat check.json
+          echo "snapshot_id=$(jq -r .snapshot_id check.json)" >> "$GITHUB_OUTPUT"
+
+  api:
+    name: Switch API (${{ needs.plan.outputs.target }}), smoke test, roll back on failure
+    needs: [plan, images, snapshot]
+    runs-on: ubuntu-latest
+    env:
+      RG: ${{ vars.AZURE_RG }}
+      APP: ${{ needs.plan.outputs.app }}
+      IMAGE: ${{ needs.images.outputs.api }}:${{ github.sha }}
+      EXPECTED: ${{ needs.snapshot.outputs.snapshot_id }}
+      SIMULATE: ${{ needs.plan.outputs.simulate_failure }}
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Record the running image
+        id: before
+        run: |
+          prev=$(az containerapp show -g "$RG" -n "$APP" --query "properties.template.containers[0].image" -o tsv)
+          [ -n "$prev" ] || { echo "::error::Container App $APP not found."; exit 1; }
+          echo "image=$prev" >> "$GITHUB_OUTPUT"
+          echo "fqdn=$(az containerapp show -g "$RG" -n "$APP" --query properties.configuration.ingress.fqdn -o tsv)" >> "$GITHUB_OUTPUT"
+          echo "Running image: $prev"
+      - name: Switch to ${{ env.IMAGE }}
+        run: az containerapp update -g "$RG" -n "$APP" --image "$IMAGE" -o none
+      - name: Smoke test
+        id: smoke
+        env:
+          BASE: https://${{ steps.before.outputs.fqdn }}
+        run: |
+          expected="$EXPECTED"
+          [ "$SIMULATE" = "true" ] && expected="simulated-failure" && echo "::warning::Rollback drill: smoke test will fail on purpose."
+          ok=false
+          for i in $(seq 1 30); do
+            meta=$(curl -fsS --max-time 60 "$BASE/meta" || true)
+            got=$(echo "$meta" | jq -r '.snapshot_id // empty' 2>/dev/null || true)
+            bad=$(echo "$meta" | jq -r '[.warnings[]? | select(test("snapshot|fallback|sample|blob"; "i"))] | length' 2>/dev/null || echo 1)
+            echo "$(date -u +%H:%M:%S) snapshot=$got snapshot-warnings=$bad"
+            if [ "$got" = "$expected" ] && [ "$bad" = "0" ]; then ok=true; break; fi
+            sleep 10
+          done
+          if [ "$ok" != "true" ]; then
+            echo "Last /meta response:"; echo "$meta" | jq . 2>/dev/null || echo "$meta"
+            echo "::error::/meta never served $expected without snapshot warnings."
+            exit 1
+          fi
+          for path in /investigations "/rank?profile=iss" "/tests?limit=1" "/compare?ids=PSI-25,PSI-69" /profiles; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$BASE$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || { echo "::error::$path returned $code"; exit 1; }
+          done
+          count=$(curl -fsS "$BASE/investigations" | jq '.items | length')
+          [ "$count" -gt 0 ] || { echo "::error::/investigations is empty"; exit 1; }
+      - name: Roll back to the previous image
+        if: failure() && steps.before.outputs.image != ''
+        env:
+          PREV: ${{ steps.before.outputs.image }}
+          BASE: https://${{ steps.before.outputs.fqdn }}
+        run: |
+          echo "::error::Rolling $APP back to $PREV"
+          az containerapp update -g "$RG" -n "$APP" --image "$PREV" -o none
+          for i in $(seq 1 30); do
+            curl -fsS --max-time 60 "$BASE/meta" >/dev/null && { echo "Rolled back; /meta answers."; break; }
+            sleep 10
+          done
+          {
+            echo "### Deploy failed and was rolled back"
+            echo "- App: \`$APP\` back on \`$PREV\`"
+            echo "- Attempted: \`$IMAGE\` (expected snapshot \`$EXPECTED\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Production only - nightly sync uses this code; move :latest
+        if: success() && needs.plan.outputs.target == 'production'
+        env:
+          SYNC_IMAGE: ${{ needs.images.outputs.sync }}
+          API_REPO: ${{ needs.images.outputs.api }}
+        run: |
+          az containerapp job update -g "$RG" -n "$SYNC_JOB" --image "$SYNC_IMAGE:$GITHUB_SHA" -o none
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker buildx imagetools create -t "$API_REPO:latest" "$API_REPO:$GITHUB_SHA"
+          docker buildx imagetools create -t "$SYNC_IMAGE:latest" "$SYNC_IMAGE:$GITHUB_SHA"
+          {
+            echo "### Deployed $GITHUB_SHA"
+            echo "- API \`$APP\` serves snapshot \`$EXPECTED\`"
+            echo "- Sync job \`$SYNC_JOB\` now runs \`$SYNC_IMAGE:$GITHUB_SHA\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  web:
+    name: Web (${{ needs.plan.outputs.target }})
+    needs: [plan, ci, api]
+    # Runs after a green API deploy, or when only web/ changed. Never after a failed API deploy.
+    if: >-
+      always() && needs.plan.outputs.frozen != 'true' && needs.plan.outputs.web == 'true'
+      && needs.ci.result == 'success'
+      && (needs.api.result == 'success' || needs.api.result == 'skipped')
+      && vars.VITE_API_BASE_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npm run build
+        working-directory: web
+        env:
+          VITE_DATA_MODE: api
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+      - if: needs.plan.outputs.target == 'production'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: web/dist
+          skip_app_build: true
+          skip_api_build: true
+      - if: needs.plan.outputs.target != 'production'
+        run: echo "Staging run - web built but not uploaded (the live site is not touched)."
