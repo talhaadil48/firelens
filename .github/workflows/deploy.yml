@@ -227,7 +227,11 @@ jobs:
             if [ "$got" = "$expected" ] && [ "$bad" = "0" ]; then ok=true; break; fi
             sleep 10
           done
-          [ "$ok" = "true" ] || { echo "::error::/meta never served $expected without snapshot warnings."; exit 1; }
+          if [ "$ok" != "true" ]; then
+            echo "Last /meta response:"; echo "$meta" | jq . 2>/dev/null || echo "$meta"
+            echo "::error::/meta never served $expected without snapshot warnings."
+            exit 1
+          fi
           for path in /investigations "/rank?profile=iss" "/tests?limit=1" "/compare?ids=PSI-25,PSI-69" /profiles; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$BASE$path")
             echo "$path -> $code"
