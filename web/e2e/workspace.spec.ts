@@ -18,9 +18,9 @@ test("real snapshot: explore → detail → compare → cited graphical answer �
   await expect(
     page.getByRole("heading", { name: "Explore the evidence." }),
   ).toBeVisible();
-  await expect(
-      page.getByText(/rows with both coordinates/),
-  ).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByText(/rows with both coordinates/)).toBeVisible({
+    timeout: 60_000,
+  });
   await expect(page.locator(".coverage-panel .js-plotly-plot")).toBeVisible();
   await page.getByRole("button", { name: "Moon base", exact: true }).click();
   await expect(page.getByText("Updating relevance…")).toBeHidden();
@@ -308,4 +308,44 @@ test("light and dark themes persist and the new condition explorer preserves sou
     path: path.join(artifacts, "coverage-light-mobile.png"),
     fullPage: true,
   });
+});
+
+test("Stop cancels without resubmitting and permits a new request", async ({
+  page,
+}) => {
+  await page.goto("/#/ask");
+  const input = page.getByLabel("What would you like to understand?");
+  let release!: () => void;
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/chat", async (route) => {
+    await blocked;
+    try {
+      await route.abort();
+    } catch {
+      /* Already aborted by the browser. */
+    }
+  });
+  try {
+    await input.fill("Which experiments report reduced flame spread?");
+    await page.getByRole("button", { name: /Search evidence/ }).click();
+    await page.getByRole("button", { name: "Stop request" }).click();
+    await expect(
+      page.getByRole("button", { name: /Search evidence/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Retrieving and checking evidence…"),
+    ).toBeHidden();
+  } finally {
+    release();
+    await page.unroute("**/chat");
+  }
+  await page.getByRole("button", { name: /Search evidence/ }).click();
+  await expect(
+    page.getByText("Source-backed excerpts", { exact: true }),
+  ).toBeVisible({ timeout: 60000 });
+  await expect(page.locator(".answer-text")).toContainText(
+    "decreases at higher speeds",
+  );
 });

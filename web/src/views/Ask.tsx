@@ -75,7 +75,7 @@ export default function Ask({ records }: { records: Investigation[] }) {
         run.signal,
         scope ? [scope] : [],
       )) {
-        if (run.signal.aborted) return;
+        if (run.signal.aborted || controller.current !== run) return;
         if (event.event === "progress")
           setTrace((old) => [
             ...old,
@@ -98,19 +98,25 @@ export default function Ask({ records }: { records: Investigation[] }) {
       if (!finished || !received)
         throw new Error("The answer stream ended early. Please try again.");
     } catch (reason) {
-      if (!run.signal.aborted)
+      if (!run.signal.aborted && controller.current === run)
         setError(
           reason instanceof Error
             ? reason.message
             : "Could not retrieve evidence",
         );
     } finally {
-      if (!run.signal.aborted) setBusy(false);
+      if (controller.current === run) {
+        controller.current = null;
+        setBusy(false);
+      }
     }
   }
   function stop() {
     controller.current?.abort();
+    controller.current = null;
     setBusy(false);
+    setAnswer(null);
+    setSelected(null);
     setTrace((old) => [...old, "Request stopped."]);
   }
   return (
@@ -154,14 +160,19 @@ export default function Ask({ records }: { records: Investigation[] }) {
                 </label>
                 {busy ? (
                   <button
+                    key="stop-request"
                     type="button"
                     className="button secondary"
-                    onClick={stop}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      stop();
+                    }}
                   >
                     Stop request
                   </button>
                 ) : (
                   <button
+                    key="submit-question"
                     className="button"
                     type="submit"
                     disabled={!question.trim()}

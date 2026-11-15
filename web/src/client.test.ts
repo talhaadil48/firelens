@@ -65,3 +65,33 @@ it("reports HTTP errors from chat including rate limiting", async () => {
   const { ask } = await import("./client");
   await expect(ask("oxygen").next()).rejects.toThrow("Chat failed (429)");
 });
+it("cancels a pending read immediately when Stop aborts the signal", async () => {
+  const cancel = vi.fn();
+  const body = new ReadableStream({ cancel });
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, body }));
+  const { ask } = await import("./client");
+  const controller = new AbortController();
+  const pending = ask("flame spread", controller.signal).next();
+  await Promise.resolve();
+  controller.abort();
+  await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  expect(cancel).toHaveBeenCalled();
+});
+it("discards buffered answer events after cancellation", async () => {
+  const body = new ReadableStream({
+    start(c) {
+      c.enqueue(
+        new TextEncoder().encode(
+          'event: progress\ndata: {"stage":"retrieval","message":"Working"}\n\nevent: answer\ndata: {"text":"stale","citations":[]}\n\n',
+        ),
+      );
+    },
+  });
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, body }));
+  const { ask } = await import("./client");
+  const controller = new AbortController();
+  const stream = ask("flame spread", controller.signal);
+  expect((await stream.next()).value?.event).toBe("progress");
+  controller.abort();
+  await expect(stream.next()).rejects.toMatchObject({ name: "AbortError" });
+});

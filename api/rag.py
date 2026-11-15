@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 import threading
 import time
-from collections import defaultdict, deque
+from collections import Counter, defaultdict, deque
 from collections.abc import Callable, Iterator
 
 from fastapi import HTTPException
@@ -176,35 +177,70 @@ def retrieve_top_chunks(
         return []
 
     q_vec = llm.embed_text(question)
-    q_tokens = _content_tokens(question)
-    allowed_ids = set(investigation_ids or [])
-    q_upper = question.upper()
+    generic = {"experiment", "experiments", "report", "reports", "reported", "study", "studies"}
 
-    scored: list[tuple[float, int, TextChunk]] = []
+    def tokens(text: str) -> list[str]:
+        values = re.findall(r"[a-z0-9]+", text.casefold())
+        return [
+            "decrease"
+            if re.fullmatch(r"reduc\w*|decreas\w*|slower|lower", t)
+            else "spread"
+            if t == "spreading"
+            else t
+            for t in values
+            if len(t) >= 2 and t not in _STOPWORDS and t not in generic
+        ]
+
+    query = set(tokens(question))
+    allowed_ids = set(investigation_ids or re.findall(r"\bPSI-\d+\b", question.upper()))
+    candidates = []
     for idx, chunk in enumerate(snap.chunks):
         inv = snap.investigations_by_id.get(chunk.accession or "")
-        if inv is None or inv.fixture:
+        if inv is None or inv.fixture or (allowed_ids and chunk.accession not in allowed_ids):
             continue
         if chunk.source_kind == "summary" and inv.summary is None:
             continue
-        if allowed_ids and chunk.accession not in allowed_ids:
+        candidates.append((idx, chunk, tokens(chunk.text)))
+    frequencies = Counter(t for _, _, words in candidates for t in set(words))
+    avg_length = sum(len(words) for _, _, words in candidates) / max(1, len(candidates))
+    scored = []
+    comparative_spread = {"decrease", "spread"} <= query
+    for idx, chunk, words in candidates:
+        counts = Counter(words)
+        overlap = query & counts.keys()
+        accession_match = chunk.accession in question.upper()
+        if not overlap and not accession_match:
             continue
+        bm25 = 0.0
+        for term in overlap:
+            idf = math.log(
+                1 + (len(candidates) - frequencies[term] + 0.5) / (frequencies[term] + 0.5)
+            )
+            tf = counts[term]
+            bm25 += idf * tf * 2.2 / (tf + 1.2 * (0.25 + 0.75 * len(words) / max(1, avg_length)))
         vec = snap.chunk_embeddings[idx] if idx < len(snap.chunk_embeddings) else []
-        sim = cosine_similarity(q_vec, vec)
-        chunk_tokens = _content_tokens(f"{chunk.accession or ''} {chunk.source_file} {chunk.text}")
-        overlap_hits = len(q_tokens & chunk_tokens) if q_tokens else 0
-        overlap_ratio = overlap_hits / max(1, len(q_tokens))
-        accession_boost = 0.25 if (chunk.accession and chunk.accession in q_upper) else 0.0
-
-        min_sim = 0.30 if llm.is_live else 0.25
-        if overlap_hits == 0 and sim < min_sim and accession_boost == 0.0:
-            continue
-
-        score = 0.55 * max(0.0, sim) + 0.45 * overlap_ratio + accession_boost
+        score = bm25 + 0.5 * max(0, cosine_similarity(q_vec, vec))
+        if accession_match:
+            score += 2
+        if comparative_spread:
+            # Require the actual spread concept. Generic flame operations are not findings.
+            if "spread" not in counts:
+                continue
+            sentences = re.split(r"(?<=[.!?])\s+|\n", chunk.text)
+            if any({"decrease", "spread"} <= set(tokens(sentence)) for sentence in sentences):
+                score += 12
         scored.append((score, -idx, chunk))
-
     scored.sort(key=lambda item: (item[0], item[1]), reverse=True)
-    return [chunk for _, _, chunk in scored[:top_k]]
+    selected = []
+    per_study: Counter[str] = Counter()
+    for _, _, chunk in scored:
+        if not allowed_ids and per_study[chunk.accession] >= 2:
+            continue
+        selected.append(chunk)
+        per_study[chunk.accession] += 1
+        if len(selected) >= top_k:
+            break
+    return selected
 
 
 def _has_active_filter(sql_filter: SqlRowFilter) -> bool:
@@ -335,7 +371,10 @@ def stream_chat_events(
     loader: SnapshotLoader,
     llm: LLMClient,
     mock_mode: bool,
+    cancelled: Callable[[], bool] = lambda: False,
 ) -> Iterator[str]:
+    if cancelled():
+        return
     if mock_mode:
         yield sse_frame(
             "progress",
@@ -379,6 +418,8 @@ def stream_chat_events(
             return
 
         snap = loader.get_snapshot()
+        if cancelled():
+            return
         top_chunks = retrieve_top_chunks(
             request.question,
             snap,
@@ -386,6 +427,8 @@ def stream_chat_events(
             investigation_ids=request.investigation_ids,
             top_k=8,
         )
+        if cancelled():
+            return
         matched_rows = retrieve_matching_rows(
             request.question,
             snap,
@@ -394,6 +437,8 @@ def stream_chat_events(
             investigation_ids=request.investigation_ids,
             top_chunks=top_chunks,
         )
+        if cancelled():
+            return
         citations = build_citations(snap, top_chunks, matched_rows)
 
         if not citations:
@@ -437,6 +482,8 @@ def stream_chat_events(
         )
 
         doi_by_accession = {acc: inv.doi for acc, inv in snap.investigations_by_id.items()}
+        if cancelled():
+            return
         answer_text = llm.generate_grounded_answer(
             request.question,
             top_chunks,
@@ -444,6 +491,8 @@ def stream_chat_events(
             citations,
             doi_by_accession=doi_by_accession,
         )
+        if cancelled():
+            return
         insufficient = not answer_text.strip() or answer_text.lstrip().lower().startswith(
             "insufficient evidence"
         )

@@ -230,3 +230,25 @@ in this historical document are superseded by
 new source-record contract, all-row Measurements view, data-limitations notices,
 local snapshot rebuild and validation. There are now 2,009 retained source records
 from all 22 downloaded experimental tables; no range/list is expanded into fake tests.
+
+## Chat retrieval and cancellation — 15 November 2026
+
+On `fix/chat-retrieval-and-cancellation`, text retrieval now combines IDF-weighted
+lexical matching with embeddings, downweights generic experiment/report words,
+respects explicit accession IDs and limits repeated unscoped results from one
+investigation. Comparative spread queries prioritize source passages that contain
+spread and a reduction/decrease in the same sentence. Offline excerpts retain the
+comparison and neighboring context rather than truncating it before the finding.
+The real BASS source describing decreased opposed-flow spread at higher flow
+speeds is a regression case; no experiment result is hardcoded or invented.
+
+Stop now prevents native form resubmission when the control changes to Search,
+cancels pending body reads and buffered SSE events, invalidates stale UI requests,
+and leaves immediate retries isolated. The server detects disconnects and skips
+remaining retrieval/generation/delivery stages. A synchronous provider call
+already in flight may finish remotely; no forced upstream cancellation is claimed.
+
+Verified: 156 Python tests, 30 frontend tests, lint/format, TypeScript, build and
+contract drift checks. Real-data browser checks cover the exact comparative
+question, Stop returning to an idle state and immediate retry. Screenshot retained
+under ignored `artifacts/readiness/flame-spread-fixed.png`. No cloud deployment.

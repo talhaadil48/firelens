@@ -413,6 +413,23 @@ def deterministic_grounded_answer(
         excerpts = []
         for chunk, tag in chunk_tags:
             snippet = " ".join(chunk.text.strip().split())
+            if re.search(r"spread", question, re.I) and re.search(
+                r"reduc|decreas|slower|lower", question, re.I
+            ):
+                sentences = re.split(r"(?<=[.!?])\s+|\n", chunk.text)
+                match = next(
+                    (
+                        i
+                        for i, sentence in enumerate(sentences)
+                        if re.search(r"spread", sentence, re.I)
+                        and re.search(r"reduc|decreas|slower|lower", sentence, re.I)
+                    ),
+                    None,
+                )
+                if match is not None:
+                    snippet = " ".join(sentences[max(0, match - 1) : match + 2]).strip()
+                    excerpts.append(f"- {snippet} {tag}")
+                    continue
             if len(snippet) > 220:
                 snippet = snippet[:217].rstrip() + "..."
             excerpts.append(f"- {snippet} {tag}")
