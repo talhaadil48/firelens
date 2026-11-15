@@ -201,3 +201,22 @@ inside one region and retains a sticky, theme-aware header. No source text,
 publication or test data was discarded. Browser verification against FLEX passed
 for all seven height bounds, Page Down scrolling, retained headings, light-mode
 table headers and a 393 px mobile layout without horizontal page overflow.
+
+## Investigation page redesign — 15 November 2026
+
+The owner requested a complete investigation-page layout replacement after a
+screenshot showed unused space beside the findings. The page now has a compact
+study header, normalized-test/condition readouts and keyboard-accessible Overview,
+Findings, Measurements and Sources & publications tabs. Each tab uses the content
+width; the former independently scrolling main/sidebar stacks are gone. Overview
+facts use a responsive grid. Measurements and lengthy publications retain bounded,
+labelled scroll regions. Copy citation, export and compare remain available in the
+header. Reviewed-only findings, citation excerpts, provenance and missing-value
+labels are retained without backend or contract changes.
+
+Verified: 25 frontend tests (including section switching and keyboard navigation),
+ESLint, TypeScript and production build. Browser checks against the local snapshot
+covered all tabs, keyboard switching and desktop/393px layouts without horizontal
+page overflow. Light/dark desktop and mobile screenshots are retained under ignored
+`artifacts/phase7/investigation-redesign-*.png`. The existing Plotly bundle-size
+advisory remains. No deployment or cloud provisioning was performed.

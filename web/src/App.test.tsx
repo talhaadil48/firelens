@@ -143,6 +143,28 @@ describe("Phase 7 research workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Copy citation" }));
     expect(await screen.findByText("Citation copied.")).toBeInTheDocument();
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining("PSI-69"));
+    const overview = screen.getByRole("tab", { name: "Overview" });
+    fireEvent.keyDown(overview, { key: "ArrowRight" });
+    expect(screen.getByRole("tab", { name: /Findings/ })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(
+      screen.queryByRole("heading", {
+        name: "What this investigation explores",
+      }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: /Measurements/ }));
+    expect(
+      screen.getByRole("heading", { name: "A look at the test rows" }),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("tab", { name: "Sources & publications" }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Source record" }),
+    ).toBeInTheDocument();
+    fireEvent.click(overview);
     expect(
       screen.getByRole("link", { name: "Verify the NASA record ↗" }),
     ).toHaveAttribute("href", expect.stringContaining("psi.nasa.gov"));
