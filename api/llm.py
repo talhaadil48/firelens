@@ -109,12 +109,19 @@ _SPECIFIC_FUELS: tuple[str, ...] = (
     "pmma",
     "nomex",
     "ultem",
+    "sibal",
+    "kapton",
+    "teflon",
+    "lampwick",
+    "pyrell",
+    "silicone",
     "heptane",
     "methanol",
     "decane",
     "dodecane",
     "octane",
     "methane",
+    "ethane",
     "propane",
     "ethylene",
     "ethanol",
@@ -256,11 +263,16 @@ def deterministic_sql_filter(
         fuel = None
 
     fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] | None = None
-    if re.search(r"\b(?:solid|fabrics?|cotton|pmma|plastics?|nomex|ultem|cloth)\b", q_lower):
+    if re.search(
+        r"\b(?:solid|fabrics?|cotton|pmma|plastics?|nomex|ultem|cloth|sibal|kapton|teflon|lampwick|pyrell|silicone)\b",
+        q_lower,
+    ):
         fuel_phase = "solid"
     elif re.search(r"\b(?:liquid|droplets?|heptane|methanol|decane|ethanol)\b", q_lower):
         fuel_phase = "liquid"
-    elif re.search(r"\b(?:gaseous|gas\s+flames?|methane|propane|ethylene|burner)\b", q_lower):
+    elif re.search(
+        r"\b(?:gaseous|gas\s+flames?|methane|ethane|propane|ethylene|burner)\b", q_lower
+    ):
         fuel_phase = "gas"
 
     o2_min: float | None = None

@@ -215,6 +215,41 @@ def structured_answer(
     return _answer("\n".join(lines), citations + availability, True)
 
 
+_PLOT_AXIS_NUMBERS_RE = re.compile(r"(?:\b-?\d+(?:\.\d+)?\s+){4,}-?\d+(?:\.\d+)?\b")
+
+
+def is_glossary_or_toc(text: str) -> bool:
+    """Return True for PDF Table of Contents or dense acronym/abbreviation glossaries."""
+    if re.search(r"\b(?:Table\s+of\s+Contents|Abbreviations\s+and\s+Acronyms)\b", text, re.I):
+        return True
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    if len(lines) >= 8:
+        pairs = sum(
+            1
+            for a, b in zip(lines, lines[1:], strict=False)
+            if len(a) <= 10
+            and a[0].isupper()
+            and sum(1 for ch in a if ch.isupper()) >= 2
+            and not any(ch.isdigit() for ch in a)
+            and re.fullmatch(r"[A-Za-z-]+", a)
+            and len(b) >= 8
+        )
+        if pairs >= 7:
+            return True
+    collapsed = " ".join(text.split())
+    sentences = [s for s in re.split(r"(?<=[.!?])\s+", collapsed) if s]
+    if sentences and max(len(s) for s in sentences) > 500 and collapsed.count(".") <= 2:
+        acronym_defs = re.findall(r"\b[A-Z]{2,}[A-Za-z0-9-]*\s+[A-Z][a-z]+\s+[A-Za-z-]+", collapsed)
+        if len(acronym_defs) >= 5:
+            return True
+    return False
+
+
+def _clean_document_sentence(sentence: str) -> str:
+    cleaned = _PLOT_AXIS_NUMBERS_RE.sub(" ", sentence)
+    return " ".join(cleaned.split())
+
+
 def document_answer(question, chunks, snap, cite):
     if not re.search(r"\bwhy\b|behavior|phenomena|hypothes|objectives?|findings", question, re.I):
         return None
@@ -257,7 +292,10 @@ def document_answer(question, chunks, snap, cite):
     query = terms(question)
     choices = []
     for chunk in chunks:
-        sentences = re.split(r"(?<=[.!?])\s+", " ".join(chunk.text.split()))
+        if is_glossary_or_toc(chunk.text):
+            continue
+        raw_sentences = re.split(r"(?<=[.!?])\s+|\s*[•●]\s*", " ".join(chunk.text.split()))
+        sentences = [_clean_document_sentence(s) for s in raw_sentences]
         scores = [
             (
                 len(query & terms(sentence))
@@ -271,7 +309,7 @@ def document_answer(question, chunks, snap, cite):
                 index,
             )
             for index, sentence in enumerate(sentences)
-            if len(sentence) > 45
+            if 45 < len(sentence) <= 500
         ]
         if not scores:
             continue
@@ -281,7 +319,14 @@ def document_answer(question, chunks, snap, cite):
         start = max(0, index - 1)
         if start == 0 and sentences[0][:1].islower():
             start = min(1, index)
-        excerpt = " ".join(sentences[start : index + 2])
+        if len(sentences[start]) > 500:
+            start = index
+        end = (
+            index + 2
+            if index + 1 < len(sentences) and len(sentences[index + 1]) <= 500
+            else index + 1
+        )
+        excerpt = " ".join(sentences[start:end])
         if chunk.field_name == "hypothesis" or re.search(
             r"tests? the hypothesis|hypothes", excerpt, re.I
         ):

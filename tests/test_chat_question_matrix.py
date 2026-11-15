@@ -183,3 +183,79 @@ def test_sql_enforces_strict_bounds_and_fuel_union_on_synthetic_rows(tmp_path, m
     assert {r.test_id for r in loader.query_tests_by_sql_filter(inclusive)} == {"a", "b", "c", "d"}
     union = deterministic_sql_filter("ethylene or gaseous tests")
     assert {r.test_id for r in loader.query_tests_by_sql_filter(union)} == {"f"}
+
+
+def test_solid_and_gas_material_filters_cover_kapton_teflon_and_ethane():
+    kapton_teflon = deterministic_sql_filter(
+        "What airflow velocities were measured for Kapton or Teflon test runs in PSI-101?"
+    )
+    assert set(kapton_teflon.fuels) == {"kapton", "teflon"}
+    assert kapton_teflon.fuel is None
+    assert kapton_teflon.fuel_phase == "solid"
+
+    ethane = deterministic_sql_filter("Which ethane flame tests ran below 90 kPa in PSI-159?")
+    assert ethane.fuels == ["ethane"]
+    assert ethane.fuel_phase == "gas"
+
+
+def test_document_answer_skips_glossary_and_plot_axis_noise():
+    from datetime import UTC, datetime
+    from types import SimpleNamespace
+
+    from api.answers import document_answer
+    from api.models import TextChunk
+    from api.rag import build_citations
+
+    now = datetime(2026, 1, 1, tzinfo=UTC)
+    inv = SimpleNamespace(
+        accession="PSI-10",
+        acronym="ACME/Flame Design",
+        doi="10.60555/test-doi",
+        version="1",
+        retrieved_at=now,
+    )
+    snap = SimpleNamespace(investigations_by_id={"PSI-10": inv}, snapshot_date=now)
+    glossary = TextChunk(
+        chunk_id="PSI-10:doc:glossary:p29",
+        accession="PSI-10",
+        source_kind="document",
+        source_file="report.pdf",
+        page=29,
+        source_url="https://psi.nasa.gov/test",
+        text=(
+            "Appendix A. Abbreviations and Acronyms\n"
+            "HiBMs\nHigh Bit-depth Multi-spectral camera\n"
+            "IPSU\nImage Processing and Storage Unit\n"
+            "LCTF\nLiquid Crystal Tunable Filter\n"
+            "MDCA\nMulti-user Droplet Combustion Apparatus\n"
+            "MSG\nMicrogravity Science Glovebox\n"
+            "PMT\nPhotomultiplier Tube\n"
+            "SOFBALL\nStructure Of Flame Balls At Low Lewis-number"
+        ),
+    )
+    science = TextChunk(
+        chunk_id="PSI-10:doc:science:p18",
+        accession="PSI-10",
+        source_kind="document",
+        source_file="report.pdf",
+        page=18,
+        source_url="https://psi.nasa.gov/test",
+        text=(
+            "The primary Flame Design objectives quantify soot inception limits and radiative "
+            "extinction in spherical diffusion flames. "
+            "1.0 0.8 0.6 0.4 0.2 0.0 "
+            "Experiments showed soot luminosity varied strongly with dilution and flow velocity."
+        ),
+    )
+    result = document_answer(
+        "What were the main science objectives and soot findings of Flame Design?",
+        [glossary, science],
+        snap,
+        build_citations,
+    )
+    assert result is not None
+    assert "Abbreviations and Acronyms" not in result.text
+    assert "HiBMs" not in result.text
+    assert "1.0 0.8 0.6 0.4 0.2 0.0" not in result.text
+    assert "soot inception limits" in result.text
+    assert [c.accession for c in result.citations] == ["PSI-10"]

@@ -13,7 +13,7 @@ from collections.abc import Callable, Iterator
 
 from fastapi import HTTPException
 
-from api.answers import document_answer, structured_answer
+from api.answers import document_answer, is_glossary_or_toc, structured_answer
 from api.llm import LLMClient, SqlRowFilter, cosine_similarity, format_citation_tag
 from api.models import (
     AnswerEvent,
@@ -225,11 +225,16 @@ def retrieve_top_chunks(
             continue
         if chunk.source_kind == "summary" and inv.summary is None:
             continue
+        if is_glossary_or_toc(chunk.text):
+            continue
         candidates.append((idx, chunk, tokens(chunk.text)))
     frequencies = Counter(t for _, _, words in candidates for t in set(words))
     avg_length = sum(len(words) for _, _, words in candidates) / max(1, len(candidates))
     scored = []
     comparative_spread = {"decrease", "spread"} <= query
+    field_intent = bool(
+        re.search(r"\b(?:objectives?|hypothes[ei]s|findings?|impacts?|approach)\b", question, re.I)
+    )
     for idx, chunk, words in candidates:
         counts = Counter(words)
         overlap = query & counts.keys()
@@ -247,6 +252,12 @@ def retrieve_top_chunks(
         score = bm25 + 0.5 * max(0, cosine_similarity(q_vec, vec))
         if accession_match:
             score += 2
+        if (
+            field_intent
+            and chunk.source_kind == "investigation_field"
+            and chunk.field_name in {"objectives", "research_impacts", "hypothesis", "approach"}
+        ):
+            score += 4
         if comparative_spread:
             # Require the actual spread concept. Generic flame operations are not findings.
             if "spread" not in counts:
