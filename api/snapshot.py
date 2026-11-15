@@ -26,49 +26,18 @@ from api.models import (
     SnapshotPointer,
     TextChunk,
 )
+from api.snapshot_format import (
+    LEGACY_POINTER_PATH,
+    PARQUET_COLUMNS,
+    SNAPSHOT_FORMAT_ID,
+    pointer_blob_path,
+)
 
 logger = logging.getLogger(__name__)
 
 BlobFetcher = Callable[[str], bytes | None]
 
-_PARQUET_COLUMNS: tuple[tuple[str, str], ...] = (
-    ("test_id", "VARCHAR"),
-    ("record_kind", "VARCHAR"),
-    ("source_cells", "VARCHAR"),
-    ("accession", "VARCHAR"),
-    ("investigation", "VARCHAR"),
-    ("test_date", "VARCHAR"),
-    ("campaign_id", "VARCHAR"),
-    ("fuel", "VARCHAR"),
-    ("fuel_phase", "VARCHAR"),
-    ("sample_geometry", "VARCHAR"),
-    ("sample_size_mm", "DOUBLE"),
-    ("sample_dimensions_mm", "VARCHAR"),
-    ("thickness_mm", "DOUBLE"),
-    ("o2_fraction", "DOUBLE"),
-    ("oxygen_basis", "VARCHAR"),
-    ("pressure_kpa", "DOUBLE"),
-    ("diluent", "VARCHAR"),
-    ("diluent_fractions", "VARCHAR"),
-    ("flow_cm_s", "DOUBLE"),
-    ("flow_direction", "VARCHAR"),
-    ("gravity", "VARCHAR"),
-    ("gravity_level_g", "DOUBLE"),
-    ("platform", "VARCHAR"),
-    ("outcome", "VARCHAR"),
-    ("metrics", "VARCHAR"),
-    ("outcome_value", "DOUBLE"),
-    ("outcome_unit", "VARCHAR"),
-    ("baseline_test_id", "VARCHAR"),
-    ("source_file", "VARCHAR"),
-    ("source_row", "BIGINT"),
-    ("doi", "VARCHAR"),
-    ("evidence_type", "VARCHAR"),
-    ("provenance", "VARCHAR"),
-    ("notes", "VARCHAR"),
-    ("source_url", "VARCHAR"),
-    ("source_version", "VARCHAR"),
-)
+_PARQUET_COLUMNS = PARQUET_COLUMNS
 
 _JSON_DICT_FIELDS = frozenset(
     {"sample_dimensions_mm", "diluent_fractions", "metrics", "provenance"}
@@ -311,9 +280,16 @@ class SnapshotLoader:
         return None
 
     def _sync_blob_snapshot(self) -> tuple[SnapshotPointer, Path] | None:
-        raw_pointer = self._fetch_blob("latest.json")
+        # The pointer for this code's snapshot format wins. The legacy root pointer is only a
+        # fallback for containers that predate format pointers.
+        pointer_path = pointer_blob_path()
+        raw_pointer = self._fetch_blob(pointer_path)
+        if raw_pointer is None:
+            pointer_path = LEGACY_POINTER_PATH
+            raw_pointer = self._fetch_blob(pointer_path)
         if raw_pointer is None:
             return None
+        logger.info("Snapshot pointer %s (format %s)", pointer_path, SNAPSHOT_FORMAT_ID)
         pointer = SnapshotPointer.model_validate_json(raw_pointer.decode("utf-8"))
         cache_dir = self.settings.snapshots_dir / pointer.snapshot_id
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -446,6 +422,17 @@ class SnapshotLoader:
                 ):
                     return self._current
                 loaded = self._load_snapshot_from_dir(pointer, snap_dir, extra_warnings)
+                if (
+                    loaded.is_sample_fallback
+                    and self._current is not None
+                    and not self._current.is_sample_fallback
+                ):
+                    # Never trade real data for the sample because a refresh went wrong.
+                    logger.warning(
+                        "Snapshot refresh found no usable snapshot; keeping %s",
+                        self._current.snapshot_id,
+                    )
+                    return self._current
                 self._current = loaded
                 return loaded
             except Exception as exc:

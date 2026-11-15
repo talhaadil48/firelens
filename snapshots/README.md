@@ -18,3 +18,13 @@ snapshots/
     vectors/                   # Embedding index (LanceDB or FAISS)
     SNAPSHOT.md                # Date, counts, source versions, and caveats
 ```
+
+## Blob layout (Phase 12)
+
+```text
+snapshots/                         # Azure Blob container, public read
+  latest.json                      # legacy pointer (APIs before Phase 12); never rewritten by sync
+  formats/<format id>/latest.json  # pointer for snapshots in one format (python -m api.snapshot_format)
+  formats/<format id>/sync-state.json  # sync job: catalogue fingerprint and last build time
+  <snapshot_id>/...                # same files as above; never deleted
+```

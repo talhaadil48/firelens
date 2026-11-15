@@ -3,11 +3,17 @@ on:
   pull_request:
   push:
     branches: [main]
+  # deploy.yml runs these same checks first and deploys nothing when they fail.
+  workflow_call:
 permissions:
   contents: read
 concurrency:
-  group: ci-${{ github.ref }}
+  # github.workflow is the caller's name when called, so a deploy's CI run never cancels
+  # (or is cancelled by) the CI run for the same push.
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+env:
+  SNAPSHOT_CONTAINER_URL: ${{ vars.SNAPSHOT_CONTAINER_URL || 'https://firelensdata.blob.core.windows.net/snapshots' }}
 jobs:
   python:
     name: Python lint, tests and contract drift
@@ -41,3 +47,39 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+  snapshot-compat:
+    # Informational on pull requests: it never fails the PR. The deploy workflow enforces the
+    # same check as a hard gate before it touches the live API.
+    name: Published snapshot fits this code (informational)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Check the snapshot published for this code's format
+        run: |
+          fmt=$(uv run python -m api.snapshot_format)
+          set +e
+          uv run python -m scripts.check_snapshot --blob "$SNAPSHOT_CONTAINER_URL" > check.json
+          code=$?
+          set -e
+          cat check.json
+          {
+            echo "### Snapshot format \`$fmt\`"
+            case $code in
+              0) echo "A valid snapshot is published for this format. The deploy can switch the API straight away." ;;
+              2) echo "This PR changes the snapshot format. On merge, the deploy runs the sync job to build a snapshot in the new format **before** switching the API; the live site is untouched until then." ;;
+              3) echo "Blob storage was unreachable from CI; the deploy repeats this check." ;;
+              *) echo "The published snapshot for this format does not validate. The deploy will rebuild it before switching the API." ;;
+            esac
+            echo; echo '```json'; cat check.json; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          case $code in
+            0) ;;
+            2) echo "::warning::Snapshot format changes to $fmt; the deploy will rebuild the snapshot before switching the API." ;;
+            3) echo "::warning::Blob storage unreachable; snapshot compatibility not checked." ;;
+            *) echo "::warning::Published snapshot for format $fmt is invalid; the deploy will rebuild it." ;;
+          esac
