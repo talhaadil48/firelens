@@ -91,8 +91,9 @@ def test_pandera_independently_rejects_out_of_range_values(row):
         FrameSchema.validate(frame, lazy=True)
 
 
-def test_mock_row_cannot_be_reviewed_as_science(row):
-    row["review_status"] = "reviewed"
+def test_mock_evidence_requires_mock_provenance(row):
+    row["evidence_type"] = "mock"
+    row["provenance"]["is_mock"] = False
     with pytest.raises(ValidationError):
         ExperimentalTest.model_validate(row)
 
@@ -227,4 +228,3 @@ def test_column_map_template_validates():
     raw = yaml.safe_load((ROOT / "harvest/maps/TEMPLATE.yaml").read_text())
     parsed = ColumnMap.model_validate(raw)
     assert parsed.accession == "PSI-69"
-    assert parsed.review_status == "unreviewed"

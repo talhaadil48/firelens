@@ -19,8 +19,8 @@ export default function CoverageMap({
   const [outcome, setOutcome] = useState("all"),
     [fullRange, setFullRange] = useState(false),
     [selected, setSelected] = useState<ConditionPoint | null>(null);
-  const reviewed = coverageRows(tests);
-  const filtered = reviewed.filter(
+  const available = coverageRows(tests);
+  const filtered = available.filter(
     (row) => outcome === "all" || (row.outcome ?? "unknown") === outcome,
   );
   const points = groupConditions(filtered);
@@ -31,14 +31,14 @@ export default function CoverageMap({
   const studies = new Set(filtered.map((row) => row.accession)).size;
   const targetOutside =
     !fullRange && profile && (profile.pressure.minimum ?? 0) > 120;
-  if (!reviewed.length)
+  if (!available.length)
     return (
       <div className="empty-state" role="status">
         <span className="empty-orbit">＋</span>
-        <strong>No reviewed measurement points yet</strong>
+        <strong>No measurement points yet</strong>
         <p>
-          Only reviewed rows with both oxygen and pressure are shown. Missing
-          values stay missing.
+          Only rows with both oxygen and pressure are shown. Missing values stay
+          missing.
         </p>
       </div>
     );
@@ -84,8 +84,8 @@ export default function CoverageMap({
         {outcomeOptions.map((option, i) => {
           const count =
             option.id === "all"
-              ? reviewed.length
-              : reviewed.filter(
+              ? available.length
+              : available.filter(
                   (row) => (row.outcome ?? "unknown") === option.id,
                 ).length;
           if (!count && option.id !== "all") return null;
@@ -147,9 +147,7 @@ export default function CoverageMap({
               {number(selected.oxygen, 2)}% O₂ <span>·</span>{" "}
               {number(selected.pressure, 2)} kPa
             </strong>
-            <p>
-              {selected.rows.length} reviewed tests at this oxygen and pressure
-            </p>
+            <p>{selected.rows.length} tests at this oxygen and pressure</p>
           </div>
           <div className="selected-study-links">
             {selected.accessions.map((id) => (
@@ -190,7 +188,7 @@ export default function CoverageMap({
         )}
       </div>
       <p className="chart-caption">
-        {filtered.length.toLocaleString()} reviewed rows with both coordinates ·{" "}
+        {filtered.length.toLocaleString()} rows with both coordinates ·{" "}
         {points.length.toLocaleString()} oxygen / pressure pairs · {studies}{" "}
         studies. Select a bubble to inspect its source studies.
       </p>
@@ -202,9 +200,7 @@ export default function CoverageMap({
         </p>
         <div className="table-scroll">
           <table>
-            <caption>
-              Reviewed plotted test rows · original coordinates retained
-            </caption>
+            <caption>Plotted test rows · original coordinates retained</caption>
             <thead>
               <tr>
                 <th>Study / test</th>

@@ -76,7 +76,6 @@ def capture(source: dict, folder: Path, client: SourceClient) -> dict:
             if url != source["url"]
             else "configured_primary_NASA_source"
         ),
-        "review_status": "unreviewed",
     }
     if source.get("follow_pdf"):
         soup = BeautifulSoup(target.read_bytes(), "html.parser")

@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from api.models import Accession, Gravity, Model, ReviewStatus
+from api.models import Accession, Gravity, Model
 
 OutcomeLabel = Literal["ignited", "extinguished", "cool_flame", "failed", "unknown"]
 
@@ -41,7 +41,9 @@ class ColumnMap(Model):
     skip_rows: list[int] = Field(default_factory=list)
     id_column: str | None = None
     id_prefix: str = ""
-    study_level_only: bool = False
+    record_kind: Literal[
+        "individual_test", "grouped_summary", "session", "reference", "source_note"
+    ] = "individual_test"
     default_fuel: str | None = None
     default_fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] = "unknown"
     default_sample_geometry: str | None = None
@@ -52,5 +54,4 @@ class ColumnMap(Model):
     cool_flame_column: str | None = None
     metrics: dict[str, MetricMapping] = Field(default_factory=dict)
     outcome_map: dict[str, OutcomeLabel] = Field(default_factory=dict)
-    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
     notes: list[str] = Field(default_factory=list)

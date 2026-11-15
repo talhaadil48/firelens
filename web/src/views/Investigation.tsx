@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { getInvestigation, getTests } from "../client";
+import { getInvestigation, getAllTests } from "../client";
 import type { Investigation as Study, TestRow } from "../client";
 import { citationText, studyName } from "../presentation";
 import "./investigation.css";
+import Measurements from "../components/Measurements";
 import {
   Empty,
   ErrorNotice,
   PageTitle,
-  ReviewLabel,
+  DataLabel,
   StudyConditions,
-  TestTable,
 } from "../components/Shared";
 
 function PanelBody({
@@ -54,11 +54,11 @@ export default function Investigation({
     const controller = new AbortController();
     Promise.all([
       getInvestigation(id, controller.signal),
-      getTests(controller.signal, { accession: id }),
+      getAllTests(controller.signal, { accession: id }),
     ])
       .then(([inv, tests]) => {
         setStudy(inv);
-        setRows(tests.items.slice(0, 10));
+        setRows(tests);
       })
       .catch((reason: unknown) => {
         if (!controller.signal.aborted)
@@ -77,12 +77,8 @@ export default function Investigation({
         Loading investigation and source rows…
       </p>
     );
-  const summary =
-    study.summary?.review_status === "reviewed" ? study.summary : null;
-  const findings = [
-    ...(study.findings ?? []),
-    ...(summary?.findings ?? []),
-  ].filter((f) => f.review_status === "reviewed");
+  const summary = study.summary ?? null;
+  const findings = [...(study.findings ?? []), ...(summary?.findings ?? [])];
   async function copy() {
     try {
       await navigator.clipboard.writeText(citationText(study!));
@@ -123,7 +119,7 @@ export default function Investigation({
           {study.title}
         </PageTitle>
         <div className="tag-row">
-          <ReviewLabel inv={study} />
+          <DataLabel inv={study} />
           <span className="tag neutral">Version {study.version}</span>
           {(study.fire_safety_tags ?? []).map((tag) => (
             <span className="tag neutral" key={tag}>
@@ -139,11 +135,31 @@ export default function Investigation({
       </header>
       <div className="study-readouts" aria-label="Investigation at a glance">
         <div className="study-test-count">
-          <strong>{study.test_count.toLocaleString()}</strong>
-          <span>Normalized tests</span>
+          <strong>
+            {(study.record_count ?? rows.length).toLocaleString()}
+          </strong>
+          <span>
+            Source records · {study.test_count.toLocaleString()} individual
+            tests
+          </span>
         </div>
         <StudyConditions inv={study} />
       </div>
+      {!!study.data_gaps?.length && (
+        <aside
+          className="study-data-notice"
+          aria-labelledby="study-data-notice-heading"
+        >
+          <h2 id="study-data-notice-heading">
+            About this investigation’s data
+          </h2>
+          <ul>
+            {study.data_gaps.map((gap) => (
+              <li key={gap}>{gap}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
       <div
         className="study-tabs"
         role="tablist"
@@ -187,7 +203,9 @@ export default function Investigation({
               }
               {key === "findings" && <span>{findings.length}</span>}
               {key === "measurements" && (
-                <span>{study.test_count.toLocaleString()}</span>
+                <span>
+                  {(study.record_count ?? rows.length).toLocaleString()}
+                </span>
               )}
             </button>
           ),
@@ -215,12 +233,6 @@ export default function Investigation({
                     study.description ??
                     "Not reported in the source metadata."}
                 </p>
-                {!summary && study.summary && (
-                  <p className="small amber-text">
-                    The generated summary is awaiting review. Original source
-                    metadata is shown.
-                  </p>
-                )}
                 <a
                   className="text-link"
                   href={study.source_url}
@@ -241,7 +253,7 @@ export default function Investigation({
                   <div>
                     <dt>What varied</dt>
                     <dd>
-                      {summary?.varied ?? "Not reported in reviewed summary"}
+                      {summary?.varied ?? "Not reported in source summary"}
                     </dd>
                   </div>
                   <div>
@@ -322,7 +334,7 @@ export default function Investigation({
                     </article>
                   ))
                 ) : (
-                  <Empty title="No reviewed findings available">
+                  <Empty title="No source findings available">
                     Read the source documents before drawing physical
                     conclusions.
                   </Empty>
@@ -340,11 +352,12 @@ export default function Investigation({
                   <h2 id="tests-heading">A look at the test rows</h2>
                 </div>
                 <span className="muted small">
-                  First {rows.length} rows · missing values stay missing
+                  {rows.length.toLocaleString()} source records · original
+                  values retained
                 </span>
               </div>
-              <PanelBody id="tests-heading" variant="detail-tests-scroll">
-                <TestTable rows={rows} />
+              <PanelBody id="tests-heading">
+                <Measurements key={id} rows={rows} />
               </PanelBody>
             </section>
           </>

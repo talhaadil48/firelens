@@ -1,5 +1,8 @@
 """Tests for Phase 4 CSV normalization and Phase 5 precomputation/snapshot."""
 
+import csv
+import hashlib
+import io
 import json
 import zipfile
 
@@ -18,9 +21,8 @@ def test_all_22_column_maps_validate():
     maps_dir = ROOT / "harvest/maps"
     maps = load_column_maps(maps_dir)
     assert len(maps) == 22
-    assert sum(1 for m in maps if not m.study_level_only) == 11
-    assert sum(1 for m in maps if m.study_level_only) == 11
-    assert all(m.review_status == "reviewed" for m in maps)
+    assert sum(1 for m in maps if m.record_kind == "individual_test") == 14
+    assert sum(1 for m in maps if m.record_kind != "individual_test") == 8
 
 
 def test_normalize_conversions_non_scalar_cells_and_duplicates(tmp_path):
@@ -74,7 +76,6 @@ def test_normalize_conversions_non_scalar_cells_and_duplicates(tmp_path):
         "cool_flame_column": "Cool",
         "metrics": {"burn_time": {"source_column": "BurnTime", "unit": "s"}},
         "outcome_map": {"Extinction": "extinguished"},
-        "review_status": "reviewed",
     }
     (maps_dir / "PSI-999.yaml").write_text(yaml.safe_dump(map_data))
 
@@ -178,7 +179,6 @@ def test_end_to_end_precompute_and_snapshot(tmp_path):
             "pressure_kpa": {"source_column": "P_atm", "unit": "atm", "multiplier": 101.325},
             "flow_cm_s": {"source_column": "Flow", "unit": "cm/s"},
         },
-        review_status="reviewed",
     )
     (maps_dir / "PSI-500.yaml").write_text(
         yaml.safe_dump(
@@ -198,7 +198,6 @@ def test_end_to_end_precompute_and_snapshot(tmp_path):
                     },
                     "flow_cm_s": {"source_column": "Flow", "unit": "cm/s"},
                 },
-                "review_status": "reviewed",
             }
         )
     )
@@ -246,9 +245,72 @@ def test_real_harvested_raw_normalizes_cleanly_when_present():
     if not raw_dir.exists():
         return
     rows, frame, stats = normalize_all(raw_dir, ROOT / "harvest/maps")
-    assert stats["mapped_tables"] == 11
-    assert stats["study_level_tables"] == 11
+    assert stats["mapped_tables"] == 22
+    assert stats["study_level_tables"] == 8
     assert len(rows) == len(frame)
     assert len(rows) > 1500
     assert (frame["o2_fraction"].dropna().between(0.0, 1.0)).all()
     assert (frame["pressure_kpa"].dropna() > 0.0).all()
+    indexed = {(row.accession, row.source_file, row.source_row): row for row in rows}
+    for mapping in load_column_maps(ROOT / "harvest/maps"):
+        path = raw_dir / mapping.accession / mapping.source_file
+        original = path.read_bytes()
+        reader = csv.reader(io.StringIO(original.decode(mapping.encoding), newline=""))
+        for _ in range(mapping.header_row - 1):
+            next(reader)
+        headers = next(reader)
+        while True:
+            physical_row = reader.line_num + 1
+            cells = next(reader, None)
+            if cells is None:
+                break
+            if not any(cell.strip() for cell in cells):
+                continue
+            record = indexed[(mapping.accession, mapping.source_file, physical_row)]
+            assert [cell.value for cell in record.source_cells] == cells
+            assert [cell.column for cell in record.source_cells[: len(headers)]] == headers[
+                : len(cells)
+            ]
+            assert record.provenance.source_sha256 == hashlib.sha256(original).hexdigest()
+
+
+def test_partial_grouped_multiline_and_unmapped_source_cells_are_retained(tmp_path):
+    raw = tmp_path / "raw"
+    folder = raw / "PSI-500"
+    folder.mkdir(parents=True)
+    maps = tmp_path / "maps"
+    maps.mkdir()
+    (folder / "partial.csv").write_text(
+        'Id,Airflow,Extra\nA,30,"first line\nsecond line"\nB,,unknown\n'
+    )
+    (folder / "groups.csv").write_text("Id,Oxygen,Pressure\nG,21;30,0.5;1\n")
+    (folder / "unmapped.csv").write_text("Unexpected,Other\noriginal value,42\n")
+    for name, kind in (("partial", "individual_test"), ("groups", "grouped_summary")):
+        (maps / f"{name}.yaml").write_text(
+            yaml.safe_dump(
+                {
+                    "accession": "PSI-500",
+                    "source_file": f"{name}.csv",
+                    "record_kind": kind,
+                    "id_column": "Id",
+                    "skip_rows": [4] if name == "partial" else [],
+                    "columns": {
+                        "flow_cm_s": {"source_column": "Airflow"},
+                        "o2_fraction": {"source_column": "Oxygen", "multiplier": 0.01},
+                    },
+                }
+            )
+        )
+    rows, _, stats = normalize_all(raw, maps)
+    assert stats["total_rows"] == 4
+    a, b = [row for row in rows if row.source_file == "partial.csv"]
+    assert a.flow_cm_s == 30 and a.pressure_kpa is None
+    assert a.source_cells[2].value == "first line\nsecond line"
+    assert b.source_row == 4 and b.record_kind == "source_note"
+    group = next(row for row in rows if row.source_file == "groups.csv")
+    assert group.o2_fraction is None
+    assert group.source_cells[1].value == "21;30"
+    assert group.record_kind == "grouped_summary"
+    unmapped = next(row for row in rows if row.source_file == "unmapped.csv")
+    assert unmapped.source_cells[0].value == "original value"
+    assert all("review_status" not in row.model_dump() for row in rows)

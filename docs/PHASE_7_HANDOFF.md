@@ -220,3 +220,13 @@ covered all tabs, keyboard switching and desktop/393px layouts without horizonta
 page overflow. Light/dark desktop and mobile screenshots are retained under ignored
 `artifacts/phase7/investigation-redesign-*.png`. The existing Plotly bundle-size
 advisory remains. No deployment or cloud provisioning was performed.
+
+## Source-record preservation — 15 November 2026
+
+The owner removed review-status flags from the product and requested every
+available source value. The previous review queue/labels and reviewed-only gates
+in this historical document are superseded by
+[SOURCE_RECORDS_HANDOFF.md](SOURCE_RECORDS_HANDOFF.md). That handoff documents the
+new source-record contract, all-row Measurements view, data-limitations notices,
+local snapshot rebuild and validation. There are now 2,009 retained source records
+from all 22 downloaded experimental tables; no range/list is expanded into fake tests.

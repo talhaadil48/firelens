@@ -15,7 +15,7 @@ import type { FixtureBundle, TestRow } from "./client";
 vi.mock("./Plot", () => ({
   default: ({ points }: { points: { rows: TestRow[] }[] }) => (
     <div data-testid="plot">
-      {points.flatMap((point) => point.rows).length} plotted reviewed points
+      {points.flatMap((point) => point.rows).length} plotted measurement points
     </div>
   ),
 }));
@@ -63,16 +63,14 @@ describe("Phase 7 research workspace", () => {
     await ready();
     expect(
       screen.getByText(
-        "Real NASA catalogue records. No reviewed measurements or relevance scores are supplied by these fixtures.",
+        "Real NASA catalogue records. No measurements or relevance scores are supplied by these fixtures.",
       ),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("link", { name: "View investigation ↗" }),
     ).toHaveLength(5);
     expect(screen.getAllByText("Metadata fixture")).toHaveLength(5);
-    expect(
-      screen.getByText("No reviewed measurement points yet"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("No measurement points yet")).toBeInTheDocument();
   });
   it("filters studies and shows an honest empty state", async () => {
     render(<App />);
@@ -201,7 +199,7 @@ describe("Phase 7 research workspace", () => {
       await screen.findByText("Insufficient evidence"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Insufficient evidence: no reviewed/),
+      screen.getByText(/Insufficient evidence: no experimental/),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /test row/ }),
@@ -234,23 +232,25 @@ describe("Phase 7 research workspace", () => {
 });
 
 describe("evidence boundaries", () => {
-  it("does not plot empty or unreviewed records", async () => {
+  it("does not plot empty or ungrouped records", async () => {
     const row = {
       accession: "PSI-69",
       test_id: "TEST",
       o2_fraction: 0.21,
       pressure_kpa: 101.3,
-      review_status: "unreviewed",
+      record_kind: "grouped_summary",
       evidence_type: "measurement",
       provenance: { is_mock: false },
     } as TestRow;
     const { rerender } = render(<CoverageMap tests={[row]} />);
     expect(screen.getByRole("status")).toHaveTextContent(
-      "No reviewed measurement points yet",
+      "No measurement points yet",
     );
-    rerender(<CoverageMap tests={[{ ...row, review_status: "reviewed" }]} />);
+    rerender(
+      <CoverageMap tests={[{ ...row, record_kind: "individual_test" }]} />,
+    );
     expect(await screen.findByTestId("plot")).toHaveTextContent(
-      "1 plotted reviewed points",
+      "1 plotted measurement points",
     );
   });
   it("does not manufacture scores and validates custom inputs", async () => {

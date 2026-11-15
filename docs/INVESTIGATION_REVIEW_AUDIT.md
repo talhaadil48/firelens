@@ -1,5 +1,7 @@
 # Investigation review-label audit
 
+Historical audit of the old snapshot. Review-status fields have since been removed; see [the replacement behavior](SOURCE_RECORDS_HANDOFF.md).
+
 Audit date: 2026-11-15. Local evidence only; no new NASA downloads.
 
 ## Scope and conclusion

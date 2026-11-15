@@ -77,7 +77,7 @@ def run(output: Path, report_path: Path) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     report = {
         "tested_at_utc": datetime.now(UTC).isoformat(),
-        "purpose": "Phase 2 feasibility; downloaded rows are unreviewed, not normalized tests",
+        "purpose": "Phase 2 feasibility; downloaded rows are not standardized experiment records",
         "checks": [],
         "success": False,
     }

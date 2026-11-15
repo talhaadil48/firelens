@@ -229,6 +229,14 @@ export interface components {
             investigation?: string | null;
             /** Test Id */
             test_id: string;
+            /**
+             * Record Kind
+             * @default individual_test
+             * @enum {string}
+             */
+            record_kind: "individual_test" | "grouped_summary" | "session" | "reference" | "source_note";
+            /** Source Cells */
+            source_cells?: components["schemas"]["SourceCell"][];
             /** Test Date */
             test_date?: string | null;
             /** Campaign Id */
@@ -302,8 +310,6 @@ export interface components {
             /** Doi */
             doi?: string | null;
             evidence_type: components["schemas"]["EvidenceType"];
-            /** @default unreviewed */
-            review_status: components["schemas"]["ReviewStatus"];
             provenance: components["schemas"]["Provenance"];
             /** Notes */
             notes?: string[];
@@ -336,8 +342,6 @@ export interface components {
             evidence_type: components["schemas"]["EvidenceType"];
             /** Citation Ids */
             citation_ids: string[];
-            /** @default unreviewed */
-            review_status: components["schemas"]["ReviewStatus"];
             /**
              * Uncertainty Label
              * @default not_assessed
@@ -435,14 +439,19 @@ export interface components {
              * @default 0
              */
             test_count: number;
-            /** @default unreviewed */
-            review_status: components["schemas"]["ReviewStatus"];
+            /**
+             * Record Count
+             * @default 0
+             */
+            record_count: number;
+            /** Data Gaps */
+            data_gaps?: string[];
             /**
              * Data Status
              * @default metadata_only
              * @enum {string}
              */
-            data_status: "metadata_only" | "raw_downloaded" | "normalized" | "reviewed";
+            data_status: "metadata_only" | "raw_downloaded" | "normalized";
             /**
              * Fixture
              * @default true
@@ -480,8 +489,6 @@ export interface components {
             sensors?: string[];
             /** Findings */
             findings?: components["schemas"]["Finding"][];
-            /** @default unreviewed */
-            review_status: components["schemas"]["ReviewStatus"];
         };
         /** MetaResponse */
         MetaResponse: {
@@ -564,11 +571,6 @@ export interface components {
             profiles: components["schemas"]["MissionProfile"][];
             /** Missing Data Policy */
             missing_data_policy: string;
-            /**
-             * Review Status
-             * @constant
-             */
-            review_status: "draft_requires_science_review";
         };
         /** Provenance */
         Provenance: {
@@ -685,11 +687,15 @@ export interface components {
              */
             data_richness: number;
         };
-        /**
-         * ReviewStatus
-         * @enum {string}
-         */
-        ReviewStatus: "unreviewed" | "reviewed" | "rejected";
+        /** SourceCell */
+        SourceCell: {
+            /** Column */
+            column: string;
+            /** Value */
+            value: string;
+            /** Column Index */
+            column_index: number;
+        };
         /** SourceDocument */
         SourceDocument: {
             /** Name */

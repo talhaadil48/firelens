@@ -25,7 +25,6 @@ from api.models import (
     InvestigationSummary,
     Provenance,
     Publication,
-    ReviewStatus,
     SnapshotPointer,
     SourceDocument,
     TextChunk,
@@ -171,6 +170,44 @@ def _format_conditions_text(ranges: dict[str, ConditionRange]) -> str | None:
     return "; ".join(parts) if parts else None
 
 
+def _data_gaps(rows: list[ExperimentalTest], harvest_entry: dict) -> list[str]:
+    gaps: list[str] = []
+    if not rows:
+        tables = [entry for entry in harvest_entry.get("files", []) if entry.get("role") == "table"]
+        gaps.append(
+            "No experimental table was imported. Measurements may still be present "
+            "in reports or publications."
+        )
+        if tables:
+            gaps.append(
+                "The harvest lists tables but no records were imported; "
+                "inspect the collection and mapping configuration."
+            )
+        return gaps
+    grouped = sum(row.record_kind != "individual_test" for row in rows)
+    if grouped:
+        gaps.append(
+            f"{grouped} source records describe groups, sessions, references or notes. "
+            "They are retained as reported and are not counted as individual tests."
+        )
+    missing_fields = []
+    for field, label in (
+        ("o2_fraction", "oxygen"),
+        ("pressure_kpa", "pressure"),
+        ("flow_cm_s", "airflow"),
+    ):
+        missing = sum(getattr(row, field) is None for row in rows)
+        if missing:
+            missing_fields.append(f"{label} ({missing}/{len(rows)} records)")
+    if missing_fields:
+        gaps.append(
+            "Exact numeric values unavailable for "
+            + ", ".join(missing_fields)
+            + ". Original values, ranges and lists remain in Measurements."
+        )
+    return gaps
+
+
 def build_investigations(
     raw_dir: Path,
     rows: list[ExperimentalTest],
@@ -197,6 +234,7 @@ def build_investigations(
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         rep_entry = report_by_acc.get(acc, {})
         acc_rows = rows_by_acc.get(acc, [])
+        test_rows = [row for row in acc_rows if row.record_kind == "individual_test"]
         acc_maps = maps_by_acc.get(acc, [])
 
         title = manifest["title"]
@@ -228,7 +266,6 @@ def build_investigations(
                 claim=f"NASA PSI investigation: {title}",
                 evidence_type=EvidenceType.METADATA,
                 citation_ids=[title_cit.id],
-                review_status=ReviewStatus.REVIEWED,
                 uncertainty_label="reported",
             )
         ]
@@ -255,12 +292,11 @@ def build_investigations(
                     claim=objective_text.split(".")[0].strip() + ".",
                     evidence_type=EvidenceType.AUTHOR_INTERPRETATION,
                     citation_ids=[obj_cit.id],
-                    review_status=ReviewStatus.REVIEWED,
                     uncertainty_label="reported",
                 )
             )
 
-        ranges = _compute_condition_ranges(acc_rows)
+        ranges = _compute_condition_ranges(test_rows)
         if acc_rows:
             first_row = acc_rows[0]
             cond_text = _format_conditions_text(ranges) or f"{len(acc_rows)} normalized rows"
@@ -268,16 +304,18 @@ def build_investigations(
                 id=f"{acc}:tests",
                 accession=acc,
                 locator=f"{first_row.source_file} (n={len(acc_rows)})",
-                supporting_text=f"Normalized {len(acc_rows)} experimental rows ({cond_text}).",
+                supporting_text=f"Imported {len(acc_rows)} source records ({cond_text}).",
                 provenance=first_row.provenance,
             )
             citations.append(table_cit)
             findings.append(
                 Finding(
-                    claim=f"Normalized {len(acc_rows)} experimental test rows ({cond_text}).",
+                    claim=(
+                        f"Imported {len(acc_rows)} source records ({cond_text}). "
+                        "Grouped records are not individual tests."
+                    ),
                     evidence_type=EvidenceType.MEASUREMENT,
                     citation_ids=[table_cit.id],
-                    review_status=ReviewStatus.REVIEWED,
                     uncertainty_label="reported",
                 )
             )
@@ -323,7 +361,6 @@ def build_investigations(
             varied=varied_text,
             sensors=[],
             findings=findings,
-            review_status=ReviewStatus.REVIEWED if acc_rows else ReviewStatus.UNREVIEWED,
         )
 
         investigations.append(
@@ -381,8 +418,12 @@ def build_investigations(
                 ],
                 findings=findings,
                 citations=citations,
-                test_count=len(acc_rows),
-                review_status=ReviewStatus.REVIEWED if acc_rows else ReviewStatus.UNREVIEWED,
+                test_count=len(test_rows),
+                record_count=len(acc_rows),
+                data_gaps=[
+                    *_data_gaps(acc_rows, rep_entry),
+                    "Sensor details are not extracted here; consult the source documents.",
+                ],
                 data_status="normalized" if acc_rows else "raw_downloaded",
                 fixture=False,
             )
@@ -662,8 +703,8 @@ def write_snapshot(
             "",
             f"- Created (UTC): {now.isoformat()}",
             f"- Investigations: {len(investigations)}",
-            f"- Normalized test rows: {len(rows)}",
-            f"- Mapped per-test CSV tables: {normalize_stats.get('mapped_tables', 0)}",
+            f"- Imported source records: {len(rows)}",
+            f"- Imported CSV tables: {normalize_stats.get('mapped_tables', 0)}",
             f"- Study-level summary/range tables: {normalize_stats.get('study_level_tables', 0)}",
             f"- Text chunks: {len(chunks)}",
             f"- Embeddings mode: {vec_meta['mode']} (dim={vec_meta['dimension']})",
@@ -690,7 +731,6 @@ def write_snapshot(
             "vectors/index.json",
             "SNAPSHOT.md",
         ],
-        review_status=ReviewStatus.REVIEWED if rows else ReviewStatus.UNREVIEWED,
     )
     (snapshots_dir / "latest.json").write_text(
         pointer.model_dump_json(indent=2) + "\n", encoding="utf-8"

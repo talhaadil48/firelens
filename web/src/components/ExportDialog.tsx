@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getExport } from "../client";
 import type { ExportResponse, Investigation, Meta } from "../client";
-import { download, reviewedRow } from "../presentation";
+import { download } from "../presentation";
 import { ErrorNotice, Modal } from "./Shared";
 
 export default function ExportDialog({
@@ -22,8 +22,7 @@ export default function ExportDialog({
     ),
     [format, setFormat] = useState("csv");
   const [metrics, setMetrics] = useState(true),
-    [metadata, setMetadata] = useState(true),
-    [reviewed, setReviewed] = useState(false);
+    [metadata, setMetadata] = useState(true);
   const [data, setData] = useState<ExportResponse | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
@@ -63,9 +62,7 @@ export default function ExportDialog({
             ),
           }
         : data;
-    const rows = selectedData.tests.filter(
-      (row) => !reviewed || reviewedRow(row),
-    );
+    const rows = selectedData.tests;
     const tests = rows.map((row) => {
       const value: Record<string, unknown> = { ...row };
       if (!metrics) delete value.metrics;
@@ -78,7 +75,6 @@ export default function ExportDialog({
       filters: {
         accession: scope === "__filtered" ? null : scope || null,
         selected_accessions: scope === "__filtered" ? selection : undefined,
-        reviewed_measurements_only: reviewed,
       },
       units: {
         o2_fraction: "fraction (0–1)",
@@ -115,13 +111,20 @@ export default function ExportDialog({
       "outcome",
       ...(metrics ? ["metrics"] : []),
       "evidence_type",
-      "review_status",
+      "record_kind",
+      "source_cells",
+      "notes",
       "doi",
       "source_file",
       "source_row",
       "source_url",
       "source_version",
     ];
+    for (const row of rows)
+      for (const key of Object.keys(row)) {
+        if ((metrics || key !== "metrics") && !columns.includes(key))
+          columns.push(key);
+      }
     const quote = (value: unknown) => {
       const text =
         value == null
@@ -156,17 +159,17 @@ export default function ExportDialog({
           .join("; ") || "not reported"
       }`,
       "# Units: oxygen fraction (0-1), pressure kPa, airflow cm/s. Missing values are empty.",
-      "# Research evidence only; source files, rows and review states retained.",
+      "# Research evidence only; source files, rows and original source cells retained.",
     ];
     return {
       count: rows.length,
       content: [...credit, columns.join(","), ...lines].join("\r\n") + "\r\n",
     };
-  }, [data, format, metadata, metrics, reviewed, scope, meta, selection]);
+  }, [data, format, metadata, metrics, scope, meta, selection]);
   return (
     <Modal title="Export research data" close={close}>
       <p className="muted">
-        Take the data with its source, units and review status.
+        Take the data with its source, units and source values.
       </p>
       <div className="export-controls">
         <label>
@@ -220,14 +223,6 @@ export default function ExportDialog({
           />
           Include reported metrics
         </label>
-        <label className="check-label">
-          <input
-            type="checkbox"
-            checked={reviewed}
-            onChange={(e) => setReviewed(e.target.checked)}
-          />
-          Reviewed measurements only
-        </label>
         {format === "json" && (
           <label className="check-label">
             <input
@@ -240,7 +235,8 @@ export default function ExportDialog({
         )}
       </div>
       <p className="small muted">
-        Citations, source locations and review labels are always included.
+        Citations, source locations and original source cells are always
+        included.
       </p>
       {error && <ErrorNotice message={error} />}
       {loading ? (

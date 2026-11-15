@@ -7,11 +7,10 @@ header_row: 1
 skip_rows: []
 id_column: "Test"
 id_prefix: "normal-"
-study_level_only: false
+record_kind: individual_test
 default_fuel_phase: gas
 default_oxygen_basis: mole
 default_gravity: microgravity
-review_status: reviewed
 
 columns:
   fuel:

@@ -2,8 +2,14 @@ schema_version: 1
 accession: PSI-100
 source_file: PSI-100_Experimental table_SAFFIRE-3.csv
 encoding: utf-8-sig
-study_level_only: true
+record_kind: individual_test
 default_fuel_phase: solid
-review_status: reviewed
 notes:
-  - "SAFFIRE-3 two-row summary table without O2 or pressure columns; kept at study level."
+- SAFFIRE-3 two-row summary table without O2 or pressure columns; retained with its
+  original source cells.
+id_column: 'Sample Number '
+columns:
+  fuel:
+    source_column: Material
+  flow_cm_s:
+    source_column: 'Air Flow '

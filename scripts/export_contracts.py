@@ -40,7 +40,7 @@ def outputs() -> dict:
             AnswerEvent(
                 text=(
                     "Insufficient evidence: Phase 2 contains catalogue metadata, "
-                    "not reviewed experimental findings."
+                    "not experimental findings."
                 ),
                 status="insufficient_evidence",
                 citations=[],

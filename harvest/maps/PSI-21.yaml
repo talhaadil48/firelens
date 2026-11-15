@@ -2,8 +2,11 @@ schema_version: 1
 accession: PSI-21
 source_file: PSI-21_Experimental table_CLD Flame.csv
 encoding: utf-8-sig
-study_level_only: true
+record_kind: grouped_summary
 default_fuel_phase: gas
-review_status: reviewed
 notes:
-  - "Daily summary table with concentration ranges ('30%-40%'); kept at study level rather than fabricating independent rows."
+- Daily summary table with concentration ranges ('30%-40%'); retained as grouped source
+  records; never expanded into independent tests.
+columns:
+  fuel:
+    source_column: Fuel Bottle

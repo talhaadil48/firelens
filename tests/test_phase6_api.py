@@ -33,7 +33,6 @@ from api.models import (
     Provenance,
     Publication,
     RankResponse,
-    ReviewStatus,
     SnapshotPointer,
     SourceDocument,
     TextChunk,
@@ -108,8 +107,7 @@ def _build_synthetic_snapshot(
                 sensors=["radiometer", "thermocouple"],
             ),
             test_count=3,
-            review_status=ReviewStatus.REVIEWED,
-            data_status="reviewed",
+            data_status="normalized",
             fixture=False,
         ),
         Investigation(
@@ -143,8 +141,7 @@ def _build_synthetic_snapshot(
                 conditions_tested="18% to 21% O2 at 101.3 kPa with N2 and He diluents.",
             ),
             test_count=2,
-            review_status=ReviewStatus.REVIEWED,
-            data_status="reviewed",
+            data_status="normalized",
             fixture=False,
         ),
         Investigation(
@@ -162,16 +159,15 @@ def _build_synthetic_snapshot(
             fuel_phase="solid",
             fire_safety_tags=["detection"],
             test_count=0,
-            review_status=ReviewStatus.UNREVIEWED,
             data_status="metadata_only",
             fixture=False,
         ),
         Investigation(
             accession="PSI-999",
-            title="Unreviewed Synthetic Placeholder Study",
-            acronym="UNREV",
+            title="Simulated Synthetic Placeholder Study",
+            acronym="SIM",
             research_area="Combustion Science",
-            objectives="Verify unreviewed and mock rows are excluded from quantitative scoring.",
+            objectives="Verify simulated and mock rows are excluded from quantitative scoring.",
             doi=None,
             version="1",
             source_url="https://psi.nasa.gov/physci/repo/data/investigations/PSI-999",
@@ -181,7 +177,6 @@ def _build_synthetic_snapshot(
             fuel_phase="solid",
             fire_safety_tags=["prevention"],
             test_count=2,
-            review_status=ReviewStatus.UNREVIEWED,
             data_status="normalized",
             fixture=False,
         ),
@@ -211,7 +206,6 @@ def _build_synthetic_snapshot(
             metrics={"spread_rate": Metric(value=1.8, unit="cm/s")},
             doi="10.60555/bass2-doi",
             evidence_type=EvidenceType.MEASUREMENT,
-            review_status=ReviewStatus.REVIEWED,
             provenance=_provenance("bass2_tests.csv", 2),
         ),
         ExperimentalTest(
@@ -230,7 +224,6 @@ def _build_synthetic_snapshot(
             metrics={"burn_time": Metric(value=42.0, unit="s")},
             doi="10.60555/bass2-doi",
             evidence_type=EvidenceType.MEASUREMENT,
-            review_status=ReviewStatus.REVIEWED,
             provenance=_provenance("bass2_tests.csv", 3),
         ),
         ExperimentalTest(
@@ -246,13 +239,13 @@ def _build_synthetic_snapshot(
             outcome="extinguished",
             doi="10.60555/bass2-doi",
             evidence_type=EvidenceType.MEASUREMENT,
-            review_status=ReviewStatus.REVIEWED,
             provenance=_provenance("bass2_tests.csv", 4),
         ),
         ExperimentalTest(
             accession="PSI-25",
             investigation="BASS-II",
-            test_id="BASS2-UNREV",
+            test_id="BASS2-GROUP",
+            record_kind="grouped_summary",
             fuel="PMMA",
             fuel_phase="solid",
             o2_fraction=0.99,
@@ -261,7 +254,6 @@ def _build_synthetic_snapshot(
             outcome="ignited",
             doi="10.60555/bass2-doi",
             evidence_type=EvidenceType.MEASUREMENT,
-            review_status=ReviewStatus.UNREVIEWED,
             provenance=_provenance("bass2_tests.csv", 5),
         ),
         ExperimentalTest(
@@ -282,7 +274,6 @@ def _build_synthetic_snapshot(
             metrics={"extinction_diameter": Metric(value=1.4, unit="mm")},
             doi="10.60555/flex-doi",
             evidence_type=EvidenceType.MEASUREMENT,
-            review_status=ReviewStatus.REVIEWED,
             provenance=_provenance("flex_tests.csv", 10),
         ),
         ExperimentalTest(
@@ -300,13 +291,12 @@ def _build_synthetic_snapshot(
             outcome="extinguished",
             doi="10.60555/flex-doi",
             evidence_type=EvidenceType.MEASUREMENT,
-            review_status=ReviewStatus.REVIEWED,
             provenance=_provenance("flex_tests.csv", 11),
         ),
         ExperimentalTest(
             accession="PSI-999",
-            investigation="UNREV",
-            test_id="UNREV-01",
+            investigation="SIM",
+            test_id="SIM-01",
             fuel="Cotton",
             fuel_phase="solid",
             o2_fraction=0.34,
@@ -314,13 +304,12 @@ def _build_synthetic_snapshot(
             gravity=Gravity.MICROGRAVITY,
             outcome="ignited",
             evidence_type=EvidenceType.SIMULATION,
-            review_status=ReviewStatus.REVIEWED,
             provenance=_provenance("sim.csv", 2),
         ),
         ExperimentalTest(
             accession="PSI-999",
-            investigation="UNREV",
-            test_id="UNREV-02",
+            investigation="SIM",
+            test_id="SIM-02",
             fuel="Cotton",
             fuel_phase="solid",
             o2_fraction=0.34,
@@ -328,7 +317,6 @@ def _build_synthetic_snapshot(
             gravity=Gravity.MICROGRAVITY,
             outcome="ignited",
             evidence_type=EvidenceType.MOCK,
-            review_status=ReviewStatus.UNREVIEWED,
             provenance=_provenance("mock.csv", 2, is_mock=True),
         ),
     ]
@@ -347,7 +335,6 @@ def _build_synthetic_snapshot(
                 outcome="extinguished",
                 doi="10.60555/flex-doi",
                 evidence_type=EvidenceType.MEASUREMENT,
-                review_status=ReviewStatus.REVIEWED,
                 provenance=_provenance("flex_tests.csv", 12),
             )
         )
@@ -408,7 +395,6 @@ def _build_synthetic_snapshot(
         test_count=len(tests),
         chunk_count=len(chunks),
         files=["tests.parquet", "investigations.json", "chunks.jsonl"],
-        review_status=ReviewStatus.REVIEWED,
     )
     (root_dir / "latest.json").write_text(pointer.model_dump_json(indent=2), encoding="utf-8")
     return snap_dir
@@ -791,7 +777,7 @@ def test_rank_cfmd_math_profile_reranking_and_gaps(tmp_path: Path):
     by_acc = {item.accession: item for item in moon.items}
 
     # Verify PSI-25 math for moon_base (O2 >= 0.30, P <= 70.3265 kPa, goal=prevention):
-    # Reviewed measurement rows = 3 (BASS2-01, BASS2-02, BASS2-03; BASS2-UNREV excluded).
+    # Individual measurement rows = 3 (BASS2-01, BASS2-02, BASS2-03; BASS2-GROUP excluded).
     # Matching rows = 2/3 -> C = 0.6667
     # Fuel phase = solid -> F = 1.0
     # Goal prevention in ["prevention", "suppression"] -> M = 1.0
@@ -808,12 +794,12 @@ def test_rank_cfmd_math_profile_reranking_and_gaps(tmp_path: Path):
     # PSI-69 has 0/2 rows matching Moon-base conditions -> ranks below PSI-25.
     psi69 = by_acc["PSI-69"]
     assert psi69.score is not None and psi69.score < psi25.score
-    assert "No reviewed tests within target oxygen envelope" in psi69.gaps
+    assert "No tests within target oxygen envelope" in psi69.gaps
 
     # PSI-100 (0 rows) and PSI-999 (simulated + mock only) must keep score=None with explicit gaps.
     assert by_acc["PSI-100"].score is None
     assert by_acc["PSI-999"].score is None
-    assert "unreviewed or non-measurement" in by_acc["PSI-999"].gaps[0]
+    assert "grouped, mock or non-measurement" in by_acc["PSI-999"].gaps[0]
 
     # Under ISS profile (21% O2, 101.35 kPa), PSI-69 has C=1.0 while PSI-25 has C=1/3.
     iss = RankResponse.model_validate(client.get("/rank?profile=iss&goal=suppression").json())
@@ -841,8 +827,8 @@ def test_tests_duckdb_filtering_and_pagination(tmp_path: Path):
     filtered = ExperimentListContract.model_validate(
         client.get("/tests?accession=PSI-25&oxygen_min=0.30&pressure_max=80").json()
     )
-    assert filtered.total == 3  # BASS2-01, BASS2-02, BASS2-UNREV match O2>=0.30 and P<=80
-    assert {row.test_id for row in filtered.items} == {"BASS2-01", "BASS2-02", "BASS2-UNREV"}
+    assert filtered.total == 3  # BASS2-01, BASS2-02, BASS2-GROUP match O2>=0.30 and P<=80
+    assert {row.test_id for row in filtered.items} == {"BASS2-01", "BASS2-02", "BASS2-GROUP"}
 
     paged = ExperimentListContract.model_validate(client.get("/tests?limit=2&offset=2").json())
     assert paged.total == 8
@@ -999,7 +985,6 @@ def test_interoperability_with_harvest_validate_tests_parquet(tmp_path: Path):
         metrics={"burn_time": Metric(value=15.0, unit="s")},
         doi="10.60555/bass2-doi",
         evidence_type=EvidenceType.MEASUREMENT,
-        review_status=ReviewStatus.REVIEWED,
         provenance=_provenance("arrow.csv", 2),
     )
     df = validate_tests([row])
@@ -1099,7 +1084,6 @@ def test_phase4_5_pipeline_snapshot_serves_phase6_api_end_to_end(tmp_path: Path)
                 },
                 "metrics": {"spread_rate": {"source_column": "SpreadRate", "unit": "cm/s"}},
                 "outcome_map": {"Ignited": "ignited", "No Ignition": "extinguished"},
-                "review_status": "reviewed",
             }
         ),
         encoding="utf-8",
@@ -1119,7 +1103,6 @@ def test_phase4_5_pipeline_snapshot_serves_phase6_api_end_to_end(tmp_path: Path)
                     "outcome": {"source_column": "Outcome"},
                 },
                 "outcome_map": {"Extinguished": "extinguished"},
-                "review_status": "reviewed",
             }
         ),
         encoding="utf-8",
@@ -1189,7 +1172,8 @@ def test_real_local_snapshot_serves_phase6_api_when_present():
 
     meta_resp = MetaResponse.model_validate(client.get("/meta").json())
     assert meta_resp.investigation_count == 24
-    assert meta_resp.test_count == 1858
+    pointer = json.loads((ROOT / "snapshots/latest.json").read_text())
+    assert meta_resp.test_count == pointer["test_count"]
 
     moon_rank = RankResponse.model_validate(client.get("/rank?profile=moon_base").json())
     assert len(moon_rank.items) == 24
@@ -1287,7 +1271,7 @@ def test_live_answer_renders_only_verified_quote(tmp_path):
     assert f", {citation.locator}]" in answer
 
 
-def test_chat_excludes_unreviewed_and_simulated_evidence(tmp_path):
+def test_chat_excludes_grouped_mock_and_simulated_measurement_rows(tmp_path):
     _build_synthetic_snapshot(tmp_path)
     runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
     from api.llm import SqlRowFilter
@@ -1295,12 +1279,12 @@ def test_chat_excludes_unreviewed_and_simulated_evidence(tmp_path):
 
     rows = runtime.snapshot_loader.query_tests_by_sql_filter(SqlRowFilter())
     assert rows
-    assert all(r.review_status == ReviewStatus.REVIEWED for r in rows)
     assert all(r.evidence_type == EvidenceType.MEASUREMENT for r in rows)
     snap = runtime.snapshot_loader.get_snapshot()
-    snap.investigations_by_id["PSI-25"].review_status = ReviewStatus.UNREVIEWED
     chunks = retrieve_top_chunks("PSI-25 fabric oxygen", snap, runtime.llm)
-    assert all(c.accession != "PSI-25" for c in chunks)
+    assert any(c.accession == "PSI-25" for c in chunks)
+    assert all(r.record_kind == "individual_test" and not r.provenance.is_mock for r in rows)
+    snap.investigations_by_id["PSI-999"].fixture = True
     client = TestClient(app)
     answer = _parse_sse(
         client.post("/chat", json={"question": "fabric", "investigation_ids": ["PSI-999"]}).text
@@ -1348,20 +1332,20 @@ def test_forwarding_headers_cannot_bypass_chat_limit(tmp_path):
     assert other.post("/chat", json={"question": "fabric"}).status_code == 200
 
 
-def test_unreviewed_summary_is_not_retrieved(tmp_path):
+def test_absent_summary_is_not_retrieved(tmp_path):
     _build_synthetic_snapshot(tmp_path)
     runtime = configure_runtime(Settings(mode="snapshot", snapshots_dir=tmp_path))
     snap = runtime.snapshot_loader.get_snapshot()
     from api.rag import retrieve_top_chunks
 
     summary = snap.chunks[0].model_copy(
-        update={"chunk_id": "unreviewed-summary", "source_kind": "summary"}
+        update={"chunk_id": "absent-summary", "source_kind": "summary"}
     )
     snap.chunks.append(summary)
     snap.chunk_embeddings.append(runtime.llm.embed_text(summary.text))
-    assert snap.investigations_by_id["PSI-25"].summary.review_status == ReviewStatus.UNREVIEWED
+    snap.investigations_by_id["PSI-25"].summary = None
     chunks = retrieve_top_chunks("PSI-25 fabric", snap, runtime.llm)
-    assert all(c.chunk_id != "unreviewed-summary" for c in chunks)
+    assert all(c.chunk_id != "absent-summary" for c in chunks)
     assert any(c.accession == "PSI-25" for c in chunks)
 
 

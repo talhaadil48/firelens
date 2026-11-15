@@ -2,8 +2,12 @@ schema_version: 1
 accession: PSI-47
 source_file: PSI-47_Experimental table_DAFT.csv
 encoding: utf-8-sig
-study_level_only: true
+record_kind: session
 default_fuel_phase: solid
-review_status: reviewed
 notes:
-  - "Two aerosol measurement session descriptions without test conditions; kept at study level."
+- Two aerosol measurement session descriptions without test conditions; retained with
+  its original source cells.
+id_column: Session Name
+columns:
+  fuel:
+    source_column: Sample Material

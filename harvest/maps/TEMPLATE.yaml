@@ -6,8 +6,7 @@ encoding: cp1252
 header_row: 1
 skip_rows: []
 id_column: "FLEX Test #"
-study_level_only: false
-review_status: unreviewed
+record_kind: individual_test
 
 columns:
   fuel:
@@ -26,4 +25,4 @@ metrics: {}
 outcome_map: {}
 
 notes:
-  - "Template example only; verify exact column headers and units against raw CSV before setting review_status: reviewed."
+  - "Template example only; verify source headers and units before use."

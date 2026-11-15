@@ -9,7 +9,7 @@ const row = (id: string, oxygen = 0.21, pressure = 101.3): TestRow => ({
   gravity: "microgravity",
   o2_fraction: oxygen,
   pressure_kpa: pressure,
-  review_status: "reviewed",
+  record_kind: "individual_test",
   evidence_type: "measurement",
   provenance: {
     source_url: "https://psi.nasa.gov/",
@@ -45,11 +45,11 @@ it("retains high-pressure data instead of deleting it from the condition groups"
   const groups = groupConditions([row("one"), row("high-pressure", 0.21, 500)]);
   expect(groups.map((p) => p.pressure)).toEqual([101.3, 500]);
 });
-it("excludes unreviewed, simulated, mock and missing-coordinate rows", () => {
+it("excludes ungrouped, simulated, mock and missing-coordinate rows", () => {
   const source = row("one");
   const rows: TestRow[] = [
     source,
-    { ...row("two"), review_status: "unreviewed" },
+    { ...row("two"), record_kind: "grouped_summary" },
     { ...row("three"), evidence_type: "simulation" },
     { ...row("four"), provenance: { ...source.provenance, is_mock: true } },
     { ...row("five"), pressure_kpa: null },

@@ -1,14 +1,11 @@
-# Phase 4 Column Maps
+# Source-table column maps
 
-Each experimental CSV normalized in Phase 4 gets a reviewed YAML file here
-named `PSI-<n>.yaml` (or `PSI-<n>_<table-slug>.yaml` when an investigation has
-multiple CSVs, such as `PSI-159` normal/inverse flames).
+Map exact source headers and explicit unit conversions. Every nonblank source row
+and every original cell is retained, including partial records, ranges, lists,
+qualitative values and source notes. Never invent independent tests from groups.
 
-All YAML files must validate against `harvest.maps_schema.ColumnMap`.
-
-## Rules
-- Never fabricate independent test rows from range strings (`"1.5 - 5"`) or
-  delimited multi-value cells (`"21; 26.5; 40"`). Use `range_policy` or
-  `study_level_only: true` when a table cannot be mapped cleanly row-by-row.
-- Keep `review_status: unreviewed` until a teammate has checked the exact CSV
-  headers, units, and conversions against the raw file.
+Use record_kind to distinguish individual_test, grouped_summary, session,
+reference and source_note. skip_rows retains those entries as source_note rather
+than deleting them. Numeric fields stay null where no exact scalar is available;
+the source_cells values remain unchanged. Hashes and physical source rows travel
+with each record. The system has no review-status flags or approval workflow.

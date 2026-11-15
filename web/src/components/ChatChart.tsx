@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { getAllTests } from "../client";
 import type { Schema, TestRow } from "../client";
-import { reviewedRow } from "../presentation";
+import { measurementRow } from "../presentation";
 import CoverageMap from "../CoverageMap";
 import ChartBoundary from "./ChartBoundary";
 import { ErrorNotice, TestTable } from "./Shared";
@@ -20,7 +20,7 @@ function matchesCitation(row: TestRow, citation: Citation) {
     (citation.provenance.source_sha256 == null ||
       citation.provenance.source_sha256 === row.provenance.source_sha256) &&
     !citation.provenance.is_mock &&
-    reviewedRow(row)
+    measurementRow(row)
   );
 }
 export default function ChatChart({
@@ -88,8 +88,8 @@ export default function ChatChart({
   if (scatter.length < 2 && !field)
     return (
       <p className="small muted">
-        A chart needs at least two cited, reviewed measurements of the same
-        quantity. No values have been inferred.
+        A chart needs at least two cited, measurements of the same quantity. No
+        values have been inferred.
       </p>
     );
   return (
@@ -118,8 +118,8 @@ export default function ChatChart({
         </div>
       </div>
       <p className="small muted">
-        Only reviewed measurements matching this answer’s citations. No
-        simulated or inferred values.
+        Only measurements matching this answer’s citations. No simulated or
+        inferred values.
       </p>
       {view === "table" ? (
         <TestTable rows={rows} />

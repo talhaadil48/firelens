@@ -38,14 +38,14 @@ export default function CoveragePlot({
     {
       type: "scatter",
       mode: "markers",
-      name: "Reviewed tests",
+      name: "Tests",
       showlegend: false,
       x: points.map((p) => p.oxygen),
       y: points.map((p) => p.pressure),
       customdata: points.map((_, i) => i),
       text: points.map(
         (p) =>
-          `${p.rows.length.toLocaleString()} reviewed ${p.rows.length === 1 ? "test" : "tests"}<br>${p.accessions.join(", ")}`,
+          `${p.rows.length.toLocaleString()} available ${p.rows.length === 1 ? "test" : "tests"}<br>${p.accessions.join(", ")}`,
       ),
       hovertemplate:
         "%{text}<br>Oxygen: %{x:.2f}%<br>Pressure: %{y:.2f} kPa<extra></extra>",

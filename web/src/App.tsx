@@ -261,8 +261,8 @@ export default function App() {
           <aside className="notice mock-notice">
             <strong>Metadata preview</strong>
             <span>
-              Real NASA catalogue records. No reviewed measurements or relevance
-              scores are supplied by these fixtures.
+              Real NASA catalogue records. No measurements or relevance scores
+              are supplied by these fixtures.
             </span>
           </aside>
         )}
@@ -340,7 +340,7 @@ export default function App() {
                   title="A snapshot you can trace."
                 >
                   Know which dataset is being used, when it was captured and
-                  what still needs review.
+                  where table data is unavailable.
                 </PageTitle>
                 <section className="panel">
                   <div className="snapshot-stats">
@@ -351,16 +351,13 @@ export default function App() {
                       </strong>
                     </div>
                     <div>
-                      <span>Normalized tests</span>
+                      <span>Imported source records</span>
                       <strong>{meta?.test_count.toLocaleString()}</strong>
                     </div>
                     <div>
-                      <span>Awaiting review</span>
+                      <span>No imported table</span>
                       <strong>
-                        {
-                          records.filter((i) => i.review_status !== "reviewed")
-                            .length
-                        }
+                        {records.filter((i) => !i.record_count).length}
                       </strong>
                     </div>
                   </div>
@@ -401,11 +398,10 @@ export default function App() {
                   </p>
                 </section>
                 <section className="panel">
-                  <h2>Review queue</h2>
-                  {records.filter((i) => i.review_status !== "reviewed")
-                    .length ? (
+                  <h2>Studies without imported tables</h2>
+                  {records.filter((i) => !i.record_count).length ? (
                     records
-                      .filter((i) => i.review_status !== "reviewed")
+                      .filter((i) => !i.record_count)
                       .map((inv) => (
                         <a
                           className="related-link"
@@ -413,14 +409,13 @@ export default function App() {
                           href={`#/investigations/${inv.accession}`}
                         >
                           {inv.accession} · {inv.title}
-                          <span>Awaiting review ↗</span>
+                          <span>No imported table ↗</span>
                         </a>
                       ))
                   ) : (
                     <p className="muted">
-                      No investigations are marked unreviewed in the active
-                      snapshot. Review flags do not replace independent
-                      scientific validation.
+                      All investigations have imported table records. Source
+                      data is research evidence, not a safety certification.
                     </p>
                   )}
                 </section>

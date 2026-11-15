@@ -1,6 +1,8 @@
 """Phase 4 CSV normalization into canonical ExperimentalTest rows and validated DataFrames."""
 
 import csv
+import hashlib
+import io
 import json
 import math
 import re
@@ -10,14 +12,14 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from api.models import EvidenceType, ExperimentalTest, Metric, Provenance
+from api.models import EvidenceType, ExperimentalTest, Metric, Provenance, SourceCell
 from harvest.maps_schema import ColumnMap
 from harvest.validation import validate_tests
 
 MISSING_TOKENS = frozenset(
     {"", "-", "–", "—", "n/a", "na", "none", "null", "ramp", "ramped", "tbd"}
 )
-UNIT_SUFFIX_RE = re.compile(r"\s*(?:atm|cm/s|mm|kpa|bar|mmhg|%)\s*$", re.IGNORECASE)
+UNIT_SUFFIX_RE = re.compile(r"\s*(?:atm|cm/s|mm|kpa|bar|mmhg|%|W|s)\s*$", re.IGNORECASE)
 
 
 def load_column_maps(maps_dir: Path) -> list[ColumnMap]:
@@ -176,15 +178,12 @@ def normalize_csv(
     seen_ids: set[str] | None = None,
 ) -> list[ExperimentalTest]:
     """Normalize one raw CSV file into ExperimentalTest records according to column_map."""
-    if column_map.study_level_only:
-        return []
-
     csv_path = raw_dir / column_map.accession / column_map.source_file
     if not csv_path.exists():
         raise FileNotFoundError(f"Missing CSV file for {column_map.accession}: {csv_path}")
 
-    lines = csv_path.read_bytes().decode(column_map.encoding, errors="strict").splitlines()
-    reader = csv.reader(lines)
+    source_bytes = csv_path.read_bytes()
+    reader = csv.reader(io.StringIO(source_bytes.decode(column_map.encoding), newline=""))
     for _ in range(column_map.header_row - 1):
         next(reader, None)
     headers = next(reader, None)
@@ -200,16 +199,31 @@ def normalize_csv(
     )
     source_version = str(manifest_info.get("version") or "1")
     retrieved_at = manifest_info.get("retrieved_at") or datetime.now(UTC)
-    file_sha256 = manifest_info.get("file_hashes", {}).get(column_map.source_file)
+    file_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    expected_hash = manifest_info.get("file_hashes", {}).get(column_map.source_file)
+    if expected_hash and expected_hash != file_sha256:
+        raise ValueError(f"Source hash mismatch: {column_map.accession}/{column_map.source_file}")
 
     tests: list[ExperimentalTest] = []
-    for source_row, raw_row in enumerate(reader, start=column_map.header_row + 1):
-        if source_row in skip_rows:
-            continue
+    while True:
+        source_row = reader.line_num + 1
+        raw_row = next(reader, None)
+        if raw_row is None:
+            break
         if not any(cell.strip() for cell in raw_row):
             continue
 
         notes: list[str] = []
+        record_kind = "source_note" if source_row in skip_rows else column_map.record_kind
+        if any(
+            "visualization" in cell.casefold() or "visualisation" in cell.casefold()
+            for cell in raw_row
+        ):
+            record_kind = "source_note"
+        if record_kind != "individual_test":
+            notes.append(
+                f"Source record type: {record_kind}; not an independent experimental test."
+            )
         test_id, id_notes = _resolve_test_id(raw_row, header_index, column_map, source_row, tracker)
         notes.extend(id_notes)
 
@@ -278,6 +292,17 @@ def normalize_csv(
                 accession=column_map.accession,
                 investigation=manifest_info.get("title"),
                 test_id=test_id,
+                record_kind=record_kind,
+                source_cells=[
+                    SourceCell(
+                        column=headers[index]
+                        if index < len(headers)
+                        else f"Extra column {index + 1}",
+                        value=value,
+                        column_index=index + 1,
+                    )
+                    for index, value in enumerate(raw_row)
+                ],
                 test_date=test_date,
                 fuel=fuel,
                 fuel_phase=column_map.default_fuel_phase,
@@ -297,7 +322,6 @@ def normalize_csv(
                 source_row=source_row,
                 doi=manifest_info.get("doi"),
                 evidence_type=EvidenceType.MEASUREMENT,
-                review_status=column_map.review_status,
                 provenance=provenance,
                 notes=notes,
             )
@@ -357,6 +381,24 @@ def normalize_all(
 ) -> tuple[list[ExperimentalTest], pd.DataFrame, dict]:
     """Normalize all mapped CSVs under raw_dir and validate with Pandera."""
     maps = load_column_maps(maps_dir)
+    mapped_sources = {(item.accession, item.source_file) for item in maps}
+    for csv_path in sorted(raw_dir.glob("PSI-*/*.csv")):
+        key = (csv_path.parent.name, csv_path.name)
+        if key not in mapped_sources:
+            try:
+                csv_path.read_bytes().decode("utf-8-sig")
+                encoding = "utf-8-sig"
+            except UnicodeDecodeError:
+                encoding = "cp1252"
+            maps.append(
+                ColumnMap(
+                    accession=key[0],
+                    source_file=key[1],
+                    encoding=encoding,
+                    record_kind="grouped_summary",
+                    notes=["No scalar mapping configured; all original source cells retained."],
+                )
+            )
     manifest_info = _collect_manifest_info(raw_dir)
     seen_ids_by_acc: dict[str, set[str]] = {}
     all_rows: list[ExperimentalTest] = []
@@ -365,9 +407,8 @@ def normalize_all(
     study_level_tables = 0
 
     for cmap in maps:
-        if cmap.study_level_only:
+        if cmap.record_kind != "individual_test":
             study_level_tables += 1
-            continue
         csv_path = raw_dir / cmap.accession / cmap.source_file
         if not csv_path.exists():
             continue

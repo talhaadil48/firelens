@@ -145,7 +145,6 @@
           "citation_ids": [
             "PSI-26:catalogue-title"
           ],
-          "review_status": "unreviewed",
           "uncertainty_label": "not_assessed",
           "uncertainty_note": null
         }
@@ -169,7 +168,6 @@
         }
       ],
       "test_count": 0,
-      "review_status": "unreviewed",
       "data_status": "metadata_only",
       "fixture": true
     },
@@ -518,7 +516,6 @@
           "citation_ids": [
             "PSI-69:catalogue-title"
           ],
-          "review_status": "unreviewed",
           "uncertainty_label": "not_assessed",
           "uncertainty_note": null
         }
@@ -542,7 +539,6 @@
         }
       ],
       "test_count": 0,
-      "review_status": "unreviewed",
       "data_status": "metadata_only",
       "fixture": true
     },
@@ -604,7 +600,6 @@
           "citation_ids": [
             "PSI-159:catalogue-title"
           ],
-          "review_status": "unreviewed",
           "uncertainty_label": "not_assessed",
           "uncertainty_note": null
         }
@@ -628,7 +623,6 @@
         }
       ],
       "test_count": 0,
-      "review_status": "unreviewed",
       "data_status": "metadata_only",
       "fixture": true
     },
@@ -723,7 +717,6 @@
           "citation_ids": [
             "PSI-100:catalogue-title"
           ],
-          "review_status": "unreviewed",
           "uncertainty_label": "not_assessed",
           "uncertainty_note": null
         }
@@ -747,7 +740,6 @@
         }
       ],
       "test_count": 0,
-      "review_status": "unreviewed",
       "data_status": "metadata_only",
       "fixture": true
     },
@@ -919,7 +911,6 @@
           "citation_ids": [
             "PSI-25:catalogue-title"
           ],
-          "review_status": "unreviewed",
           "uncertainty_label": "not_assessed",
           "uncertainty_note": null
         }
@@ -943,7 +934,6 @@
         }
       ],
       "test_count": 0,
-      "review_status": "unreviewed",
       "data_status": "metadata_only",
       "fixture": true
     }

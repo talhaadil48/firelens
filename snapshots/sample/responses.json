@@ -192,8 +192,7 @@
         ]
       }
     ],
-    "missing_data_policy": "Missing or unreviewed conditions yield no score (null); never zero-fill or silently renormalize. Exclude simulated and mock rows from measured coverage.",
-    "review_status": "draft_requires_science_review"
+    "missing_data_policy": "Missing conditions yield no score (null); never zero-fill or silently renormalize. Exclude simulated and mock rows from measured coverage."
   },
   "investigations": {
     "items": [
@@ -342,7 +341,6 @@
             "citation_ids": [
               "PSI-26:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -366,7 +364,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -715,7 +714,6 @@
             "citation_ids": [
               "PSI-69:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -739,7 +737,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -801,7 +800,6 @@
             "citation_ids": [
               "PSI-159:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -825,7 +823,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -920,7 +919,6 @@
             "citation_ids": [
               "PSI-100:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -944,7 +942,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -1116,7 +1115,6 @@
             "citation_ids": [
               "PSI-25:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -1140,7 +1138,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       }
@@ -1495,7 +1494,6 @@
         "citation_ids": [
           "PSI-69:catalogue-title"
         ],
-        "review_status": "unreviewed",
         "uncertainty_label": "not_assessed",
         "uncertainty_note": null
       }
@@ -1519,7 +1517,8 @@
       }
     ],
     "test_count": 0,
-    "review_status": "unreviewed",
+    "record_count": 0,
+    "data_gaps": [],
     "data_status": "metadata_only",
     "fixture": true
   },
@@ -1570,7 +1569,7 @@
           "data_richness": null
         },
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No normalized tests in Phase 2 fixture"
         ],
         "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
       },
@@ -1584,7 +1583,7 @@
           "data_richness": null
         },
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No normalized tests in Phase 2 fixture"
         ],
         "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
       },
@@ -1598,7 +1597,7 @@
           "data_richness": null
         },
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No normalized tests in Phase 2 fixture"
         ],
         "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
       },
@@ -1612,7 +1611,7 @@
           "data_richness": null
         },
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No normalized tests in Phase 2 fixture"
         ],
         "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
       },
@@ -1626,7 +1625,7 @@
           "data_richness": null
         },
         "gaps": [
-          "No reviewed normalized tests in Phase 2 fixture"
+          "No normalized tests in Phase 2 fixture"
         ],
         "rationale": "Metadata fixture only; no quantitative relevance score can be calculated."
       }
@@ -1792,7 +1791,6 @@
             "citation_ids": [
               "PSI-26:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -1816,7 +1814,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -1988,7 +1987,6 @@
             "citation_ids": [
               "PSI-25:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -2012,7 +2010,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       }
@@ -2181,7 +2180,6 @@
             "citation_ids": [
               "PSI-26:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -2205,7 +2203,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -2554,7 +2553,6 @@
             "citation_ids": [
               "PSI-69:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -2578,7 +2576,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -2640,7 +2639,6 @@
             "citation_ids": [
               "PSI-159:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -2664,7 +2662,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -2759,7 +2758,6 @@
             "citation_ids": [
               "PSI-100:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -2783,7 +2781,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       },
@@ -2955,7 +2954,6 @@
             "citation_ids": [
               "PSI-25:catalogue-title"
             ],
-            "review_status": "unreviewed",
             "uncertainty_label": "not_assessed",
             "uncertainty_note": null
           }
@@ -2979,7 +2977,8 @@
           }
         ],
         "test_count": 0,
-        "review_status": "unreviewed",
+        "record_count": 0,
+        "data_gaps": [],
         "data_status": "metadata_only",
         "fixture": true
       }
