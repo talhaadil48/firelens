@@ -2,7 +2,8 @@ name: Deploy
 # One ordered pipeline: CI -> images -> snapshot gate -> API (smoke test, auto-rollback) -> web.
 # Pushes to main deploy production. Pushes to the Phase 12 branch deploy to the staging API only,
 # which nobody visits. Set the repo variable DEPLOY_FREEZE=true to stop production deploys
-# (judging-day kill switch).
+# (judging-day kill switch). Rollback drill (staging only): put [simulate-smoke-failure] in the
+# commit message; the smoke test then fails on purpose and the API is rolled back.
 on:
   push:
     branches: [main, feature/phase-12-guarded-sync]
