@@ -1987,3 +1987,6 @@ td a {
     max-height: min(240px, 40dvh);
   }
 }
+.chat-scope { margin-top: 14px; }
+.chat-scope .tag-row { margin-top: 8px; gap: 8px; }
+.chat-scope button.tag { cursor: pointer; padding: 6px 10px; }

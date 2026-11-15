@@ -1,4 +1,4 @@
-﻿import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import Ask from "./views/Ask";
 import { ask } from "./client";
@@ -76,4 +76,58 @@ it("stops a request and isolates a new request from late events", async () => {
       screen.queryByRole("button", { name: "Stop request" }),
     ).not.toBeInTheDocument(),
   );
+});
+it("sends multiple selected investigation IDs and lets users remove or clear them", async () => {
+  const { readFileSync } = await import("node:fs");
+  const fixture = JSON.parse(readFileSync("public/fixtures.json", "utf8"));
+  vi.mocked(ask).mockReset();
+  vi.mocked(ask).mockImplementation(async function* () {
+    yield {
+      event: "answer",
+      data: {
+        text: "No matching evidence",
+        status: "insufficient_evidence",
+        citations: [],
+        mode: "mock",
+      },
+    };
+    yield { event: "done", data: { finish_reason: "insufficient_evidence" } };
+  });
+  render(<Ask records={fixture.investigations.items} />);
+  fireEvent.change(screen.getByLabelText("Search scope"), {
+    target: { value: "PSI-69" },
+  });
+  fireEvent.change(screen.getByLabelText("Search scope"), {
+    target: { value: "PSI-25" },
+  });
+  expect(
+    screen.getByRole("button", { name: "Remove PSI-69 from selected investigations" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Remove PSI-25 from selected investigations" }),
+  ).toBeInTheDocument();
+  fireEvent.change(
+    screen.getByLabelText("What would you like to understand?"),
+    { target: { value: "Compare these studies" } },
+  );
+  fireEvent.click(screen.getByRole("button", { name: /Search evidence/ }));
+  await screen.findByText("No matching evidence");
+  expect(ask).toHaveBeenCalledWith(
+    "Compare these studies",
+    expect.any(AbortSignal),
+    ["PSI-69", "PSI-25"],
+  );
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Clear scope" })).toBeEnabled(),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Remove PSI-69 from selected investigations" }),
+  );
+  expect(
+    screen.queryByRole("button", { name: "Remove PSI-69 from selected investigations" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Clear scope" }));
+  expect(
+    screen.queryByRole("button", { name: "Remove PSI-25 from selected investigations" }),
+  ).not.toBeInTheDocument();
 });

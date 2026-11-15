@@ -275,3 +275,24 @@ The local backend was restarted with reload enabled. Regression tests explicitly
 fail if these paths attempt model generation or SQL-filter calls. Python: 160
 passing tests. Frontend: 30 passing tests, lint/TypeScript/build passed. No cloud
 configuration or deployment was changed.
+
+### Multi-investigation chat selection and ten-question audit
+
+Chat now accepts up to ten selected investigations through the scope picker,
+shows removable study chips, prevents duplicates and provides Clear scope. Empty
+selection means all studies. All selected IDs are sent in investigation_ids;
+selection is locked while a request is active. Existing source/answer/cancellation
+contracts are unchanged. Added payload/removal/clear tests.
+
+The owner's ten supplied questions were run sequentially against the actual
+local backend. Full results and identified data/prompt/app issues are recorded in
+[CHAT_QUESTION_MATRIX.md](CHAT_QUESTION_MATRIX.md). In particular, the high-oxygen
+request returned a 21.23% oxygen row, and the gaseous-study coordinate request
+rendered airflow bars. Those backend/filter/chart failures are reported rather
+than claimed fixed. Missing calibrated airflow or oxygen/pressure values were
+not invented to satisfy a chart expectation.
+
+Frontend verification: 31 tests, ESLint, TypeScript and build pass. Browser
+verification replays the ten actual SSE answers against the real row endpoints
+and verifies multiple selected IDs appear as chips. Source records, responses,
+chart results and screenshots remain under ignored artifacts/question-matrix/.

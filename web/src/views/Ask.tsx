@@ -46,7 +46,7 @@ function AnswerText({
 }
 export default function Ask({ records }: { records: Investigation[] }) {
   const [question, setQuestion] = useState(""),
-    [scope, setScope] = useState(""),
+    [scope, setScope] = useState<string[]>([]),
     [asked, setAsked] = useState("");
   const [answer, setAnswer] = useState<Schema["AnswerEvent"] | null>(null),
     [trace, setTrace] = useState<string[]>([]);
@@ -70,11 +70,7 @@ export default function Ask({ records }: { records: Investigation[] }) {
     let finished = false,
       received = false;
     try {
-      for await (const event of ask(
-        question.trim(),
-        run.signal,
-        scope ? [scope] : [],
-      )) {
+      for await (const event of ask(question.trim(), run.signal, scope)) {
         if (run.signal.aborted || controller.current !== run) return;
         if (event.event === "progress")
           setTrace((old) => [
@@ -146,13 +142,25 @@ export default function Ask({ records }: { records: Investigation[] }) {
                   <span className="sr-only">Search scope</span>
                   <select
                     aria-label="Search scope"
-                    value={scope}
-                    onChange={(e) => setScope(e.target.value)}
-                    disabled={busy}
+                    value=""
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      if (id && !scope.includes(id) && scope.length < 10)
+                        setScope((old) => [...old, id]);
+                    }}
+                    disabled={busy || scope.length >= 10}
                   >
-                    <option value="">All investigations</option>
+                    <option value="">
+                      {scope.length
+                        ? "Add another investigation"
+                        : "All investigations"}
+                    </option>
                     {records.map((inv) => (
-                      <option key={inv.accession} value={inv.accession}>
+                      <option
+                        key={inv.accession}
+                        value={inv.accession}
+                        disabled={scope.includes(inv.accession)}
+                      >
                         {inv.accession} · {inv.acronym ?? inv.title}
                       </option>
                     ))}
@@ -180,6 +188,41 @@ export default function Ask({ records }: { records: Investigation[] }) {
                     Search evidence ↗
                   </button>
                 )}
+              </div>
+              <div className="chat-scope" aria-label="Selected investigations">
+                <span className="small muted">
+                  {scope.length
+                    ? `${scope.length} / 10 selected`
+                    : "Search all studies, or select up to 10 investigations."}
+                </span>
+                <div className="tag-row">
+                  {scope.map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className="tag neutral"
+                      disabled={busy}
+                      aria-label={`Remove ${id} from selected investigations`}
+                      onClick={() =>
+                        setScope((old) => old.filter((value) => value !== id))
+                      }
+                    >
+                      {records.find((record) => record.accession === id)
+                        ?.acronym ?? id}{" "}
+                      · {id} ×
+                    </button>
+                  ))}
+                  {!!scope.length && (
+                    <button
+                      type="button"
+                      className="text-button"
+                      disabled={busy}
+                      onClick={() => setScope([])}
+                    >
+                      Clear scope
+                    </button>
+                  )}
+                </div>
               </div>
             </form>
             <p className="small muted">
