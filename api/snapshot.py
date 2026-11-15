@@ -523,41 +523,68 @@ class SnapshotLoader:
             ]
         return rows, total
 
-    def query_tests_by_sql_filter(self, sql_filter: SqlRowFilter) -> list[ExperimentalTest]:
+    def query_tests_by_sql_filter(
+        self, sql_filter: SqlRowFilter, *, all_matches: bool = False
+    ) -> list[ExperimentalTest]:
         snap = self.get_snapshot()
         if snap.parquet_path is None:
             return []
 
-        clauses: list[str] = ["evidence_type = 'measurement'", "record_kind = 'individual_test'"]
+        clauses: list[str] = [
+            "evidence_type = 'measurement'",
+            "record_kind = 'individual_test'",
+            "NOT COALESCE(CAST(json_extract(provenance, '$.is_mock') AS BOOLEAN), FALSE)",
+        ]
         params: list[Any] = []
 
         if sql_filter.accessions:
             placeholders = ", ".join("?" for _ in sql_filter.accessions)
             clauses.append(f"accession IN ({placeholders})")
             params.extend(sql_filter.accessions)
-        if sql_filter.fuel:
-            clauses.append("LOWER(COALESCE(fuel, '')) LIKE ?")
-            params.append(f"%{sql_filter.fuel.casefold()}%")
-        if sql_filter.fuel_phase:
-            clauses.append("fuel_phase = ?")
+        fuel_values = sql_filter.fuels or ([sql_filter.fuel] if sql_filter.fuel else [])
+        fuel_clause = " OR ".join("LOWER(COALESCE(fuel, '')) LIKE ?" for _ in fuel_values)
+        phase_clause = "fuel_phase = ?" if sql_filter.fuel_phase else ""
+        if fuel_clause:
+            if sql_filter.fuel_or_phase and phase_clause:
+                clauses.append(f"(({fuel_clause}) OR {phase_clause})")
+                params.extend(f"%{value.casefold()}%" for value in fuel_values)
+                params.append(sql_filter.fuel_phase)
+                phase_clause = ""
+            else:
+                clauses.append(f"({fuel_clause})")
+                params.extend(f"%{value.casefold()}%" for value in fuel_values)
+        if phase_clause:
+            clauses.append(phase_clause)
             params.append(sql_filter.fuel_phase)
         if sql_filter.o2_min is not None:
-            clauses.append("o2_fraction >= ?")
+            clauses.append(
+                "o2_fraction " + (">" if "o2_min" in sql_filter.exclusive else ">=") + " ?"
+            )
             params.append(sql_filter.o2_min)
         if sql_filter.o2_max is not None:
-            clauses.append("o2_fraction <= ?")
+            clauses.append(
+                "o2_fraction " + ("<" if "o2_max" in sql_filter.exclusive else "<=") + " ?"
+            )
             params.append(sql_filter.o2_max)
         if sql_filter.pressure_min is not None:
-            clauses.append("pressure_kpa >= ?")
+            clauses.append(
+                "pressure_kpa " + (">" if "pressure_min" in sql_filter.exclusive else ">=") + " ?"
+            )
             params.append(sql_filter.pressure_min)
         if sql_filter.pressure_max is not None:
-            clauses.append("pressure_kpa <= ?")
+            clauses.append(
+                "pressure_kpa " + ("<" if "pressure_max" in sql_filter.exclusive else "<=") + " ?"
+            )
             params.append(sql_filter.pressure_max)
         if sql_filter.flow_min is not None:
-            clauses.append("flow_cm_s >= ?")
+            clauses.append(
+                "flow_cm_s " + (">" if "flow_min" in sql_filter.exclusive else ">=") + " ?"
+            )
             params.append(sql_filter.flow_min)
         if sql_filter.flow_max is not None:
-            clauses.append("flow_cm_s <= ?")
+            clauses.append(
+                "flow_cm_s " + ("<" if "flow_max" in sql_filter.exclusive else "<=") + " ?"
+            )
             params.append(sql_filter.flow_max)
         if sql_filter.diluent:
             clauses.append("LOWER(COALESCE(diluent, '')) LIKE ?")
@@ -571,9 +598,10 @@ class SnapshotLoader:
         sql = (
             f"SELECT * FROM {source} {where_sql} "
             "ORDER BY accession ASC, source_row ASC, test_id ASC "
-            "LIMIT ?"
         )
-        params.append(sql_filter.limit)
+        if not all_matches:
+            sql += "LIMIT ?"
+            params.append(sql_filter.limit)
 
         with duckdb.connect(":memory:") as conn:
             cursor = conn.execute(sql, params)

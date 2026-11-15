@@ -141,3 +141,37 @@ it("uses an airflow bar chart when the question asks for airflow", async () => {
   );
   expect(screen.queryByTestId("cited-plot")).not.toBeInTheDocument();
 });
+it("does not substitute airflow bars for missing requested oxygen-pressure coordinates", async () => {
+  const rows = [row("one", 2), row("two", 3)].map((r) => ({
+    ...r,
+    o2_fraction: null,
+    pressure_kpa: null,
+    flow_cm_s: 10,
+  }));
+  vi.mocked(getAllTests).mockResolvedValue(rows);
+  render(
+    <ChatChart
+      citations={rows.map(citation)}
+      question="What oxygen concentrations and pressures were measured?"
+    />,
+  );
+  expect(
+    await screen.findByText(/No different quantity has been substituted/),
+  ).toBeInTheDocument();
+  expect(screen.queryByTestId("cited-bars")).not.toBeInTheDocument();
+  expect(screen.queryByTestId("cited-plot")).not.toBeInTheDocument();
+});
+it("does not substitute pressure when the requested airflow is missing", async () => {
+  const rows = [row("one", 2), row("two", 3)];
+  vi.mocked(getAllTests).mockResolvedValue(rows);
+  render(
+    <ChatChart
+      citations={rows.map(citation)}
+      question="Compare airflow velocities"
+    />,
+  );
+  expect(
+    await screen.findByText(/No different quantity has been substituted/),
+  ).toBeInTheDocument();
+  expect(screen.queryByTestId("cited-bars")).not.toBeInTheDocument();
+});

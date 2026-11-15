@@ -13,6 +13,7 @@ from collections.abc import Callable, Iterator
 
 from fastapi import HTTPException
 
+from api.answers import document_answer, structured_answer
 from api.llm import LLMClient, SqlRowFilter, cosine_similarity, format_citation_tag
 from api.models import (
     AnswerEvent,
@@ -521,6 +522,33 @@ def stream_chat_events(
         snap = loader.get_snapshot()
         if cancelled():
             return
+        structured = structured_answer(request, snap, loader, build_citations)
+        if cancelled():
+            return
+        if structured is not None:
+            yield sse_frame(
+                "progress",
+                ProgressEvent(
+                    stage="retrieval",
+                    message="Checked structured source records and requested fields.",
+                ).model_dump(),
+            )
+            yield sse_frame(
+                "progress",
+                ProgressEvent(
+                    stage="answer", message="Prepared a source-grounded response."
+                ).model_dump(),
+            )
+            yield sse_frame("answer", structured.model_dump(mode="json"))
+            yield sse_frame(
+                "done",
+                DoneEvent(
+                    finish_reason="stop"
+                    if structured.status == "supported"
+                    else "insufficient_evidence"
+                ).model_dump(),
+            )
+            return
         top_chunks = retrieve_top_chunks(
             request.question,
             snap,
@@ -532,7 +560,9 @@ def stream_chat_events(
             return
         # Structured metadata summaries and literal comparative findings do not
         # require a model to approve facts already present in the source records.
-        direct = _source_answer(request.question, top_chunks, snap)
+        direct = _source_answer(request.question, top_chunks, snap) or document_answer(
+            request.question, top_chunks, snap, build_citations
+        )
         if direct is not None:
             yield sse_frame(
                 "progress",

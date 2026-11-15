@@ -96,7 +96,8 @@ for _bucket_idx, _terms in enumerate(_DOMAIN_VOCAB_GROUPS):
 _ACRONYM_TO_ACCESSION: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bBASS[\s-]*II\b", re.IGNORECASE), "PSI-25"),
     (re.compile(r"\bBASS\b(?![\s-]*II\b)", re.IGNORECASE), "PSI-26"),
-    (re.compile(r"\bFLEX[\s-]*2\b", re.IGNORECASE), "PSI-143"),
+    (re.compile(r"\bFLEX[\s-]*2\b", re.IGNORECASE), "PSI-68"),
+    (re.compile(r"\bFlame\s+Design\b", re.IGNORECASE), "PSI-10"),
     (re.compile(r"\bFLEX\b(?![\s-]*2\b)", re.IGNORECASE), "PSI-69"),
     (re.compile(r"\bCFI[\s-]*G\b", re.IGNORECASE), "PSI-159"),
     (re.compile(r"\bSPICE\b", re.IGNORECASE), "PSI-107"),
@@ -129,6 +130,9 @@ class SqlRowFilter(BaseModel):
 
     accessions: list[str] = Field(default_factory=list)
     fuel: str | None = None
+    fuels: list[str] = Field(default_factory=list)
+    fuel_or_phase: bool = False
+    exclusive: list[str] = Field(default_factory=list)
     fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] | None = None
     o2_min: float | None = Field(default=None, ge=0, le=1)
     o2_max: float | None = Field(default=None, ge=0, le=1)
@@ -222,12 +226,34 @@ def deterministic_sql_filter(
                 accessions.append(accession)
 
     q_lower = question.casefold()
+    for symbol, words in [
+        (">=", " at least "),
+        ("<=", " at most "),
+        (">", " above "),
+        ("<", " below "),
+    ]:
+        q_lower = q_lower.replace(symbol, words)
+    # Normalize variable-first wording before applying the scalar-bound parser.
+    q_lower = re.sub(
+        r"\b(?:oxygen|o2)(?:\s+(?:concentrations?|fractions?|levels?|percentages?))?\s+"
+        r"(above|over|below|under|greater than|less than|at least|at most)\s*"
+        r"(\d+(?:\.\d+)?)\s*(%|percent)?",
+        lambda m: f"{m[1]} {m[2]}{m[3] or ''} oxygen",
+        q_lower,
+    )
 
     fuel: str | None = None
     for candidate in _SPECIFIC_FUELS:
         if re.search(rf"\b{re.escape(candidate)}\b", q_lower):
             fuel = candidate
             break
+    fuels = [
+        candidate
+        for candidate in _SPECIFIC_FUELS
+        if re.search(rf"\b{re.escape(candidate)}\b", q_lower)
+    ]
+    if len(fuels) > 1:
+        fuel = None
 
     fuel_phase: Literal["solid", "liquid", "gas", "mixed", "unknown"] | None = None
     if re.search(r"\b(?:solid|fabrics?|cotton|pmma|plastics?|nomex|ultem|cloth)\b", q_lower):
@@ -320,9 +346,27 @@ def deterministic_sql_filter(
     elif re.search(r"\b(?:ignit(?:ed|ion)|burned)\b", q_lower):
         outcome = "ignited"
 
+    exclusive = []
+    for axis, suffix, _scale in [
+        ("o2", r"(?:%|percent)?\s*(?:o2|oxygen)", 0.01),
+        ("pressure", r"kpa", 1),
+        ("flow", r"cm/s", 1),
+    ]:
+        for match in re.finditer(
+            r"\b(above|over|greater than|more than|below|under|less than)\s*"
+            r"(\d+(?:\.\d+)?)\s*" + suffix,
+            q_lower,
+        ):
+            bound = axis + (
+                "_min" if match[1] in {"above", "over", "greater than", "more than"} else "_max"
+            )
+            exclusive.append(bound)
     return SqlRowFilter(
         accessions=accessions,
         fuel=fuel,
+        fuels=fuels,
+        fuel_or_phase=bool(fuels and re.search(r"\bor\s+(?:solid|gaseous|gas|liquid)\b", q_lower)),
+        exclusive=exclusive,
         fuel_phase=fuel_phase,
         o2_min=o2_min,
         o2_max=o2_max,
