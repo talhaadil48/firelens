@@ -8,7 +8,7 @@ import { PageTitle, ErrorNotice, Empty } from "../components/Shared";
 type Citation = Schema["Citation"];
 const suggestions = [
   "Which experiments report reduced flame spread?",
-  "Which fabric tests burned above 30% oxygen?",
+  "Which PMMA test runs in PSI-25 were tested above 18% oxygen?",
   "What cool-flame behavior was reported in FLEX?",
 ];
 function AnswerText({
