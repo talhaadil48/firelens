@@ -1,4 +1,4 @@
-.PHONY: setup spike harvest normalize precompute snapshot api web test lint contracts fixtures docker-api docker-sync
+.PHONY: setup spike harvest normalize precompute snapshot sync api web test lint contracts fixtures docker-api docker-sync
 setup:
 	uv sync --frozen
 	cd web && npm ci
@@ -12,6 +12,8 @@ precompute:
 	uv run python -m harvest.pipeline precompute
 snapshot:
 	uv run python -m harvest.pipeline snapshot
+sync:
+	uv run python -m sync
 api:
 	uv run uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 web:

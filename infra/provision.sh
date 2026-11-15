@@ -7,6 +7,7 @@
 #   infra/provision.sh upload         upload snapshots/<id>/ then snapshots/latest.json
 #   infra/provision.sh image          build api/Dockerfile and push $API_IMAGE to GHCR
 #   infra/provision.sh apps           Container Apps env, API app, Static Web App
+#   infra/provision.sh sync           build sync image + Container Apps Job (03:00 PKT)
 #   infra/provision.sh web            build web/ against the live API and upload it
 #   infra/provision.sh github         OIDC deploy identity + GitHub secrets/variables
 #   infra/provision.sh status         what exists and the public URLs
@@ -139,16 +140,17 @@ upload() {
   echo "The API picks the new pointer up within 15 minutes (or on its next cold start)."
 }
 
-image() {
+build_and_push() { # build_and_push <dockerfile-rel> <image-ref>
+  local dockerfile="$1" image_ref="$2"
   command -v docker >/dev/null || die "Docker not found."
   docker info >/dev/null 2>&1 || die "Docker is not running. Start Docker Desktop."
-  [ "$API_IMAGE" = "$(printf '%s' "$API_IMAGE" | tr '[:upper:]' '[:lower:]')" ] \
-    || die "API_IMAGE must be lowercase (GHCR rule): $API_IMAGE"
-  local repo="${API_IMAGE%:*}" sha
+  [ "$image_ref" = "$(printf '%s' "$image_ref" | tr '[:upper:]' '[:lower:]')" ] \
+    || die "Image reference must be lowercase (GHCR rule): $image_ref"
+  local repo="${image_ref%:*}" sha
   sha=$(git -C "$(winpath "$root")" rev-parse --short HEAD)
 
-  say "Building $API_IMAGE (also tagged :$sha) from api/Dockerfile"
-  docker build -f "$(winpath "$root/api/Dockerfile")" -t "$API_IMAGE" -t "$repo:$sha" "$(winpath "$root")"
+  say "Building $image_ref (also tagged :$sha) from $dockerfile"
+  docker build -f "$(winpath "$root/$dockerfile")" -t "$image_ref" -t "$repo:$sha" "$(winpath "$root")"
 
   if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
     say "Logging Docker in to ghcr.io with the gh token (not shown)"
@@ -157,11 +159,55 @@ image() {
     echo "  gh not logged in; using an existing 'docker login ghcr.io'."
   fi
   say "Pushing"
-  docker push -q "$API_IMAGE" && docker push -q "$repo:$sha" \
+  docker push -q "$image_ref" && docker push -q "$repo:$sha" \
     || die "Push denied. Run: gh auth refresh -h github.com -s write:packages   (then retry)"
-  echo; echo "Pushed $API_IMAGE and $repo:$sha."
+  echo; echo "Pushed $image_ref and $repo:$sha."
   echo "First push only: GitHub -> your profile -> Packages -> ${repo##*/} -> Package settings"
   echo "-> Change visibility -> Public, so Azure can pull it without credentials."
+}
+
+image() {
+  build_and_push "api/Dockerfile" "$API_IMAGE"
+}
+
+sync() {
+  local sync_job="${SYNC_JOB:-firelens-sync}"
+  local sync_image="${SYNC_IMAGE:-${API_IMAGE%/*}/firelens-sync:latest}"
+  local sync_cron="${SYNC_CRON:-0 22 * * *}"
+
+  exists az containerapp env show -g "$RG" -n "$ENV_NAME" \
+    || die "Container Apps environment $ENV_NAME not found. Run 'apps' first."
+  exists az storage account show -g "$RG" -n "$STORAGE" \
+    || die "Storage account $STORAGE not found. Run 'core' first."
+
+  build_and_push "sync/Dockerfile" "$sync_image"
+
+  local storage_id
+  storage_id=$(az storage account show -g "$RG" -n "$STORAGE" --query id -o tsv)
+  local vars=(
+    "AZURE_STORAGE_ACCOUNT_URL=$BLOB_URL"
+    "AZURE_STORAGE_CONTAINER=$CONTAINER"
+    "FIRELENS_LLM_PROVIDER=openrouter"
+  )
+
+  say "Container Apps Job $sync_job (schedule UTC: '$sync_cron', 03:00 PKT)"
+  if exists az containerapp job show -g "$RG" -n "$sync_job"; then
+    az containerapp job update -g "$RG" -n "$sync_job" \
+      --image "$sync_image" --cron-expression "$sync_cron" \
+      --mi-system-assigned --set-env-vars "${vars[@]}" --only-show-errors -o none
+  else
+    az containerapp job create -g "$RG" -n "$sync_job" --environment "$ENV_NAME" \
+      --image "$sync_image" --trigger-type Schedule --cron-expression "$sync_cron" \
+      --replica-timeout 3600 --replica-retry-limit 1 --parallelism 1 --replica-completion-count 1 \
+      --cpu 0.5 --memory 1.0Gi --mi-system-assigned --env-vars "${vars[@]}" \
+      --only-show-errors -o none
+  fi
+
+  local principal_id
+  principal_id=$(az containerapp job show -g "$RG" -n "$sync_job" --query identity.principalId -o tsv)
+  grant "$principal_id" ServicePrincipal "Storage Blob Data Contributor" "$storage_id"
+
+  echo; echo "Manual trigger: az containerapp job start -g $RG -n $sync_job"
 }
 
 web() {
@@ -308,6 +354,12 @@ status() {
   echo "  API:       $([ -n "$api" ] && echo "https://$api" || echo '(not created)')"
   echo "  Web:       $([ -n "$web" ] && echo "https://$web" || echo '(not created)')"
   echo "  Snapshots: $BLOB_URL/$CONTAINER/latest.json"
+  local sync_job="${SYNC_JOB:-firelens-sync}"
+  if exists az containerapp job show -g "$RG" -n "$sync_job"; then
+    echo "  Sync job:  $sync_job (cron UTC: ${SYNC_CRON:-0 22 * * *})"
+  else
+    echo "  Sync job:  (not created)"
+  fi
 }
 
 case "${1:-}" in
@@ -316,8 +368,9 @@ case "${1:-}" in
   upload) upload ;;
   image) image ;;
   apps) apps ;;
+  sync) sync ;;
   web) web ;;
   github) github ;;
   status) status ;;
-  *) sed -n '2,16p' "$0"; exit 1 ;;
+  *) sed -n '2,17p' "$0"; exit 1 ;;
 esac

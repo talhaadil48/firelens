@@ -170,7 +170,11 @@ def _format_conditions_text(ranges: dict[str, ConditionRange]) -> str | None:
     return "; ".join(parts) if parts else None
 
 
-def _data_gaps(rows: list[ExperimentalTest], harvest_entry: dict) -> list[str]:
+def _data_gaps(
+    rows: list[ExperimentalTest],
+    harvest_entry: dict,
+    study_maps: list[ColumnMap] | None = None,
+) -> list[str]:
     gaps: list[str] = []
     if not rows:
         tables = [entry for entry in harvest_entry.get("files", []) if entry.get("role") == "table"]
@@ -184,6 +188,16 @@ def _data_gaps(rows: list[ExperimentalTest], harvest_entry: dict) -> list[str]:
                 "inspect the collection and mapping configuration."
             )
         return gaps
+    if study_maps is not None:
+        mapped_files = {m.source_file for m in study_maps}
+        unmapped_files = sorted(
+            {r.source_file for r in rows if r.source_file and r.source_file not in mapped_files}
+        )
+        if unmapped_files:
+            gaps.append(
+                f"No scalar column map is configured for {', '.join(unmapped_files)}; "
+                "original source cells are retained as reported."
+            )
     grouped = sum(row.record_kind != "individual_test" for row in rows)
     if grouped:
         gaps.append(
@@ -421,7 +435,7 @@ def build_investigations(
                 test_count=len(test_rows),
                 record_count=len(acc_rows),
                 data_gaps=[
-                    *_data_gaps(acc_rows, rep_entry),
+                    *_data_gaps(acc_rows, rep_entry, acc_maps),
                     "Sensor details are not extracted here; consult the source documents.",
                 ],
                 data_status="normalized" if acc_rows else "raw_downloaded",

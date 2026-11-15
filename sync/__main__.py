@@ -1,3 +1,6 @@
-"""The production sync worker is implemented in Phase 12."""
+"""CLI entry point for the Phase 12 incremental PSI sync job."""
 
-raise SystemExit("Sync is not configured. Run `make spike` for the Phase 2 source check.")
+from sync.run import main
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -41,6 +41,7 @@ GoDaddy DNS ── www ──> Static Web App  firelens-web   (React build, Free
 | 7 | Budget alert in the portal (§4) | 9.7 | Alert e-mail configured. |
 | 8 | `bash infra/provision.sh github`; owner adds the printed values | 10.2, 10.3 | Secrets and variables are on the repo; Actions deploy from `main`. |
 | 9 | Custom domain (§3) | 11 | `https://www.<domain>` and `https://api.<domain>` work. |
+| 10 | `bash infra/provision.sh sync` | 12 | `firelens-sync` Container Apps Job runs daily at 03:00 PKT (`0 22 * * *` UTC) and writes new snapshots with managed identity. |
 
 `bash infra/provision.sh status` prints what exists and the URLs at any time. Every
 step is safe to re-run; re-running `apps` also rotates the OpenRouter secret and
@@ -110,4 +111,4 @@ then check Cost analysis by hand weekly (build step 15.2).
   git-ignored). If Blob is unreachable the API serves the sample fallback; `/meta` warns.
 - **Cold start.** `--min-replicas 0` keeps cost near zero; the first request after
   idle takes a few seconds. Set `--min-replicas 1` for judging day if needed.
-- **Sync job (Phase 12)** is not provisioned: `sync/__main__.py` is still a stub.
+- **Sync job (Phase 12)** pushes `sync/Dockerfile` and creates the scheduled Container Apps Job `firelens-sync` (`0 22 * * *` UTC / 03:00 PKT, also manually triggerable via `az containerapp job start -g firelens-rg -n firelens-sync`) with `Storage Blob Data Contributor` managed identity on `$STORAGE`. Run locally anytime with `make sync` or `uv run python -m sync`.
