@@ -2,14 +2,15 @@
 
 Evidence-linked exploration of NASA microgravity combustion research.
 
-**Status: Phase 7 dashboard on `feature/phase-7-web`.** Explorer, reviewed
+**Status: Phase 7 dashboard on `feature/phase-7-web`.** Explorer, source-backed
 coverage charts, investigation detail, comparison, source-linked chat (including
 charts of cited measurements) and CSV/JSON exports connect to the Phase 6 API.
 Light/dark appearance is available from the header. The coverage view groups
 identical tested conditions and offers outcome filters and explicit pressure ranges.
 Mock mode stays an explicitly empty metadata preview. A local ignored snapshot
-contains 24 investigations and 1,858 normalized tests; it must be generated on a
-fresh checkout. See [Phase 7 setup and verification](docs/PHASE_7_HANDOFF.md).
+contains 24 investigations and 2,009 source records from 22 experimental tables; it must be generated on a
+fresh checkout. See [source-record preservation and migration](docs/SOURCE_RECORDS_HANDOFF.md) and
+[Phase 7 setup and verification](docs/PHASE_7_HANDOFF.md).
 
 ## Start locally
 
@@ -93,8 +94,8 @@ also records differences that need resolution before implementing real rankings.
 
 | Folder | Responsibility |
 | --- | --- |
-| `harvest/` | Collection, reviewed column maps, normalization and snapshot precomputation |
-| `api/` | Typed API, DuckDB ranking/filtering, reviewed-evidence RAG and exports |
+| `harvest/` | Collection, column maps, normalization and snapshot precomputation |
+| `api/` | Typed API, DuckDB ranking/filtering, source-grounded RAG and exports |
 | `web/` | Vite, React, TypeScript, Tailwind and lazy-loaded Plotly scaffold |
 | `config/` | Illustrative mission profiles and draft relevance weights |
 | `snapshots/sample/` | Checked metadata fixtures; real snapshots remain ignored |
@@ -107,7 +108,7 @@ also records differences that need resolution before implementing real rankings.
 
 Mission scenarios and weights are design assumptions, not NASA-approved mission
 specifications, material certifications or fire-risk predictions. The rank route
-only scores investigations with eligible reviewed measurements and sufficient
+only scores investigations with eligible individual measurements and sufficient
 conditions; other scores stay null. A gap means no
 matching evidence in this collection, not proof that no research exists. CSV row
 counts include possible descriptions/units/blank rows and are not validated test counts.

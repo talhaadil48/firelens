@@ -1,6 +1,5 @@
 schema_version: 1
 score_label: research relevance
-review_status: draft_requires_science_review
 # C/F/M/D from the supplied complete plan. These are research relevance weights.
 weights:
   conditions: 0.40
@@ -8,7 +7,7 @@ weights:
   safety_goal: 0.20
   data_richness: 0.15
 missing_data_policy: >-
-  Missing or unreviewed conditions yield no score (null); never zero-fill or
+  Missing conditions yield no score (null); never zero-fill or
   silently renormalize. Exclude simulated and mock rows from measured coverage.
 profiles:
   - id: earth

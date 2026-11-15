@@ -47,8 +47,8 @@ class _ConditionBounds:
 @dataclass(frozen=True)
 class _InvestigationSqlStats:
     total_rows: int = 0
-    reviewed_measurement_rows: int = 0
-    reviewed_o2_p_rows: int = 0
+    measurement_rows: int = 0
+    o2_p_rows: int = 0
     valid_rows: int = 0
     matching_rows: int = 0
     matching_o2: int = 0
@@ -145,8 +145,11 @@ def _query_sql_stats(
     escaped = str(parquet_path).replace("'", "''")
     source = f"read_parquet('{escaped}')"
 
-    reviewed_cond = "review_status = 'reviewed' AND evidence_type = 'measurement'"
-    o2_p_cond = f"{reviewed_cond} AND o2_fraction IS NOT NULL AND pressure_kpa IS NOT NULL"
+    measurement_cond = (
+        "record_kind = 'individual_test' AND evidence_type = 'measurement' "
+        "AND NOT COALESCE(CAST(json_extract(provenance, '$.is_mock') AS BOOLEAN), FALSE)"
+    )
+    o2_p_cond = f"{measurement_cond} AND o2_fraction IS NOT NULL AND pressure_kpa IS NOT NULL"
     valid_cond = f"{o2_p_cond} AND flow_cm_s IS NOT NULL" if bounds.flow_active else o2_p_cond
 
     o2_match = "o2_fraction >= ? AND o2_fraction <= ?"
@@ -184,8 +187,8 @@ def _query_sql_stats(
         SELECT
             accession,
             COUNT(*) AS total_rows,
-            SUM(CASE WHEN {reviewed_cond} THEN 1 ELSE 0 END) AS reviewed_measurement_rows,
-            SUM(CASE WHEN {o2_p_cond} THEN 1 ELSE 0 END) AS reviewed_o2_p_rows,
+            SUM(CASE WHEN {measurement_cond} THEN 1 ELSE 0 END) AS measurement_rows,
+            SUM(CASE WHEN {o2_p_cond} THEN 1 ELSE 0 END) AS o2_p_rows,
             SUM(CASE WHEN {valid_cond} THEN 1 ELSE 0 END) AS valid_rows,
             SUM(CASE WHEN {full_match} THEN 1 ELSE 0 END) AS matching_rows,
             SUM(CASE WHEN ({valid_cond}) AND ({o2_match}) THEN 1 ELSE 0 END) AS matching_o2,
@@ -209,8 +212,8 @@ def _query_sql_stats(
             (
                 accession,
                 total_rows,
-                reviewed_measurement_rows,
-                reviewed_o2_p_rows,
+                measurement_rows,
+                o2_p_rows,
                 valid_rows,
                 matching_rows,
                 matching_o2,
@@ -222,8 +225,8 @@ def _query_sql_stats(
             ) = row
             stats[str(accession)] = _InvestigationSqlStats(
                 total_rows=int(total_rows or 0),
-                reviewed_measurement_rows=int(reviewed_measurement_rows or 0),
-                reviewed_o2_p_rows=int(reviewed_o2_p_rows or 0),
+                measurement_rows=int(measurement_rows or 0),
+                o2_p_rows=int(o2_p_rows or 0),
                 valid_rows=int(valid_rows or 0),
                 matching_rows=int(matching_rows or 0),
                 matching_o2=int(matching_o2 or 0),
@@ -257,18 +260,16 @@ def _score_investigation(
     if stats.valid_rows == 0:
         gaps: list[str] = []
         if stats.total_rows == 0:
-            gaps.append("No reviewed normalized test rows in snapshot")
-        elif stats.reviewed_measurement_rows == 0:
+            gaps.append("No normalized test rows in snapshot")
+        elif stats.measurement_rows == 0:
             gaps.append(
-                "Normalized test rows exist but are unreviewed or non-measurement "
+                "Normalized test rows exist but are grouped, mock or non-measurement "
                 "(excluded from scoring)"
             )
-        elif bounds.flow_active and stats.reviewed_o2_p_rows > 0:
-            gaps.append(
-                "Reviewed test rows are missing airflow (flow_cm_s) for the selected flow profile"
-            )
+        elif bounds.flow_active and stats.o2_p_rows > 0:
+            gaps.append("test rows are missing airflow (flow_cm_s) for the selected flow profile")
         else:
-            gaps.append("Reviewed test rows are missing required oxygen or pressure measurements")
+            gaps.append("test rows are missing required oxygen or pressure measurements")
         if partial_g_requested:
             gaps.append("No partial-gravity test rows in PSI snapshot")
         return RankItem(
@@ -277,7 +278,7 @@ def _score_investigation(
             breakdown={key: None for key in weight_keys},
             gaps=gaps,
             rationale=(
-                "No reviewed normalized measurement rows satisfy the profile condition inputs; "
+                "No normalized measurement rows satisfy the profile condition inputs; "
                 "score remains null."
             ),
         )
@@ -320,18 +321,18 @@ def _score_investigation(
 
     gaps = []
     if stats.matching_o2 == 0:
-        gaps.append("No reviewed tests within target oxygen envelope")
+        gaps.append("No tests within target oxygen envelope")
     if stats.matching_p == 0:
-        gaps.append("No reviewed tests within target pressure envelope")
+        gaps.append("No tests within target pressure envelope")
     if bounds.flow_active and stats.matching_flow == 0:
-        gaps.append("No reviewed tests within target airflow envelope")
+        gaps.append("No tests within target airflow envelope")
     if partial_g_requested and stats.reduced_g_rows == 0:
         gaps.append("No partial-gravity test rows in PSI snapshot")
     if goal not in inv.fire_safety_tags:
         gaps.append(f"Investigation is not tagged for safety goal '{goal}'")
 
     rationale = (
-        f"{stats.matching_rows}/{stats.valid_rows} reviewed measurement rows match target "
+        f"{stats.matching_rows}/{stats.valid_rows} measurement rows match target "
         f"conditions (C={c_score:.2f}, F={f_score:.2f}, M={m_score:.2f}, D={d_score:.2f})."
     )
     return RankItem(
@@ -380,7 +381,7 @@ def rank_investigations(
                 RankItem(
                     accession=inv.accession,
                     breakdown={name: None for name in config.weights.model_dump()},
-                    gaps=["No reviewed normalized tests in Phase 2 fixture"],
+                    gaps=["No normalized tests in Phase 2 fixture"],
                     rationale=(
                         "Metadata fixture only; no quantitative relevance score can be calculated."
                     ),
@@ -428,9 +429,7 @@ def rank_investigations(
             "microgravity and 1g results bound rather than directly measure partial-g behavior."
         )
     if any(item.score is None for item in items):
-        warnings.append(
-            "Investigations without reviewed normalized measurement rows retain score=null."
-        )
+        warnings.append("Investigations without normalized measurement rows retain score=null.")
 
     return RankResponse(
         profile=selected,

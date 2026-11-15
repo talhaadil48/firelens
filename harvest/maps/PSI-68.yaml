@@ -2,9 +2,21 @@ schema_version: 1
 accession: PSI-68
 source_file: PSI-68_Experimental table_Flex2.csv
 encoding: utf-8-sig
-study_level_only: true
+record_kind: grouped_summary
 default_fuel_phase: liquid
 default_sample_geometry: droplet
-review_status: reviewed
 notes:
-  - "FLEX-2 summary table storing diameter ranges ('1.5 - 5') and multi-value O2/pressure lists ('0.17; 0.21;0.25; 0.3'); kept at study level."
+- FLEX-2 summary table storing diameter ranges ('1.5 - 5') and multi-value O2/pressure
+  lists ('0.17; 0.21;0.25; 0.3'); retained with its original source cells.
+columns:
+  fuel:
+    source_column: Sample (Fuel Type)
+  sample_size_mm:
+    source_column: Initial Droplet Diameter (mm)
+  o2_fraction:
+    source_column: Oxygen Mole Fraction
+  pressure_kpa:
+    source_column: Ambient Pressure (atm)
+    multiplier: 101.325
+  flow_cm_s:
+    source_column: Flow Velocity (cm/s)

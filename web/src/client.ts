@@ -262,7 +262,7 @@ export async function* ask(
     yield {
       event: "answer",
       data: {
-        text: "Insufficient evidence: no reviewed experimental findings in this Phase 2 fixture.",
+        text: "Insufficient evidence: no experimental findings in this Phase 2 fixture.",
         status: "insufficient_evidence",
         mode: "mock",
         citations: [],

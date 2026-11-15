@@ -60,18 +60,10 @@ export function Empty({
     </div>
   );
 }
-export function ReviewLabel({ inv }: { inv: Investigation }) {
+export function DataLabel({ inv }: { inv: Investigation }) {
   return (
-    <span
-      className={`tag ${inv.fixture ? "neutral" : inv.review_status === "reviewed" ? "green" : "amber"}`}
-    >
-      {inv.fixture
-        ? "Metadata fixture"
-        : inv.review_status === "reviewed"
-          ? "Reviewed data"
-          : inv.review_status === "rejected"
-            ? "Rejected evidence"
-            : "Awaiting review"}
+    <span className="tag neutral">
+      {inv.fixture ? "Metadata fixture" : "NASA source data"}
     </span>
   );
 }
@@ -114,7 +106,7 @@ export function TestTable({ rows }: { rows: TestRow[] }) {
             <th>Pressure (kPa)</th>
             <th>Flow (cm/s)</th>
             <th>Outcome</th>
-            <th>Review</th>
+            <th>Record type</th>
             <th>Source</th>
           </tr>
         </thead>
@@ -135,7 +127,8 @@ export function TestTable({ rows }: { rows: TestRow[] }) {
               <td>{number(row.flow_cm_s)}</td>
               <td>{row.outcome?.replaceAll("_", " ") ?? "Not reported"}</td>
               <td>
-                {row.review_status} · {row.evidence_type}
+                {row.record_kind?.replaceAll("_", " ") ?? "individual test"} ·{" "}
+                {row.evidence_type}
               </td>
               <td>
                 <a

@@ -2,8 +2,14 @@ schema_version: 1
 accession: PSI-20
 source_file: PSI-20_Experimental table_ACME BRE.csv
 encoding: utf-8-sig
-study_level_only: true
+record_kind: grouped_summary
 default_fuel_phase: gas
-review_status: reviewed
 notes:
-  - "Daily summary table with semicolon-delimited O2 lists ('21; 26.5; 40') and varied pressures; kept at study level rather than fabricating independent rows."
+- Daily summary table with semicolon-delimited O2 lists ('21; 26.5; 40') and varied
+  pressures; retained as grouped source records; never expanded into independent tests.
+columns:
+  fuel:
+    source_column: Fuel Bottle
+  o2_fraction:
+    source_column: Oxygen Conc (percent)
+    multiplier: 0.01

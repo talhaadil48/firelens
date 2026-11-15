@@ -22,7 +22,6 @@ from api.models import (
     ExperimentalTest,
     ProgressEvent,
     Provenance,
-    ReviewStatus,
     TextChunk,
 )
 from api.snapshot import LoadedSnapshot, SnapshotLoader
@@ -184,11 +183,9 @@ def retrieve_top_chunks(
     scored: list[tuple[float, int, TextChunk]] = []
     for idx, chunk in enumerate(snap.chunks):
         inv = snap.investigations_by_id.get(chunk.accession or "")
-        if inv is None or inv.fixture or inv.review_status != ReviewStatus.REVIEWED:
+        if inv is None or inv.fixture:
             continue
-        if chunk.source_kind == "summary" and (
-            inv.summary is None or inv.summary.review_status != ReviewStatus.REVIEWED
-        ):
+        if chunk.source_kind == "summary" and inv.summary is None:
             continue
         if allowed_ids and chunk.accession not in allowed_ids:
             continue
@@ -256,7 +253,7 @@ def retrieve_matching_rows(
     return [
         row
         for row in loader.query_tests_by_sql_filter(sql_filter)
-        if row.review_status == ReviewStatus.REVIEWED
+        if row.record_kind == "individual_test"
         and row.evidence_type == EvidenceType.MEASUREMENT
         and not row.provenance.is_mock
     ]
@@ -351,7 +348,7 @@ def stream_chat_events(
             AnswerEvent(
                 text=(
                     "Insufficient evidence: Phase 2 contains catalogue metadata, "
-                    "not reviewed experimental findings."
+                    "not experimental findings."
                 ),
                 status="insufficient_evidence",
                 citations=[],

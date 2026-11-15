@@ -162,7 +162,7 @@ def build(source_dir: Path | None = None) -> None:
         warnings=[
             (
                 "Phase 2 contract fixtures: real NASA titles and metadata; "
-                "scientific claims unreviewed."
+                "scientific claims not independently validated."
             ),
             "No normalized test measurements or mission-safety rankings are available yet.",
         ],

@@ -45,6 +45,9 @@ logger = logging.getLogger("firelens.api")
 SAMPLE = ROOT / "snapshots/sample"
 
 CSV_FIELDS = [
+    "record_kind",
+    "source_cells",
+    "notes",
     "test_id",
     "accession",
     "investigation",
@@ -72,6 +75,7 @@ CSV_FIELDS = [
     "source_row",
     "doi",
 ]
+CSV_FIELDS = list(dict.fromkeys([*CSV_FIELDS, *ExperimentalTest.model_fields, "source_version"]))
 
 CatalogueFetcher = Callable[[], list[dict[str, Any]]]
 

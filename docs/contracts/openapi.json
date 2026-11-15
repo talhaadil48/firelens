@@ -866,6 +866,25 @@
             "minLength": 1,
             "title": "Test Id"
           },
+          "record_kind": {
+            "type": "string",
+            "enum": [
+              "individual_test",
+              "grouped_summary",
+              "session",
+              "reference",
+              "source_note"
+            ],
+            "title": "Record Kind",
+            "default": "individual_test"
+          },
+          "source_cells": {
+            "items": {
+              "$ref": "#/components/schemas/SourceCell"
+            },
+            "type": "array",
+            "title": "Source Cells"
+          },
           "test_date": {
             "anyOf": [
               {
@@ -1159,10 +1178,6 @@
           "evidence_type": {
             "$ref": "#/components/schemas/EvidenceType"
           },
-          "review_status": {
-            "$ref": "#/components/schemas/ReviewStatus",
-            "default": "unreviewed"
-          },
           "provenance": {
             "$ref": "#/components/schemas/Provenance"
           },
@@ -1242,10 +1257,6 @@
             "type": "array",
             "minItems": 1,
             "title": "Citation Ids"
-          },
-          "review_status": {
-            "$ref": "#/components/schemas/ReviewStatus",
-            "default": "unreviewed"
           },
           "uncertainty_label": {
             "type": "string",
@@ -1572,17 +1583,25 @@
             "title": "Test Count",
             "default": 0
           },
-          "review_status": {
-            "$ref": "#/components/schemas/ReviewStatus",
-            "default": "unreviewed"
+          "record_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Record Count",
+            "default": 0
+          },
+          "data_gaps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Data Gaps"
           },
           "data_status": {
             "type": "string",
             "enum": [
               "metadata_only",
               "raw_downloaded",
-              "normalized",
-              "reviewed"
+              "normalized"
             ],
             "title": "Data Status",
             "default": "metadata_only"
@@ -1699,10 +1718,6 @@
             },
             "type": "array",
             "title": "Findings"
-          },
-          "review_status": {
-            "$ref": "#/components/schemas/ReviewStatus",
-            "default": "unreviewed"
           }
         },
         "additionalProperties": false,
@@ -1922,11 +1937,6 @@
           "missing_data_policy": {
             "type": "string",
             "title": "Missing Data Policy"
-          },
-          "review_status": {
-            "type": "string",
-            "const": "draft_requires_science_review",
-            "title": "Review Status"
           }
         },
         "additionalProperties": false,
@@ -1934,8 +1944,7 @@
         "required": [
           "weights",
           "profiles",
-          "missing_data_policy",
-          "review_status"
+          "missing_data_policy"
         ],
         "title": "ProfileConfig"
       },
@@ -2218,14 +2227,30 @@
         "type": "object",
         "title": "RankWeights"
       },
-      "ReviewStatus": {
-        "type": "string",
-        "enum": [
-          "unreviewed",
-          "reviewed",
-          "rejected"
+      "SourceCell": {
+        "properties": {
+          "column": {
+            "type": "string",
+            "title": "Column"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "column_index": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Column Index"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "column",
+          "value",
+          "column_index"
         ],
-        "title": "ReviewStatus"
+        "title": "SourceCell"
       },
       "SourceDocument": {
         "properties": {

@@ -116,8 +116,7 @@ export default function Ask({ records }: { records: Investigation[] }) {
   return (
     <>
       <PageTitle eyebrow="ASK FIRELENS" title="Questions meet evidence.">
-        Search reviewed NASA combustion research. Follow every answer back to
-        its source.
+        Search NASA combustion research. Follow every answer back to its source.
       </PageTitle>
       <div className="ask-layout">
         <div>
@@ -145,7 +144,7 @@ export default function Ask({ records }: { records: Investigation[] }) {
                     onChange={(e) => setScope(e.target.value)}
                     disabled={busy}
                   >
-                    <option value="">All reviewed investigations</option>
+                    <option value="">All investigations</option>
                     {records.map((inv) => (
                       <option key={inv.accession} value={inv.accession}>
                         {inv.accession} · {inv.acronym ?? inv.title}

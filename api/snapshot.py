@@ -33,6 +33,8 @@ BlobFetcher = Callable[[str], bytes | None]
 
 _PARQUET_COLUMNS: tuple[tuple[str, str], ...] = (
     ("test_id", "VARCHAR"),
+    ("record_kind", "VARCHAR"),
+    ("source_cells", "VARCHAR"),
     ("accession", "VARCHAR"),
     ("investigation", "VARCHAR"),
     ("test_date", "VARCHAR"),
@@ -62,7 +64,6 @@ _PARQUET_COLUMNS: tuple[tuple[str, str], ...] = (
     ("source_row", "BIGINT"),
     ("doi", "VARCHAR"),
     ("evidence_type", "VARCHAR"),
-    ("review_status", "VARCHAR"),
     ("provenance", "VARCHAR"),
     ("notes", "VARCHAR"),
     ("source_url", "VARCHAR"),
@@ -72,7 +73,7 @@ _PARQUET_COLUMNS: tuple[tuple[str, str], ...] = (
 _JSON_DICT_FIELDS = frozenset(
     {"sample_dimensions_mm", "diluent_fractions", "metrics", "provenance"}
 )
-_JSON_LIST_FIELDS = frozenset({"notes"})
+_JSON_LIST_FIELDS = frozenset({"notes", "source_cells"})
 
 
 def _clean_scalar(value: Any) -> Any:
@@ -394,10 +395,6 @@ class SnapshotLoader:
         if pointer is not None:
             snapshot_id = pointer.snapshot_id
             snapshot_date = pointer.created_at
-            if pointer.review_status != "reviewed":
-                warnings.append(
-                    f"Snapshot {snapshot_id} review_status is '{pointer.review_status}'."
-                )
         else:
             meta_file = target_dir / "meta.json"
             if meta_file.exists():
@@ -531,7 +528,7 @@ class SnapshotLoader:
         if snap.parquet_path is None:
             return []
 
-        clauses: list[str] = ["evidence_type = 'measurement'", "review_status = 'reviewed'"]
+        clauses: list[str] = ["evidence_type = 'measurement'", "record_kind = 'individual_test'"]
         params: list[Any] = []
 
         if sql_filter.accessions:
@@ -573,8 +570,7 @@ class SnapshotLoader:
         source = _parquet_sql_source(snap.parquet_path)
         sql = (
             f"SELECT * FROM {source} {where_sql} "
-            "ORDER BY CASE WHEN review_status = 'reviewed' THEN 0 ELSE 1 END, "
-            "accession ASC, source_row ASC, test_id ASC "
+            "ORDER BY accession ASC, source_row ASC, test_id ASC "
             "LIMIT ?"
         )
         params.append(sql_filter.limit)

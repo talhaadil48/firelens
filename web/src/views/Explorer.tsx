@@ -9,12 +9,7 @@ import type {
   TestRow,
 } from "../client";
 import { number, range, studyName } from "../presentation";
-import {
-  Empty,
-  ErrorNotice,
-  PageTitle,
-  ReviewLabel,
-} from "../components/Shared";
+import { Empty, ErrorNotice, PageTitle, DataLabel } from "../components/Shared";
 
 type Props = {
   records: Investigation[];
@@ -56,8 +51,7 @@ export default function Explorer({
 }: Props) {
   const [shown, setShown] = useState(6);
   const [query, setQuery] = useState(""),
-    [phase, setPhase] = useState("all"),
-    [review, setReview] = useState("all");
+    [phase, setPhase] = useState("all");
   const [custom, setCustom] = useState({
     oxygen: "",
     pressure: "",
@@ -84,10 +78,9 @@ export default function Explorer({
         `${item.title} ${item.accession} ${item.acronym ?? ""} ${item.objectives ?? ""}`
           .toLowerCase()
           .includes(query.toLowerCase()) &&
-        (phase === "all" || item.fuel_phase === phase) &&
-        (review === "all" || item.review_status === review),
+        (phase === "all" || item.fuel_phase === phase),
     );
-  }, [records, rank, query, phase, review]);
+  }, [records, rank, query, phase]);
   const visibleIds = new Set(ordered.map((item) => item.accession));
   const visibleRows = rows.filter((row) => visibleIds.has(row.accession));
   const allGaps = [
@@ -275,7 +268,7 @@ export default function Explorer({
           <ErrorNotice message={rowsError} />
         ) : rowsLoading ? (
           <div className="chart-loading" role="status">
-            Loading reviewed test coordinates…
+            Loading test coordinates…
           </div>
         ) : (
           <CoverageMap
@@ -327,43 +320,25 @@ export default function Explorer({
               ))}
             </select>
           </label>
-          <label>
-            <span className="sr-only">Review status</span>
-            <select
-              aria-label="Review status"
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-            >
-              <option value="all">All review states</option>
-              <option value="reviewed">Reviewed</option>
-              <option value="unreviewed">Unreviewed</option>
-            </select>
-          </label>
-          {(query || phase !== "all" || review !== "all") && (
+          {(query || phase !== "all") && (
             <button
               className="text-button"
               onClick={() => {
                 setQuery("");
                 setPhase("all");
-                setReview("all");
               }}
             >
               Clear filters
             </button>
           )}
         </div>
-        {(query || phase !== "all" || review !== "all") && (
+        {(query || phase !== "all") && (
           <div className="active-filters" aria-label="Active filters">
             {query && (
               <button onClick={() => setQuery("")}>Search: {query} ×</button>
             )}
             {phase !== "all" && (
               <button onClick={() => setPhase("all")}>Fuel: {phase} ×</button>
-            )}
-            {review !== "all" && (
-              <button onClick={() => setReview("all")}>
-                Review: {review} ×
-              </button>
             )}
           </div>
         )}
@@ -380,7 +355,7 @@ export default function Explorer({
                     {String(index + 1).padStart(2, "0")}{" "}
                     <span className="card-id">{inv.accession}</span>
                   </span>
-                  <ReviewLabel inv={inv} />
+                  <DataLabel inv={inv} />
                 </div>
                 <div className="study-title">
                   <a href={`#/investigations/${inv.accession}`}>
@@ -398,8 +373,7 @@ export default function Explorer({
                 </div>
                 <p className="study-full-title">{inv.title}</p>
                 <p className="study-description">
-                  {inv.summary?.review_status === "reviewed" &&
-                  inv.summary.objective.trim().length > 12
+                  {inv.summary && inv.summary.objective.trim().length > 12
                     ? inv.summary.objective
                     : inv.objectives && inv.objectives.trim().length > 12
                       ? inv.objectives
@@ -502,12 +476,12 @@ export default function Explorer({
         <div>
           <p className="small">
             {number(visibleRows.length, 0)} normalized rows match the study
-            filters; the chart shows the reviewed subset with both coordinates.
+            filters; the chart shows the subset with both coordinates.
           </p>
           <ul>
             {(allGaps.length
               ? allGaps.slice(0, 4)
-              : ["No reviewed evidence has been scored for this selection."]
+              : ["No source evidence has been scored for this selection."]
             ).map((gap) => (
               <li key={gap}>{gap}</li>
             ))}

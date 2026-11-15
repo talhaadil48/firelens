@@ -1,6 +1,6 @@
 """Phase 3: harvest all public PSI combustion investigations and selected NASA context.
 
-Run `uv run python -m harvest.run`. Raw data remains local, unnormalized and unreviewed.
+Run `uv run python -m harvest.run`. Raw data remains local, not yet standardized.
 """
 
 import argparse
@@ -149,7 +149,6 @@ def investigate(hit: dict, folder: Path, client: SourceClient) -> dict:
             {
                 **record,
                 "status": "manifest_captured",
-                "review_status": "unreviewed",
                 "selected_files": selected,
             },
         )
@@ -247,7 +246,7 @@ def markdown(report: dict) -> str:
             "CSV row counts include possible unit/description/blank rows "
             "and are not validated test counts."
         ),
-        "Data is unnormalized and unreviewed. Bulk Raw Data was not downloaded.",
+        "Data is not yet standardized. Bulk Raw Data was not downloaded.",
         "",
         "## Investigation inventory",
         "",

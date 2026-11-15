@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 import { getCompare } from "../client";
 import type { CompareResponse, Investigation } from "../client";
 import { range, studyName } from "../presentation";
-import {
-  Empty,
-  ErrorNotice,
-  PageTitle,
-  ReviewLabel,
-} from "../components/Shared";
+import { Empty, ErrorNotice, PageTitle, DataLabel } from "../components/Shared";
 
 const fields: [string, (inv: Investigation) => string][] = [
   ["Objective", (inv) => inv.objectives ?? "Not reported"],
@@ -15,9 +10,9 @@ const fields: [string, (inv: Investigation) => string][] = [
   [
     "Fuels & geometry",
     (inv) =>
-      inv.summary?.review_status === "reviewed"
+      inv.summary != null
         ? (inv.summary.fuels_and_geometry ?? "Not reported")
-        : "No reviewed summary",
+        : "No source summary",
   ],
   ["Oxygen", (inv) => range(inv.condition_ranges?.oxygen)],
   ["Pressure", (inv) => range(inv.condition_ranges?.pressure)],
@@ -25,9 +20,9 @@ const fields: [string, (inv: Investigation) => string][] = [
   [
     "What varied",
     (inv) =>
-      inv.summary?.review_status === "reviewed"
+      inv.summary != null
         ? (inv.summary.varied ?? "Not reported")
-        : "No reviewed summary",
+        : "No source summary",
   ],
   ["Hardware", (inv) => (inv.hardware ?? []).join(", ") || "Not reported"],
   ["Sensors", (inv) => (inv.sensors ?? []).join(", ") || "Not reported"],
@@ -144,7 +139,7 @@ export default function Compare({
                         <a href={`#/investigations/${inv.accession}`}>
                           <h2>{studyName(inv)}</h2>
                         </a>
-                        <ReviewLabel inv={inv} />
+                        <DataLabel inv={inv} />
                       </th>
                     ))}
                   </tr>

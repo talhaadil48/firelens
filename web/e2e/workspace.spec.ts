@@ -19,7 +19,7 @@ test("real snapshot: explore → detail → compare → cited graphical answer �
     page.getByRole("heading", { name: "Explore the evidence." }),
   ).toBeVisible();
   await expect(
-    page.getByText(/reviewed rows with both coordinates/),
+      page.getByText(/rows with both coordinates/),
   ).toBeVisible({ timeout: 60_000 });
   await expect(page.locator(".coverage-panel .js-plotly-plot")).toBeVisible();
   await page.getByRole("button", { name: "Moon base", exact: true }).click();

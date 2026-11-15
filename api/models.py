@@ -16,12 +16,6 @@ class Model(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class ReviewStatus(StrEnum):
-    UNREVIEWED = "unreviewed"
-    REVIEWED = "reviewed"
-    REJECTED = "rejected"
-
-
 class EvidenceType(StrEnum):
     MEASUREMENT = "measurement"
     SIMULATION = "simulation"
@@ -64,10 +58,20 @@ class Metric(Model):
     provenance: Provenance | None = None
 
 
+class SourceCell(Model):
+    column: str
+    value: str
+    column_index: int = Field(ge=1)
+
+
 class ExperimentalTest(Model):
     accession: Accession
     investigation: str | None = None
     test_id: str = Field(min_length=1)
+    record_kind: Literal[
+        "individual_test", "grouped_summary", "session", "reference", "source_note"
+    ] = "individual_test"
+    source_cells: list[SourceCell] = Field(default_factory=list)
     test_date: date | None = None
     campaign_id: str | None = None
     fuel: str | None = Field(default=None, validation_alias=AliasChoices("fuel", "material"))
@@ -102,7 +106,6 @@ class ExperimentalTest(Model):
     source_row: int | None = Field(default=None, ge=1)
     doi: str | None = None
     evidence_type: EvidenceType
-    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
     provenance: Provenance
     notes: list[str] = Field(default_factory=list)
 
@@ -134,8 +137,6 @@ class ExperimentalTest(Model):
             raise ValueError("An outcome value needs its original unit")
         if self.evidence_type == EvidenceType.MOCK and not self.provenance.is_mock:
             raise ValueError("Mock evidence must carry is_mock=true")
-        if self.provenance.is_mock and self.review_status == ReviewStatus.REVIEWED:
-            raise ValueError("Mock rows cannot be scientifically reviewed")
         return self
 
 
@@ -150,7 +151,6 @@ class Finding(Model):
     claim: str
     evidence_type: EvidenceType
     citation_ids: list[str] = Field(min_length=1)
-    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
     uncertainty_label: Literal["not_assessed", "reported", "not_reported", "qualitative"] = (
         "not_assessed"
     )
@@ -171,7 +171,6 @@ class InvestigationSummary(Model):
     varied: str | None = None
     sensors: list[str] = Field(default_factory=list)
     findings: list[Finding] = Field(default_factory=list)
-    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
 
 
 class Investigation(Model):
@@ -208,10 +207,9 @@ class Investigation(Model):
     findings: list[Finding] = Field(default_factory=list)
     citations: list[Citation] = Field(default_factory=list)
     test_count: int = Field(default=0, ge=0)
-    review_status: ReviewStatus = ReviewStatus.UNREVIEWED
-    data_status: Literal["metadata_only", "raw_downloaded", "normalized", "reviewed"] = (
-        "metadata_only"
-    )
+    record_count: int = Field(default=0, ge=0)
+    data_gaps: list[str] = Field(default_factory=list)
+    data_status: Literal["metadata_only", "raw_downloaded", "normalized"] = "metadata_only"
     fixture: bool = True
 
     @model_validator(mode="after")
@@ -301,7 +299,6 @@ class ProfileConfig(Model):
     weights: RankWeights
     profiles: list[MissionProfile]
     missing_data_policy: str
-    review_status: Literal["draft_requires_science_review"]
 
 
 class RankItem(Model):
@@ -412,4 +409,3 @@ class SnapshotPointer(Model):
     test_count: int = Field(ge=0)
     chunk_count: int = Field(ge=0)
     files: list[str] = Field(min_length=1)
-    review_status: ReviewStatus = ReviewStatus.UNREVIEWED

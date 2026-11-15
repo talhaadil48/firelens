@@ -5,10 +5,9 @@ encoding: utf-8-sig
 header_row: 1
 skip_rows: []
 id_column: "SAME Test #"
-study_level_only: false
+record_kind: individual_test
 default_fuel_phase: solid
 default_gravity: microgravity
-review_status: reviewed
 
 columns:
   fuel:

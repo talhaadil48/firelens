@@ -1,5 +1,5 @@
 import type { TestRow } from "./client";
-import { reviewedRow } from "./presentation";
+import { measurementRow } from "./presentation";
 
 export const outcomeOptions = [
   { id: "all", label: "All outcomes" },
@@ -18,7 +18,7 @@ export interface ConditionPoint {
 export function coverageRows(tests: TestRow[]) {
   return tests.filter(
     (row) =>
-      reviewedRow(row) && row.o2_fraction != null && row.pressure_kpa != null,
+      measurementRow(row) && row.o2_fraction != null && row.pressure_kpa != null,
   );
 }
 export function groupConditions(rows: TestRow[]): ConditionPoint[] {

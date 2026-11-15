@@ -15,7 +15,7 @@ vi.mock("./components/EvidenceBars", () => ({
 vi.mock("./Plot", () => ({
   default: ({ points }: { points: { rows: TestRow[] }[] }) => (
     <div data-testid="cited-plot">
-      {points.flatMap((point) => point.rows).length} reviewed points:{" "}
+      {points.flatMap((point) => point.rows).length} measurement points:{" "}
       {points
         .flatMap((point) => point.rows)
         .map((t) => t.test_id)
@@ -31,7 +31,7 @@ const row = (id: string, sourceRow: number): TestRow => ({
   gravity: "microgravity",
   o2_fraction: 0.21,
   pressure_kpa: 101.3,
-  review_status: "reviewed",
+  record_kind: "individual_test",
   evidence_type: "measurement",
   source_file: "tests.csv",
   source_row: sourceRow,
@@ -50,18 +50,18 @@ const citation = (r: TestRow): Schema["Citation"] => ({
   id: `row:${r.accession}:${r.test_id}`,
   accession: r.accession,
   locator: `tests.csv row ${r.source_row}`,
-  supporting_text: "Reviewed test evidence",
+  supporting_text: "Source test evidence",
   provenance: r.provenance,
 });
 beforeEach(() => {
   vi.mocked(getAllTests).mockReset();
 });
-it("plots only cited, reviewed measurements with exactly matching provenance", async () => {
+it("plots only cited, measurements with exactly matching provenance", async () => {
   const first = row("one", 2),
     second = row("two", 3),
-    unreviewed = {
-      ...row("unreviewed", 4),
-      review_status: "unreviewed" as const,
+    grouped = {
+      ...row("grouped", 4),
+      record_kind: "grouped_summary" as const,
     };
   const mismatched = row("wrong-source-row", 5),
     extra = row("uncited", 6);
@@ -74,7 +74,7 @@ it("plots only cited, reviewed measurements with exactly matching provenance", a
   vi.mocked(getAllTests).mockResolvedValue([
     first,
     second,
-    unreviewed,
+    grouped,
     mismatched,
     extra,
     oldVersion,
@@ -85,7 +85,7 @@ it("plots only cited, reviewed measurements with exactly matching provenance", a
       citations={[
         citation(first),
         citation(second),
-        citation(unreviewed),
+        citation(grouped),
         poisonedCitation,
         {
           ...citation(oldVersion),
@@ -99,7 +99,7 @@ it("plots only cited, reviewed measurements with exactly matching provenance", a
     />,
   );
   expect(await screen.findByTestId("cited-plot")).toHaveTextContent(
-    "2 reviewed points: one,two",
+    "2 measurement points: one,two",
   );
   expect(getAllTests).toHaveBeenCalledWith(expect.any(AbortSignal), {
     accession: "PSI-69",

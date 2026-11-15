@@ -7,8 +7,8 @@ export const number = (value: number | null | undefined, digits = 1) =>
     : new Intl.NumberFormat("en", { maximumFractionDigits: digits }).format(
         value,
       );
-export const reviewedRow = (row: TestRow) =>
-  row.review_status === "reviewed" &&
+export const measurementRow = (row: TestRow) =>
+  (row.record_kind ?? "individual_test") === "individual_test" &&
   row.evidence_type === "measurement" &&
   !row.provenance.is_mock;
 export function range(

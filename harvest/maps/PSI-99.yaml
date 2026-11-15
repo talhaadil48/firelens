@@ -2,8 +2,27 @@ schema_version: 1
 accession: PSI-99
 source_file: PSI-99_Experimental table_SAFFIRE-2.csv
 encoding: utf-8-sig
-study_level_only: true
+record_kind: individual_test
 default_fuel_phase: solid
-review_status: reviewed
 notes:
-  - "SAFFIRE-2 summary table with approximate O2 strings ('~ 21.5') and mixed unit/qualitative cells; kept at study level."
+- SAFFIRE-2 summary table with approximate O2 strings ('~ 21.5') and mixed unit/qualitative
+  cells; retained with its original source cells.
+id_column: Sample Number
+columns:
+  fuel:
+    source_column: Material
+  flow_cm_s:
+    source_column: Air Flow (cm/s)
+  o2_fraction:
+    source_column: Percent O2 (Note 1)
+    multiplier: 0.01
+metrics:
+  ignition_power:
+    source_column: Ignition Power (W)
+    unit: W
+  ignition_time:
+    source_column: Ignition Time (s)
+    unit: s
+  burn_time:
+    source_column: Burn Time (s)
+    unit: s
