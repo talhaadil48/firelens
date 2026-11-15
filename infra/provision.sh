@@ -252,15 +252,29 @@ github() {
   [ -n "$app_id" ] || app_id=$(az ad app create --display-name "$DEPLOY_APP" --query appId -o tsv)
   exists az ad sp show --id "$app_id" || az ad sp create --id "$app_id" --only-show-errors -o none
   sp_id=$(az ad sp show --id "$app_id" --query id -o tsv)
-  if [ -z "$(az ad app federated-credential list --id "$app_id" --query "[?name=='github-main'].name" -o tsv)" ]; then
+  federate() { # federate <credential-name> <subject>
+    [ -n "$(az ad app federated-credential list --id "$app_id" --query "[?name=='$1'].name" -o tsv)" ] && return
     az ad app federated-credential create --id "$app_id" --only-show-errors -o none --parameters \
-      "{\"name\":\"github-main\",\"issuer\":\"https://token.actions.githubusercontent.com\",\"subject\":\"repo:$GITHUB_REPO:ref:refs/heads/main\",\"audiences\":[\"api://AzureADTokenExchange\"]}"
+      "{\"name\":\"$1\",\"issuer\":\"https://token.actions.githubusercontent.com\",\"subject\":\"$2\",\"audiences\":[\"api://AzureADTokenExchange\"]}"
+    echo "  OIDC subject $2"
+  }
+  federate github-main "repo:$GITHUB_REPO:ref:refs/heads/main"
+  # GitHub may send the subject with immutable IDs: repo:<owner>@<id>/<repo>@<id>:ref:...
+  local ids
+  ids=$(gh api "repos/$GITHUB_REPO" --jq '"\(.owner.login)@\(.owner.id)/\(.name)@\(.id)"' 2>/dev/null || true)
+  if [ -n "$ids" ]; then
+    federate github-main-ids "repo:$ids:ref:refs/heads/main"
+  else
+    echo "  (gh unavailable: add the ID-form subject by hand if azure/login reports AADSTS700213)"
   fi
   rg_id=$(az group show -n "$RG" --query id -o tsv)
   grant "$sp_id" ServicePrincipal Contributor "$rg_id"
 
-  local api="https://$(api_fqdn)"
+  local api="https://$(api_fqdn)" admin=false
   if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
+    admin=$(gh api "repos/$GITHUB_REPO" --jq .permissions.admin 2>/dev/null || echo false)
+  fi
+  if [ "$admin" = "true" ]; then
     say "GitHub secrets and variables on $GITHUB_REPO (values piped, never printed)"
     gh secret set AZURE_CLIENT_ID -R "$GITHUB_REPO" --body "$app_id"
     gh secret set AZURE_TENANT_ID -R "$GITHUB_REPO" --body "$tenant"
@@ -272,7 +286,8 @@ github() {
     gh variable set VITE_API_BASE_URL -R "$GITHUB_REPO" --body "$api"
     echo "  done"
   else
-    say "gh is not available or not logged in. Add these in GitHub -> Settings -> Secrets and variables -> Actions"
+    # On a personal-account repo only the owner can manage Actions secrets.
+    say "No admin rights on $GITHUB_REPO. Send these to the owner for Settings -> Secrets and variables -> Actions"
     echo "  secret   AZURE_CLIENT_ID          = $app_id"
     echo "  secret   AZURE_TENANT_ID          = $tenant"
     echo "  secret   AZURE_SUBSCRIPTION_ID    = $sub"
@@ -281,8 +296,8 @@ github() {
     echo "  variable AZURE_RG                 = $RG"
     echo "  variable AZURE_API_APP            = $API_APP"
     echo "  variable VITE_API_BASE_URL        = $api"
+    echo "Send the deployment token privately (direct message), never in an issue, PR or chat channel."
   fi
-  echo "Personal-account repos: only the owner can set secrets. If gh returns 403, send these to the owner."
 }
 
 status() {
