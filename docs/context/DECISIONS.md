@@ -71,3 +71,15 @@ new collection uses `raw/plan-aligned-20261114/` (eight context topics, document
 Apollo fallbacks, two missing PDFs). See `PLAN_ALIGNMENT.md` and the active
 `SESSION_HANDOFF.md`; prior provisional decisions are historical. No live scientific
 ranking, normalization or deployment was added by this foundation update.
+
+## Cloud: OpenRouter instead of Azure OpenAI (14 Nov 2026)
+
+The team chose OpenRouter for chat instead of Azure OpenAI. Build step 9.3 is dropped:
+no Azure OpenAI resource, no Cognitive Services role. The Container App runs with
+`FIRELENS_LLM_PROVIDER=openrouter` and the key as a Container App secret. In this mode
+`api/llm.py` uses the deterministic local embedding, so no embedding service is
+provisioned. Region is East US 2 (`eastus2`), resource group `firelens-rg`.
+
+The API's Blob fetch is an anonymous HTTPS GET, so the `snapshots` container is
+public-read (CC0 PSI-derived files only) instead of private with a managed-identity
+reader role. `infra/provision.sh` and `infra/README.md` hold the runbook.
