@@ -1,5 +1,9 @@
 # FireLens project context
 
+Active chat-fix checkpoint: read [CHAT_FIX_HANDOFF.md](../CHAT_FIX_HANDOFF.md)
+first for the current branch, uncommitted work, verification state and remaining
+steps. It supersedes historical chat-status notes below.
+
 For the current Phase 7 checkpoint, start with [Phase 7 handoff](../PHASE_7_HANDOFF.md).
 The [Phase 6 review](PHASE_6_REVIEW.md) records backend hardening.
 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) retains the earlier alignment history.

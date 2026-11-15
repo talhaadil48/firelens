@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal
 
+import anyio
 import httpx
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -711,14 +712,41 @@ def chat(request: ChatRequest, http_request: Request = None) -> StreamingRespons
     if not runtime.is_mock_mode:
         runtime.rate_limiter.check(_client_ip(http_request))
 
+    cancelled = threading.Event()
     events = stream_chat_events(
         request,
         loader=runtime.snapshot_loader,
         llm=runtime.llm,
         mock_mode=runtime.is_mock_mode,
+        cancelled=cancelled.is_set,
     )
+
+    async def response_events():
+        async with anyio.create_task_group() as tasks:
+
+            async def watch_disconnect():
+                while not cancelled.is_set():
+                    if http_request is not None and await http_request.is_disconnected():
+                        cancelled.set()
+                        tasks.cancel_scope.cancel()
+                        return
+                    await anyio.sleep(0.1)
+
+            tasks.start_soon(watch_disconnect)
+            try:
+                while not cancelled.is_set():
+                    frame = await anyio.to_thread.run_sync(
+                        lambda: next(events, None), abandon_on_cancel=True
+                    )
+                    if frame is None or cancelled.is_set():
+                        break
+                    yield frame
+            finally:
+                cancelled.set()
+                tasks.cancel_scope.cancel()
+
     return StreamingResponse(
-        events,
+        response_events(),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

@@ -252,6 +252,7 @@ export async function* ask(
   signal?: AbortSignal,
   ids: string[] = [],
 ): AsyncGenerator<ChatEvent> {
+  signal?.throwIfAborted();
   if (!question.trim() || question.length > 2000)
     throw new Error("Enter a question of 1–2000 characters");
   if (mode === "mock") {
@@ -280,11 +281,18 @@ export async function* ask(
   if (!response.ok || !response.body)
     throw new Error(`Chat failed (${response.status})`);
   const reader = response.body.getReader();
+  const cancel = () => {
+    void reader.cancel().catch(() => {});
+  };
+  signal?.addEventListener("abort", cancel, { once: true });
+  if (signal?.aborted) cancel();
   const decoder = new TextDecoder();
   let pending = "";
   try {
     while (true) {
+      signal?.throwIfAborted();
       const chunk = await reader.read();
+      signal?.throwIfAborted();
       if (chunk.done) {
         if (pending.trim())
           throw new Error("Incomplete chat stream. Please retry.");
@@ -307,6 +315,7 @@ export async function* ask(
           .map((line) => line.slice(6))
           .join("\n");
         if (event && ["progress", "answer", "done"].includes(event) && data) {
+          signal?.throwIfAborted();
           yield {
             event: event as ChatEvent["event"],
             data: JSON.parse(data) as ChatEvent["data"],
@@ -315,7 +324,8 @@ export async function* ask(
       }
     }
   } finally {
-    await reader.cancel();
+    signal?.removeEventListener("abort", cancel);
+    await reader.cancel().catch(() => {});
     reader.releaseLock();
   }
 }

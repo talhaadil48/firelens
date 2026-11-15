@@ -1,0 +1,68 @@
+[
+  {
+    "id": "A1",
+    "question": "Which PMMA or solid fuel test runs in PSI-69 were conducted above 20% oxygen, and what pressures and airflow rates were measured?",
+    "investigation_ids": [
+      "PSI-69"
+    ]
+  },
+  {
+    "id": "A2",
+    "question": "Which experimental test runs were performed at oxygen concentrations above 30% and pressures below 105 kPa? List specific test IDs and fuels.",
+    "investigation_ids": []
+  },
+  {
+    "id": "A3",
+    "question": "What oxygen fractions and cabin pressures were measured across the test runs in PSI-101 and PSI-102?",
+    "investigation_ids": [
+      "PSI-101",
+      "PSI-102"
+    ]
+  },
+  {
+    "id": "A4",
+    "question": "What oxygen concentrations and pressures were tested in PSI-159 and PSI-107 ethylene or gaseous flame experiments?",
+    "investigation_ids": [
+      "PSI-159",
+      "PSI-107"
+    ]
+  },
+  {
+    "id": "B1",
+    "question": "Compare the airflow velocities (flow_cm_s) across cotton and PMMA test runs in PSI-25.",
+    "investigation_ids": [
+      "PSI-25"
+    ]
+  },
+  {
+    "id": "B2",
+    "question": "What forced airflow velocities in cm/s were tested across the test runs in PSI-69?",
+    "investigation_ids": [
+      "PSI-69"
+    ]
+  },
+  {
+    "id": "C1",
+    "question": "What cool-flame behavior and droplet extinction phenomena were reported in the FLEX droplet combustion experiments?",
+    "investigation_ids": []
+  },
+  {
+    "id": "C2",
+    "question": "Why can solid materials in microgravity with low ventilation airflow burn more hazardously or at lower oxygen limits than in normal gravity according to PSI-25?",
+    "investigation_ids": [
+      "PSI-25"
+    ]
+  },
+  {
+    "id": "C3",
+    "question": "What were the main science objectives and soot findings of the Flame Design (PSI-159) investigation on the ISS?",
+    "investigation_ids": [
+      "PSI-159"
+    ]
+  },
+  {
+    "id": "D1",
+    "question": "Did NASA test lithium-ion battery thermal runaway at 80% oxygen and 300 kPa in a Martian dust storm?",
+    "investigation_ids": []
+  }
+]

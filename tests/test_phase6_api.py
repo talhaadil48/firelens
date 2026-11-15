@@ -1373,3 +1373,114 @@ def test_live_model_abstention_survives_to_sse(tmp_path):
     assert frames[-2][1]["status"] == "insufficient_evidence"
     assert frames[-2][1]["citations"] == []
     assert frames[-1][1]["finish_reason"] == "insufficient_evidence"
+
+
+def test_comparative_spread_retrieval_prioritizes_findings_not_operations(tmp_path):
+    from api.rag import retrieve_top_chunks
+
+    _build_synthetic_snapshot(tmp_path)
+    runtime = configure_runtime(
+        Settings(mode="snapshot", snapshots_dir=tmp_path, llm_provider="offline")
+    )
+    snap = runtime.snapshot_loader.get_snapshot()
+    base = snap.chunks[0]
+    texts = [
+        "Flame experiment report. Reduced emissions. Crew installed flame experiment bottles.",
+        "Opposed-flow flame spread rate increases to a maximum "
+        "and then decreases at higher flow speeds.",
+        "Reduced gravity experiments involve flame operations on the station.",
+    ]
+    snap.chunks = [
+        base.model_copy(update={"chunk_id": f"probe-{i}", "text": text})
+        for i, text in enumerate(texts)
+    ]
+    snap.chunk_embeddings = [runtime.llm.embed_text(text) for text in texts]
+    chunks = retrieve_top_chunks(
+        "Which experiments report reduced flame spread?", snap, runtime.llm
+    )
+    assert chunks[0].chunk_id == "probe-1"
+    assert all("spread" in c.text for c in chunks)
+
+
+def test_real_comparative_spread_question_finds_citable_bass_result():
+    from api.config import ROOT
+    from api.llm import deterministic_grounded_answer
+    from api.rag import build_citations, retrieve_top_chunks
+
+    if not (ROOT / "snapshots/latest.json").exists():
+        pytest.skip("Local source snapshot required")
+    runtime = configure_runtime(
+        Settings(
+            mode="snapshot", llm_provider="offline", azure_storage_account_url="", _env_file=None
+        )
+    )
+    snap = runtime.snapshot_loader.get_snapshot()
+    question = "Which experiments report reduced flame spread?"
+    chunks = retrieve_top_chunks(question, snap, runtime.llm)
+    assert any(
+        c.accession == "PSI-26" and "decreases at higher speeds" in c.text for c in chunks[:4]
+    )
+    answer = deterministic_grounded_answer(question, chunks, [], build_citations(snap, chunks, []))
+    assert "decreases at higher speeds" in answer
+    assert "PSI-26" in answer
+    assert "Gap notice" not in answer
+
+
+def test_cancelled_chat_does_not_start_model_or_loader_work():
+    from api.models import ChatRequest
+    from api.rag import stream_chat_events
+
+    class UnexpectedWork:
+        def __getattr__(self, name):
+            raise AssertionError(f"Cancelled request accessed {name}")
+
+    assert (
+        list(
+            stream_chat_events(
+                ChatRequest(question="flame spread"),
+                loader=UnexpectedWork(),
+                llm=UnexpectedWork(),
+                mock_mode=False,
+                cancelled=lambda: True,
+            )
+        )
+        == []
+    )
+
+
+@pytest.mark.parametrize(
+    "question,ids,expected",
+    [
+        ("Which experiments report reduced flame spread?", [], "decreases at higher speeds"),
+        ("summarize it", ["PSI-69"], "FLEX"),
+        ("summarise", ["PSI-100"], "SAFFIRE"),
+        ("give an overview", ["PSI-25"], "BASS"),
+    ],
+)
+def test_source_backed_answers_survive_live_model_abstention(question, ids, expected, monkeypatch):
+    from api.config import ROOT
+    from api.llm import deterministic_embed
+
+    if not (ROOT / "snapshots/latest.json").exists():
+        pytest.skip("Local source snapshot required")
+    runtime = configure_runtime(
+        Settings(
+            mode="snapshot", llm_provider="offline", azure_storage_account_url="", _env_file=None
+        )
+    )
+    monkeypatch.setattr(runtime.llm, "embed_text", deterministic_embed)
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("Source answers must not need generation or SQL-filter model calls")
+
+    monkeypatch.setattr(runtime.llm, "generate_grounded_answer", unexpected)
+    monkeypatch.setattr(runtime.llm, "propose_sql_filter", unexpected)
+    frames = _parse_sse(
+        TestClient(app).post("/chat", json={"question": question, "investigation_ids": ids}).text
+    )
+    answer = next(data for event, data in frames if event == "answer")
+    assert answer["status"] == "supported"
+    assert expected in answer["text"]
+    assert answer["citations"]
+    if ids:
+        assert all(c["accession"] in ids for c in answer["citations"])

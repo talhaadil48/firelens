@@ -230,3 +230,69 @@ in this historical document are superseded by
 new source-record contract, all-row Measurements view, data-limitations notices,
 local snapshot rebuild and validation. There are now 2,009 retained source records
 from all 22 downloaded experimental tables; no range/list is expanded into fake tests.
+
+## Chat retrieval and cancellation — 15 November 2026
+
+On `fix/chat-retrieval-and-cancellation`, text retrieval now combines IDF-weighted
+lexical matching with embeddings, downweights generic experiment/report words,
+respects explicit accession IDs and limits repeated unscoped results from one
+investigation. Comparative spread queries prioritize source passages that contain
+spread and a reduction/decrease in the same sentence. Offline excerpts retain the
+comparison and neighboring context rather than truncating it before the finding.
+The real BASS source describing decreased opposed-flow spread at higher flow
+speeds is a regression case; no experiment result is hardcoded or invented.
+
+Stop now prevents native form resubmission when the control changes to Search,
+cancels pending body reads and buffered SSE events, invalidates stale UI requests,
+and leaves immediate retries isolated. The server detects disconnects and skips
+remaining retrieval/generation/delivery stages. A synchronous provider call
+already in flight may finish remotely; no forced upstream cancellation is claimed.
+
+Verified: 156 Python tests, 30 frontend tests, lint/format, TypeScript, build and
+contract drift checks. Real-data browser checks cover the exact comparative
+question, Stop returning to an idle state and immediate retry. Screenshot retained
+under ignored `artifacts/readiness/flame-spread-fixed.png`. No cloud deployment.
+
+### Source-based summary and comparative answer follow-up
+
+Selected-study `summarize`, `summarise`, summary and overview requests now retrieve
+the selected investigation's structured source fields directly, including the
+first chunk of each field to avoid mid-paragraph fragments. Explicit PSI IDs and
+unambiguous acronym requests are supported. The response labels objectives,
+approach and research impacts, cites the underlying source fields and does not
+present objectives as experimental findings.
+
+When retrieved documents contain a literal reported decrease in spread, the
+comparison can be returned with its source citation directly. Generic plans and
+objectives are excluded from this direct-comparison path. These paths bypass
+model generation/SQL proposals so a model's abstention cannot hide facts present
+in these supported source fields. Other questions retain normal RAG/abstention.
+
+Verified against the actual local API at port 8001 and the owner's frontend at
+localhost:5173: the exact reduced-flame-spread question returns the BASS comparison;
+selecting FLEX and asking `summarize it` returns a cited source-based summary.
+The local backend was restarted with reload enabled. Regression tests explicitly
+fail if these paths attempt model generation or SQL-filter calls. Python: 160
+passing tests. Frontend: 30 passing tests, lint/TypeScript/build passed. No cloud
+configuration or deployment was changed.
+
+### Multi-investigation chat selection and ten-question audit
+
+Chat now accepts up to ten selected investigations through the scope picker,
+shows removable study chips, prevents duplicates and provides Clear scope. Empty
+selection means all studies. All selected IDs are sent in investigation_ids;
+selection is locked while a request is active. Existing source/answer/cancellation
+contracts are unchanged. Added payload/removal/clear tests.
+
+The owner's ten supplied questions were run sequentially against the actual
+local backend. Full results and identified data/prompt/app issues are recorded in
+[CHAT_QUESTION_MATRIX.md](CHAT_QUESTION_MATRIX.md). In particular, the high-oxygen
+request returned a 21.23% oxygen row, and the gaseous-study coordinate request
+rendered airflow bars. Those backend/filter/chart failures are reported rather
+than claimed fixed. Missing calibrated airflow or oxygen/pressure values were
+not invented to satisfy a chart expectation.
+
+Frontend verification: 31 tests, ESLint, TypeScript and build pass. Browser
+verification replays the ten actual SSE answers against the real row endpoints
+and verifies multiple selected IDs appear as chips. Source records, responses,
+chart results and screenshots remain under ignored artifacts/question-matrix/.

@@ -75,15 +75,30 @@ export default function ChatChart({
   const field = (["flow_cm_s", "pressure_kpa", "o2_fraction"] as const).find(
     (key) => rows.filter((row) => row[key] != null).length >= 2,
   );
-  const requestedField = /\b(airflow|flow|velocity)\b/i.test(question)
+  const requestedScatter =
+    /\b(oxygen|o2)\b/i.test(question) && /\bpressures?\b/i.test(question);
+  const requestedField = /\b(airflow|flow|velocit(?:y|ies))\b|flow_cm_s/i.test(
+    question,
+  )
     ? "flow_cm_s"
-    : /\bpressure\b/i.test(question) && !/\b(oxygen|o2)\b/i.test(question)
+    : /\bpressures?\b/i.test(question) && !/\b(oxygen|o2)\b/i.test(question)
       ? "pressure_kpa"
       : null;
   const requestedAvailable =
     requestedField &&
     rows.filter((row) => row[requestedField] != null).length >= 2;
-  const showScatter = scatter.length >= 2 && !requestedAvailable;
+  if (
+    (requestedScatter && scatter.length < 2) ||
+    (!requestedScatter && requestedField && !requestedAvailable)
+  )
+    return (
+      <p className="small muted">
+        The cited rows lack enough measurements of the requested quantities. No
+        different quantity has been substituted.
+      </p>
+    );
+  const showScatter =
+    scatter.length >= 2 && (requestedScatter || !requestedAvailable);
   const barField = requestedAvailable ? requestedField : field;
   if (scatter.length < 2 && !field)
     return (
