@@ -119,7 +119,7 @@ snapshot exists for the new format, run the sync job with the new image and wait
 before touching the API otherwise) → switch the API → smoke test `/meta` (expected
 snapshot, no snapshot warnings) and the main endpoints → **automatic rollback** to the
 previous image on any failure → web (only after a green API). Pushes to
-`feature/phase-12-sync` deploy to the staging API only; a commit message containing
+`feature/phase-12-guarded-sync` deploy to the staging API only; a commit message containing
 `[simulate-smoke-failure]` drills the rollback there.
 
 **Freeze switch:** repo variable `DEPLOY_FREEZE=true` skips every production deploy

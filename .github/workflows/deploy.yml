@@ -5,7 +5,7 @@ name: Deploy
 # (judging-day kill switch).
 on:
   push:
-    branches: [main, feature/phase-12-sync]
+    branches: [main, feature/phase-12-guarded-sync]
   workflow_dispatch:
     inputs:
       force_snapshot_rebuild:
