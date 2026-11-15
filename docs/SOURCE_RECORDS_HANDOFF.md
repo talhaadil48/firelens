@@ -53,8 +53,7 @@ TypeScript must move together.
 - Python: 153 tests, Ruff lint/format and contract drift check.
 - Web: 27 tests, ESLint, TypeScript and production build.
 - A local real-data test checks every nonblank row/cell from all 22 original CSVs
-  against imported records and verifies their full SHA-256 hashes. Source hashes
-  are also recorded in the historical `INVESTIGATION_REVIEW_AUDIT.md`.
+  against imported records and verifies their full SHA-256 hashes.
 - Added coverage for partial records, grouped values, unmapped files, original
   multi-line cells and physical row locations, retained source notes, pagination,
   multiple source tables and original-column rendering.

@@ -1,11 +1,11 @@
-> Historical Phase 1–3 assessment. For the current Phase 7 implementation and
-> verification, read [Phase 7 handoff](../PHASE_7_HANDOFF.md).
+> Historical Phase 1–3 assessment. The later phases have since been implemented;
+> read the code and its verified checks for current behaviour.
 
-# Supplied plan alignment — current Phase 1–3 foundation
+# Supplied plan alignment — Phase 1–3 foundation
 
 Updated 14 November 2026 after the owner authorized fixing the differences found
 in the original review. The complete supplied plan remains unchanged in
-`flame-in-freefall-plan.md`. Read `SESSION_HANDOFF.md` for the active delivery state.
+`flame-in-freefall-plan.md`. This file records the state at that point.
 
 ## Aligned in this update
 

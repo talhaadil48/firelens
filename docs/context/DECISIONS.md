@@ -51,9 +51,8 @@ handoff and harvest log for the two unresolved upstream PDF links.
 ## Complete product plan received
 
 The owner has now supplied the original complete `flame-in-freefall-plan.md`.
-It is preserved verbatim under that name in this context directory. The previous
-derived plan is retained as `implementation-summary.md`. Read `PLAN_ALIGNMENT.md`
-for the code-level comparison.
+It is preserved verbatim under that name in this context directory. Read
+`PLAN_ALIGNMENT.md` for the code-level comparison.
 
 The supplied plan establishes C/F/M/D (conditions, fuel realism, safety goal, data
 richness) as the intended ranking design, superseding decision 5's provisional
@@ -68,9 +67,9 @@ The owner authorized alignment on the current branch. The canonical row schema,
 C/F/M/D weights, profile/custom contracts and exact context source configuration
 now follow the full plan. Legacy row/query aliases preserve compatibility. The
 new collection uses `raw/plan-aligned-20261114/` (eight context topics, documented
-Apollo fallbacks, two missing PDFs). See `PLAN_ALIGNMENT.md` and the active
-`SESSION_HANDOFF.md`; prior provisional decisions are historical. No live scientific
-ranking, normalization or deployment was added by this foundation update.
+Apollo fallbacks, two missing PDFs). See `PLAN_ALIGNMENT.md`; prior provisional
+decisions are historical. No live scientific ranking, normalization or deployment
+was added by this foundation update.
 
 ## Cloud: OpenRouter instead of Azure OpenAI (14 Nov 2026)
 

@@ -1,4 +1,4 @@
-"""Compatibility re-export of api.snapshot (see docs/PARALLEL_PLAN.md)."""
+"""Compatibility re-export of api.snapshot."""
 
 from api.snapshot import (
     BlobFetcher,

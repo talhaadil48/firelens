@@ -178,6 +178,4 @@ If you change `api/models.py` or `api/main.py`:
 - [docs/context/README.md](docs/context/README.md) — context reading order
 - [docs/context/flame-in-freefall-plan.md](docs/context/flame-in-freefall-plan.md) — complete product plan
 - [docs/context/PLAN_ALIGNMENT.md](docs/context/PLAN_ALIGNMENT.md) — alignment status and remaining later-phase work
-- [docs/context/SESSION_HANDOFF.md](docs/context/SESSION_HANDOFF.md) — latest branch checkpoint
-- [docs/PHASE_3_HANDOFF.md](docs/PHASE_3_HANDOFF.md) — detailed Phase 3 harvester and audit reference
 - [docs/harvest/HARVEST_LOG.md](docs/harvest/HARVEST_LOG.md) — latest executed harvest inventory
