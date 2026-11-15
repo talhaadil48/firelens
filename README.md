@@ -23,12 +23,24 @@ designing?*
   pressurized rover, spacesuit) or set oxygen, pressure and airflow yourself. Investigations are ranked by how closely their measured
   test conditions match, and a coverage map shows which conditions have been tested and
   where the gaps are.
+
+  ![FireLens Explorer view showing mission environment selector, oxygen vs. pressure coverage map, and ranked investigations](docs/screenshots/explorer.png)
+
 - **Investigation.** Each investigation's purpose, hardware, test records, findings and
   publications, with its PSI accession, version and DOI.
+
+  ![FireLens Investigation view for PSI-69 FLEX showing research objective, fuel and hardware metadata, and test summary](docs/screenshots/investigation.png)
+
 - **Compare.** Two or more investigations side by side: what is the same, what differs.
+
+  ![FireLens Compare view showing PSI-69 FLEX and PSI-39 CFI side by side with differing fields highlighted](docs/screenshots/compare.png)
+
 - **Ask FireLens.** Questions in plain language, answered only from retrieved report
   excerpts and measurement rows. Every claim is cited (accession, DOI, file, page or row);
   charts in answers are drawn from the cited rows. If nothing relevant is found, it says so.
+
+  ![FireLens Ask FireLens view showing a source-grounded answer with inline citations and the evidence viewer excerpt](docs/screenshots/ask-firelens.png)
+
 - **Export.** The records behind any view as CSV or JSON, with their sources.
 
 **Data in the live snapshot:** 24 PSI Combustion Science investigations (all with DOIs),
@@ -36,8 +48,6 @@ designing?*
 for ranking) and 2,632 text passages from reports and NASA context pages. Four
 investigations have no machine-readable tables and are shown with their metadata and
 links only.
-
-<!-- Screenshots: add 2–3 images of Explorer, an Investigation and an Ask answer here. -->
 
 ## How it stays trustworthy
 
